@@ -1,16 +1,6 @@
-export type WeatherInfo = { label: string }
-
-export function describeWeather(code: number): WeatherInfo {
-  if (code === 0) return { label: 'Clear sky' }
-  if (code === 1) return { label: 'Mainly clear' }
-  if (code === 2) return { label: 'Partly cloudy' }
-  if (code === 3) return { label: 'Overcast' }
-  if (code === 45 || code === 48) return { label: 'Fog' }
-  if (code >= 51 && code <= 57) return { label: 'Drizzle' }
-  if (code >= 61 && code <= 67) return { label: 'Rain' }
-  if (code >= 71 && code <= 77) return { label: 'Snow' }
-  if (code >= 80 && code <= 82) return { label: 'Rain showers' }
-  if (code >= 85 && code <= 86) return { label: 'Snow showers' }
-  if (code >= 95) return { label: 'Thunderstorm' }
-  return { label: 'Unknown' }
+export function weatherCodeKey(code: number | null | undefined): string {
+  if (code === null || code === undefined) return 'wcode.unknown'
+  const allowed = [0,1,2,3,45,48,51,53,55,61,63,65,71,73,75,80,81,82,85,86,95,96,99]
+  if (allowed.includes(code)) return 'wcode.' + code
+  return 'wcode.unknown'
 }
