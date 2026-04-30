@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 
 export function BackToTop() {
@@ -22,3 +22,4 @@ export function BackToTop() {
     </button>
   )
 }
+

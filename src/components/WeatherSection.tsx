@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { RefreshCw, Wind, Droplets, Gauge, Thermometer, Compass, Cloud } from 'lucide-react'
 import { useWeather } from '../hooks/useWeather'
 import { describeWeather } from '../data/weatherCodes'
@@ -18,10 +18,10 @@ export function WeatherSection() {
     <section id="weather" className="py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.5 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
           <span className="inline-block px-3 py-1 rounded-full bg-[#38BDF8]/10 text-[#006BA6] text-xs font-medium">
@@ -101,3 +101,4 @@ function Stat({ icon, label, value }: { icon: JSX.Element; label: string; value:
     </div>
   )
 }
+

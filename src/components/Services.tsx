@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import {
   CloudRain,
   Waves,
@@ -37,10 +37,10 @@ export function Services() {
     <section id="services" className="py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.5 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
           <span className="text-xs font-medium text-[#006BA6] uppercase">Our Services</span>
@@ -52,10 +52,10 @@ export function Services() {
           {services.map((s, i) => (
             <motion.div
               key={s.id}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
-              transition= duration: 0.4, delay: i * 0.04 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.04 }}
               className="rounded-xl bg-gradient-to-b from-white to-[#F5FAFD] border border-slate-100 p-5 hover:shadow-lg hover:border-[#38BDF8]/30 transition"
             >
               <div className="w-11 h-11 rounded-xl bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
@@ -70,3 +70,4 @@ export function Services() {
     </section>
   )
 }
+

@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Newspaper } from 'lucide-react'
 import { news } from '../data/defaultContent'
 
@@ -7,10 +7,10 @@ export function News() {
     <section id="news" className="py-16 lg:py-20 bg-[#F5FAFD]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.5 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
           <span className="text-xs font-medium text-[#006BA6] uppercase">News</span>
@@ -20,10 +20,10 @@ export function News() {
           {news.map((n, i) => (
             <motion.article
               key={n.title}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
-              transition= duration: 0.4, delay: i * 0.05 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
               className="rounded-2xl bg-white border border-slate-100 p-6 hover:shadow-md transition"
             >
               <div className="flex items-center gap-2 text-xs text-[#006BA6]">
@@ -39,3 +39,4 @@ export function News() {
     </section>
   )
 }
+

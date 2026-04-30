@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from 'react'
+﻿import { useState, type FormEvent, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
@@ -66,10 +66,10 @@ export function AppointmentForm() {
     <section id="contact" className="py-16 lg:py-20 bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.5 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
           className="mb-10 text-center"
         >
           <span className="text-xs font-medium text-[#006BA6] uppercase">Contact</span>
@@ -205,3 +205,4 @@ function Field({
     </div>
   )
 }
+

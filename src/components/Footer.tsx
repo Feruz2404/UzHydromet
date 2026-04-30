@@ -1,4 +1,4 @@
-import { CloudSun } from 'lucide-react'
+﻿import { CloudSun } from 'lucide-react'
 import { agency } from '../data/defaultContent'
 
 export function Footer() {
@@ -47,3 +47,4 @@ export function Footer() {
     </footer>
   )
 }
+

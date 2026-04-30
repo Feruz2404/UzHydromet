@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+﻿import { motion } from 'framer-motion'
 import { Activity, MapPin, Calendar, ShieldAlert } from 'lucide-react'
 
 const stats = [
@@ -31,9 +31,9 @@ export function Hero() {
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
         <motion.div
-          initial= opacity: 0, y: 20 
-          animate= opacity: 1, y: 0 
-          transition= duration: 0.6 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
           <span className="inline-block px-3 py-1 rounded-full bg-[#006BA6]/10 text-[#006BA6] text-xs font-medium">
             Official Government Agency
@@ -80,9 +80,9 @@ export function Hero() {
         </motion.div>
 
         <motion.div
-          initial= opacity: 0, y: 30 
-          animate= opacity: 1, y: 0 
-          transition= duration: 0.6, delay: 0.15 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
           className="relative"
         >
           <div className="rounded-2xl bg-white/80 backdrop-blur-xl border border-white shadow-xl p-6">
@@ -115,3 +115,4 @@ export function Hero() {
     </section>
   )
 }
+
