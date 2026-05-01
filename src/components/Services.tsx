@@ -2,6 +2,20 @@ import { motion } from 'framer-motion'
 import { CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 
+const headerMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 }
+}
+
+const cardMotion = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 }
+}
+
 const services = [
   { id: 'meteo', titleKey: 'services.meteo.title', textKey: 'services.meteo.text' },
   { id: 'hydro', titleKey: 'services.hydro.title', textKey: 'services.hydro.text' },
@@ -29,24 +43,15 @@ export function Services() {
   return (
     <section id="services" className="py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.5 
-          className="mb-12 text-center max-w-2xl mx-auto"
-        >
+        <motion.div {...headerMotion} className="mb-12 text-center max-w-2xl mx-auto">
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {services.map((s, i) => (
+          {services.map((s) => (
             <motion.div
               key={s.id}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
-              transition= duration: 0.5, delay: i * 0.04 
+              {...cardMotion}
               className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />

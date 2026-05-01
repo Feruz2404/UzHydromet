@@ -3,6 +3,20 @@ import { Newspaper, ArrowRight } from 'lucide-react'
 import { news } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
+const headerMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
+}
+
+const cardMotion = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.55 }
+}
+
 const tagAccents: Record<number, string> = {
   0: 'bg-brand-ice text-brand-deep ring-brand-sky/30',
   1: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
@@ -14,13 +28,7 @@ export function News() {
   return (
     <section id="news" className="py-16 lg:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial= opacity: 0, y: 20 
-          whileInView= opacity: 1, y: 0 
-          viewport= once: true 
-          transition= duration: 0.6 
-          className="mb-12 text-center max-w-2xl mx-auto"
-        >
+        <motion.div {...headerMotion} className="mb-12 text-center max-w-2xl mx-auto">
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('news.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('news.title')}</h2>
         </motion.div>
@@ -28,10 +36,7 @@ export function News() {
           {news.map((n, i) => (
             <motion.article
               key={n.titleKey}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
-              transition= duration: 0.6, delay: i * 0.08 
+              {...cardMotion}
               className="group relative rounded-3xl bg-gradient-to-b from-white to-brand-mist border border-slate-100 p-7 shadow-card hover:shadow-glow hover:-translate-y-1 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice/70 blur-2xl pointer-events-none" aria-hidden="true" />
