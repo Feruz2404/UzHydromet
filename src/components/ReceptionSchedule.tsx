@@ -24,14 +24,14 @@ export function ReceptionSchedule() {
   }, [query, t])
 
   return (
-    <section id="reception" className="py-12 md:py-16 lg:py-24 bg-brand-mist">
+    <section id="reception" className="py-10 md:py-14 lg:py-20 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-8 md:mb-10 text-center max-w-2xl mx-auto">
-          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('reception.eyebrow')}</span>
-          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('reception.title')}</h2>
+        <motion.div {...headerMotion} className="mb-6 md:mb-10 text-center max-w-2xl mx-auto">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('reception.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('reception.title')}</h2>
         </motion.div>
 
-        <div className="mb-6 flex justify-end">
+        <div className="mb-5 md:mb-6 flex justify-end">
           <label className="relative w-full md:w-80">
             <span className="sr-only">{t('reception.searchSr')}</span>
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" size={16} />
@@ -81,20 +81,20 @@ export function ReceptionSchedule() {
           </table>
         </div>
 
-        <div className="md:hidden grid gap-3">
+        <div className="md:hidden -mx-4 px-4 pb-2 flex gap-3 overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar">
           {filtered.map((l) => (
-            <div key={l.id} className="rounded-2xl bg-white border border-slate-100 p-5 shadow-card">
-              <div className="font-display font-bold text-brand-navy break-words">{l.name}</div>
-              <div className="text-sm text-brand-muted">{t(l.positionKey)}</div>
-              <div className="mt-3 text-sm text-brand-muted">{t(l.dayKey)} {'•'} {l.receptionTime}</div>
-              <div className="text-sm text-brand-muted break-words">{l.phone}</div>
-              <a href="#contact" className="mt-4 inline-flex items-center gap-1.5 text-brand-deep font-semibold">
+            <div key={l.id} className="snap-start min-w-[84vw] shrink-0 rounded-2xl bg-white border border-slate-100 p-4 shadow-card">
+              <div className="font-display text-[15px] font-bold text-brand-navy leading-tight break-words">{l.name}</div>
+              <div className="mt-1 text-[13px] text-brand-muted leading-snug">{t(l.positionKey)}</div>
+              <div className="mt-3 text-[13px] text-brand-muted">{t(l.dayKey)} {'\u2022'} {l.receptionTime}</div>
+              <div className="text-[13px] text-brand-muted break-words">{l.phone}</div>
+              <a href="#contact" className="mt-3 inline-flex items-center gap-1.5 text-brand-deep font-semibold text-[13px]">
                 {t('reception.bookAppointment')} <ArrowRight size={14} />
               </a>
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="text-center text-brand-muted py-8">{t('reception.empty')}</div>
+            <div className="min-w-full text-center text-brand-muted py-8">{t('reception.empty')}</div>
           )}
         </div>
       </div>
