@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { CloudSun, Thermometer, Droplets, Sprout } from 'lucide-react'
 import { agency } from '../data/defaultContent'
 
@@ -8,6 +8,13 @@ const cards = [
   { icon: 'drops', title: 'Hydrological Observations', text: 'Tracking surface water resources and basin conditions.' },
   { icon: 'sprout', title: 'Agrometeorological Analysis', text: 'Insights to support agriculture and food security.' }
 ]
+
+const fadeUpMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
+}
 
 function CardIcon({ kind }: { kind: string }) {
   if (kind === 'cloudsun') return <CloudSun size={20} />
@@ -20,12 +27,7 @@ export function About() {
   return (
     <section id="about" className="py-16 lg:py-20 bg-[#F5FAFD]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
+        <motion.div {...fadeUpMotion}>
           <span className="text-xs font-medium text-[#006BA6] uppercase">About Us</span>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">
             Hydrometeorological Service Agency
@@ -43,13 +45,10 @@ export function About() {
           </div>
         </motion.div>
         <div className="grid sm:grid-cols-2 gap-4">
-          {cards.map((c, i) => (
+          {cards.map((c) => (
             <motion.div
               key={c.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
+              {...fadeUpMotion}
               className="rounded-xl bg-white p-5 border border-slate-100 shadow-sm hover:shadow-md transition"
             >
               <div className="w-10 h-10 rounded-lg bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
@@ -64,4 +63,3 @@ export function About() {
     </section>
   )
 }
-

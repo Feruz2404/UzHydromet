@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   CloudRain,
   Waves,
@@ -21,6 +21,13 @@ const services = [
   { id: 'alerts', title: 'Severe Weather Alerts', text: 'Early warning of dangerous weather events.' }
 ]
 
+const fadeUpMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
+}
+
 function ServiceIcon({ id }: { id: string }) {
   if (id === 'meteo') return <CloudRain size={22} />
   if (id === 'hydro') return <Waves size={22} />
@@ -36,26 +43,17 @@ export function Services() {
   return (
     <section id="services" className="py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
+        <motion.div {...fadeUpMotion} className="mb-10 text-center">
           <span className="text-xs font-medium text-[#006BA6] uppercase">Our Services</span>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">
             Comprehensive Hydrometeorological Services
           </h2>
         </motion.div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {services.map((s, i) => (
+          {services.map((s) => (
             <motion.div
               key={s.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.04 }}
+              {...fadeUpMotion}
               className="rounded-xl bg-gradient-to-b from-white to-[#F5FAFD] border border-slate-100 p-5 hover:shadow-lg hover:border-[#38BDF8]/30 transition"
             >
               <div className="w-11 h-11 rounded-xl bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
@@ -70,4 +68,3 @@ export function Services() {
     </section>
   )
 }
-
