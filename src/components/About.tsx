@@ -49,23 +49,23 @@ function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; va
 export function About() {
   const { t } = useLanguage()
   return (
-    <section id="about" className="py-16 lg:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+    <section id="about" className="py-12 md:py-16 lg:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-8 md:gap-10 lg:gap-12 items-start">
         <motion.div {...introMotion} className="lg:col-span-5">
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('about.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('about.title')}</h2>
           <p className="mt-5 text-brand-muted leading-relaxed">{t('about.body')}</p>
-          <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <ContactRow icon={<Phone size={16} />} label={t('about.label.phone')} value={agency.phone} />
             <ContactRow icon={<Mail size={16} />} label={t('about.label.email')} value={agency.email} />
           </div>
         </motion.div>
-        <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+        <div className="lg:col-span-7 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none">
           {cards.map((c) => (
             <motion.div
               key={c.titleKey}
               {...cardMotion}
-              className="rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
+              className="snap-start min-w-[78vw] sm:min-w-0 shrink-0 sm:shrink rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
             >
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-ice to-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30">
                 <CardIcon kind={c.kind} />

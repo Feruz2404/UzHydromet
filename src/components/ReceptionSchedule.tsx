@@ -24,9 +24,9 @@ export function ReceptionSchedule() {
   }, [query, t])
 
   return (
-    <section id="reception" className="py-16 lg:py-24 bg-brand-mist">
+    <section id="reception" className="py-12 md:py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-10 text-center max-w-2xl mx-auto">
+        <motion.div {...headerMotion} className="mb-8 md:mb-10 text-center max-w-2xl mx-auto">
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('reception.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('reception.title')}</h2>
         </motion.div>
@@ -59,7 +59,7 @@ export function ReceptionSchedule() {
             </thead>
             <tbody>
               {filtered.map((l) => (
-                <tr key={l.name} className="border-t border-slate-100 hover:bg-brand-mist/40 transition">
+                <tr key={l.id} className="border-t border-slate-100 hover:bg-brand-mist/40 transition">
                   <td className="px-5 py-4 font-semibold text-brand-navy">{l.name}</td>
                   <td className="px-5 py-4 text-brand-muted">{t(l.positionKey)}</td>
                   <td className="px-5 py-4 text-brand-muted">{t(l.dayKey)}</td>
@@ -83,11 +83,11 @@ export function ReceptionSchedule() {
 
         <div className="md:hidden grid gap-3">
           {filtered.map((l) => (
-            <div key={l.name} className="rounded-2xl bg-white border border-slate-100 p-5 shadow-card">
+            <div key={l.id} className="rounded-2xl bg-white border border-slate-100 p-5 shadow-card">
               <div className="font-display font-bold text-brand-navy break-words">{l.name}</div>
               <div className="text-sm text-brand-muted">{t(l.positionKey)}</div>
               <div className="mt-3 text-sm text-brand-muted">{t(l.dayKey)} {'•'} {l.receptionTime}</div>
-              <div className="text-sm text-brand-muted">{l.phone}</div>
+              <div className="text-sm text-brand-muted break-words">{l.phone}</div>
               <a href="#contact" className="mt-4 inline-flex items-center gap-1.5 text-brand-deep font-semibold">
                 {t('reception.bookAppointment')} <ArrowRight size={14} />
               </a>
