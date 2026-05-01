@@ -1,67 +1,73 @@
-﻿import { motion } from 'framer-motion'
-import { CloudSun, Thermometer, Droplets, Sprout } from 'lucide-react'
-import { agency } from '../data/defaultContent'
+import { motion } from 'framer-motion'
+import { CheckCircle2, MapPin, Phone, Mail, Globe } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { motionPreset } from '../lib/motion'
+import { useLanguage } from '../i18n/LanguageContext'
+import { useContent } from '../store/contentStore'
+import { SectionHeader } from './SectionHeader'
 
-const cards = [
-  { icon: 'cloudsun', title: 'Weather Forecasting', text: 'Daily and seasonal forecasts for all regions of Uzbekistan.' },
-  { icon: 'therm', title: 'Climate Monitoring', text: 'Long-term observation and analysis of climate trends.' },
-  { icon: 'drops', title: 'Hydrological Observations', text: 'Tracking surface water resources and basin conditions.' },
-  { icon: 'sprout', title: 'Agrometeorological Analysis', text: 'Insights to support agriculture and food security.' }
+type Highlight = { id: string; labelKey: string; fallback: string }
+const highlights: Highlight[] = [
+  { id: 'mission', labelKey: 'about.h.mission', fallback: 'National mission' },
+  { id: 'science', labelKey: 'about.h.science', fallback: 'Scientific accuracy' },
+  { id: 'open', labelKey: 'about.h.open', fallback: 'Open data and transparency' },
+  { id: 'modern', labelKey: 'about.h.modern', fallback: 'Modern infrastructure' }
 ]
 
-function CardIcon({ kind }: { kind: string }) {
-  if (kind === 'cloudsun') return <CloudSun size={20} />
-  if (kind === 'therm') return <Thermometer size={20} />
-  if (kind === 'drops') return <Droplets size={20} />
-  return <Sprout size={20} />
+type Fact = { id: string; icon: LucideIcon; value: string }
+
+function FactRow(props: { fact: Fact }) {
+  const Icon = props.fact.icon
+  return (
+    <li className="flex items-start gap-3">
+      <span aria-hidden="true" className="w-9 h-9 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+        <Icon size={16} />
+      </span>
+      <span className="text-sm text-slate-700 mt-1.5 break-words">{props.fact.value}</span>
+    </li>
+  )
 }
 
 export function About() {
+  const { lang, t } = useLanguage()
+  const { content } = useContent()
+  const facts: Fact[] = [
+    { id: 'address', icon: MapPin, value: content.contact.address },
+    { id: 'phone', icon: Phone, value: content.contact.phone },
+    { id: 'email', icon: Mail, value: content.contact.email },
+    { id: 'website', icon: Globe, value: content.contact.website }
+  ]
   return (
-    <section id="about" className="py-16 lg:py-20 bg-[#F5FAFD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <span className="text-xs font-medium text-[#006BA6] uppercase">About Us</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">
-            Hydrometeorological Service Agency
-          </h2>
-          <p className="mt-4 text-slate-600 leading-relaxed">{agency.about}</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-white border border-slate-100">
-              <div className="text-xs text-slate-500">Phone</div>
-              <div className="text-sm font-medium text-[#003B5C]">{agency.phone}</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white border border-slate-100">
-              <div className="text-xs text-slate-500">Email</div>
-              <div className="text-sm font-medium text-[#003B5C]">{agency.email}</div>
-            </div>
-          </div>
-        </motion.div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          {cards.map((c, i) => (
-            <motion.div
-              key={c.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="rounded-xl bg-white p-5 border border-slate-100 shadow-sm hover:shadow-md transition"
-            >
-              <div className="w-10 h-10 rounded-lg bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
-                <CardIcon kind={c.icon} />
-              </div>
-              <div className="mt-3 font-semibold text-[#003B5C]">{c.title}</div>
-              <div className="mt-1 text-sm text-slate-600">{c.text}</div>
-            </motion.div>
-          ))}
+    <section id="about" className="section bg-bg">
+      <div className="container-page grid lg:grid-cols-12 gap-10 items-start">
+        <div className="lg:col-span-7">
+          <SectionHeader
+            eyebrow={t('about.eyebrow', 'About the agency')}
+            title={t('about.title', 'Hydrometeorological Service Agency')}
+            description={content.about.body[lang]}
+          />
+          <motion.ul {...motionPreset.fadeUp} className="mt-7 grid sm:grid-cols-2 gap-3">
+            {highlights.map((h) => (
+              <li key={h.id} className="flex items-start gap-3 rounded-xl bg-white border border-slate-100 p-4 shadow-sm">
+                <CheckCircle2 size={20} className="text-brand-600 mt-0.5 shrink-0" />
+                <span className="text-sm text-slate-700 font-medium">{t(h.labelKey, h.fallback)}</span>
+              </li>
+            ))}
+          </motion.ul>
         </div>
+        <motion.aside {...motionPreset.slideLeft} className="lg:col-span-5 rounded-2xl bg-white border border-slate-100 shadow-card p-6">
+          <h3 className="text-base font-semibold text-ink-900">{t('about.glanceTitle', 'At a glance')}</h3>
+          <ul className="mt-4 space-y-3">
+            {facts.map((f) => (
+              <FactRow key={f.id} fact={f} />
+            ))}
+          </ul>
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <div className="text-xs uppercase tracking-wider text-slate-500">{t('about.hoursLabel', 'Working hours')}</div>
+            <div className="text-sm font-medium text-ink-900 mt-1">{content.contact.workingHours[lang]}</div>
+          </div>
+        </motion.aside>
       </div>
     </section>
   )
 }
-

@@ -1,25 +1,27 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowUp } from 'lucide-react'
 
-export function BackToTop() {
-  const [show, setShow] = useState<boolean>(false)
+const listenerOptions: AddEventListenerOptions = { passive: true }
+const scrollOptions: ScrollToOptions = { top: 0, behavior: 'smooth' }
 
+export function BackToTop() {
+  const [visible, setVisible] = useState<boolean>(false)
   useEffect(() => {
-    const onScroll = () => setShow(window.scrollY > 400)
-    window.addEventListener('scroll', onScroll)
+    function onScroll(): void { setVisible(window.scrollY > 400) }
+    onScroll()
+    window.addEventListener('scroll', onScroll, listenerOptions)
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  if (!show) return null
+  function scrollTop(): void { window.scrollTo(scrollOptions) }
+  if (!visible) return null
   return (
     <button
       type="button"
-      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-[#006BA6] text-white shadow-lg hover:bg-[#003B5C] transition flex items-center justify-center"
+      onClick={scrollTop}
       aria-label="Back to top"
+      className="fixed bottom-6 right-6 z-40 rounded-full bg-brand-600 hover:bg-brand-700 text-white shadow-lg w-12 h-12 flex items-center justify-center transition"
     >
-      <ArrowUp size={18} />
+      <ArrowUp size={20} />
     </button>
   )
 }
-

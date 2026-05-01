@@ -1,100 +1,67 @@
-﻿import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search } from 'lucide-react'
-import { leaders } from '../data/defaultContent'
+import { Calendar, Clock, Phone, Mail } from 'lucide-react'
+import { motionPreset } from '../lib/motion'
+import { useLanguage } from '../i18n/LanguageContext'
+import { useContent } from '../store/contentStore'
+import { SectionHeader } from './SectionHeader'
+
+type Day = { id: string; labelKey: string; fallback: string }
+const weekDays: Day[] = [
+  { id: 'mon', labelKey: 'day.mon', fallback: 'Mon' },
+  { id: 'tue', labelKey: 'day.tue', fallback: 'Tue' },
+  { id: 'wed', labelKey: 'day.wed', fallback: 'Wed' },
+  { id: 'thu', labelKey: 'day.thu', fallback: 'Thu' },
+  { id: 'fri', labelKey: 'day.fri', fallback: 'Fri' }
+]
 
 export function ReceptionSchedule() {
-  const [query, setQuery] = useState<string>('')
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    if (!q) return leaders
-    return leaders.filter(
-      (l) => l.name.toLowerCase().includes(q) || l.position.toLowerCase().includes(q)
-    )
-  }, [query])
-
+  const { lang, t } = useLanguage()
+  const { content } = useContent()
+  const leader = content.leaders.length > 0 ? content.leaders[0] : null
+  const receptionDayLabel = leader ? leader.receptionDay[lang] : ''
+  const receptionTime = leader ? leader.receptionTime : '11:00\u201313:00'
   return (
-    <section id="reception" className="py-16 lg:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <span className="text-xs font-medium text-[#006BA6] uppercase">Reception Schedule</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">Public Reception Hours</h2>
-        </motion.div>
-
-        <div className="mb-6 flex justify-end">
-          <label className="relative w-full md:w-72">
-            <span className="sr-only">Search reception schedule</span>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by name or position"
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#006BA6]"
-            />
-          </label>
+    <section id="reception" className="section bg-white">
+      <div className="container-page grid lg:grid-cols-12 gap-10 items-start">
+        <div className="lg:col-span-5">
+          <SectionHeader
+            eyebrow={t('reception.eyebrow', 'Reception schedule')}
+            title={t('reception.title', 'When you can visit')}
+            description={t('reception.subtitle', 'Citizen reception is held weekly by the Agency Director.')}
+          />
         </div>
-
-        <div className="hidden md:block overflow-hidden rounded-xl border border-slate-100">
-          <table className="w-full text-sm">
-            <thead className="bg-[#F5FAFD] text-left text-slate-600">
-              <tr>
-                <th className="px-4 py-3">Leader</th>
-                <th className="px-4 py-3">Position</th>
-                <th className="px-4 py-3">Day</th>
-                <th className="px-4 py-3">Time</th>
-                <th className="px-4 py-3">Phone</th>
-                <th className="px-4 py-3" aria-label="Action"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((l) => (
-                <tr key={l.name} className="border-t border-slate-100">
-                  <td className="px-4 py-3 font-medium text-[#003B5C]">{l.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.position}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.receptionDay}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.receptionTime}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.phone}</td>
-                  <td className="px-4 py-3 text-right">
-                    <a href="#contact" className="text-[#006BA6] font-medium hover:underline">
-                      Book
-                    </a>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-slate-500">No results found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="md:hidden grid gap-3">
-          {filtered.map((l) => (
-            <div key={l.name} className="rounded-xl bg-white border border-slate-100 p-4">
-              <div className="font-semibold text-[#003B5C]">{l.name}</div>
-              <div className="text-sm text-slate-600">{l.position}</div>
-              <div className="mt-2 text-sm text-slate-600">{l.receptionDay} | {l.receptionTime}</div>
-              <div className="text-sm text-slate-600">{l.phone}</div>
-              <a href="#contact" className="mt-3 inline-block text-[#006BA6] font-medium">
-                Book appointment
-              </a>
+        <motion.div {...motionPreset.fadeUp} className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
+          <div className="rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 text-white p-6 shadow-card">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-white/80">
+              <Calendar size={14} />
+              <span>{t('reception.day', 'Reception day')}</span>
             </div>
-          ))}
-          {filtered.length === 0 && (
-            <div className="text-center text-slate-500 py-6">No results found.</div>
-          )}
-        </div>
+            <div className="mt-3 text-2xl font-bold">{receptionDayLabel || t('day.thu', 'Thursday')}</div>
+            <div className="mt-6 flex items-center gap-2 text-xs uppercase tracking-wider text-white/80">
+              <Clock size={14} />
+              <span>{t('reception.time', 'Hours')}</span>
+            </div>
+            <div className="mt-3 text-2xl font-bold">{receptionTime}</div>
+          </div>
+          <div className="rounded-2xl bg-white border border-slate-100 shadow-sm p-6">
+            <h3 className="text-base font-semibold text-ink-900">{t('reception.contactsTitle', 'Direct contacts')}</h3>
+            <ul className="mt-4 space-y-3 text-sm text-slate-700">
+              <li className="flex items-center gap-2"><Phone size={14} className="text-brand-600" /> {content.contact.phone}</li>
+              <li className="flex items-center gap-2"><Mail size={14} className="text-brand-600" /> {content.contact.email}</li>
+            </ul>
+            <div className="mt-5 pt-5 border-t border-slate-100">
+              <div className="text-xs uppercase tracking-wider text-slate-500">{t('reception.openDays', 'Open Mon\u2013Fri')}</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {weekDays.map((d) => (
+                  <span key={d.id} className="px-2.5 py-1 rounded-md bg-brand-50 text-brand-700 text-xs font-medium">
+                    {t(d.labelKey, d.fallback)}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   )
 }
-
