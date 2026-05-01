@@ -2,6 +2,7 @@ import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { WeatherSection } from '../components/WeatherSection'
 import { About } from '../components/About'
+import { Hydrometeorology } from '../components/Hydrometeorology'
 import { Services } from '../components/Services'
 import { Leadership } from '../components/Leadership'
 import { ReceptionSchedule } from '../components/ReceptionSchedule'
@@ -19,6 +20,7 @@ export default function HomePage() {
         <Hero />
         <WeatherSection />
         <About />
+        <Hydrometeorology />
         <Services />
         <Leadership />
         <ReceptionSchedule />
