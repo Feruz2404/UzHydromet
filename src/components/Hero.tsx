@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion'
-import { CloudSun, Calendar, MapPin, Activity, Droplets, Thermometer, AlertTriangle } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { CloudSun, Calendar, MapPin, Activity, Phone, Mail, Clock, Globe } from 'lucide-react'
+import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const heroMotion = {
@@ -15,19 +16,19 @@ const heroMotionRight = {
   transition: { duration: 0.7, delay: 0.15 }
 }
 
-type Bullet = {
-  id: string
-  Icon: LucideIcon
-  titleKey: string
-  textKey: string
+function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <li className="flex items-start gap-3">
+      <span aria-hidden="true" className="inline-flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-brand-mist text-brand-deep ring-1 ring-brand-sky/20">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-brand-muted font-semibold">{label}</div>
+        <div className="mt-0.5 text-[12.5px] sm:text-sm text-brand-navy font-semibold leading-snug break-words">{value}</div>
+      </div>
+    </li>
+  )
 }
-
-const bullets: Bullet[] = [
-  { id: 'forecasting', Icon: CloudSun, titleKey: 'hero.area.forecasting.title', textKey: 'hero.area.forecasting.text' },
-  { id: 'hydro', Icon: Droplets, titleKey: 'hero.area.hydro.title', textKey: 'hero.area.hydro.text' },
-  { id: 'climate', Icon: Thermometer, titleKey: 'hero.area.climate.title', textKey: 'hero.area.climate.text' },
-  { id: 'warnings', Icon: AlertTriangle, titleKey: 'hero.area.warnings.title', textKey: 'hero.area.warnings.text' }
-]
 
 export function Hero() {
   const { t } = useLanguage()
@@ -71,20 +72,11 @@ export function Hero() {
             <h2 className="mt-2 font-display text-base sm:text-lg lg:text-2xl font-extrabold text-brand-ink leading-tight">{t('hero.institutional.title')}</h2>
             <p className="mt-2 text-xs sm:text-sm text-brand-muted leading-relaxed">{t('hero.institutional.subtitle')}</p>
             <ul className="mt-4 space-y-2.5 sm:space-y-3">
-              {bullets.map((b) => {
-                const Icon = b.Icon
-                return (
-                  <li key={b.id} className="flex items-start gap-3">
-                    <span aria-hidden="true" className="inline-flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-brand-mist text-brand-deep ring-1 ring-brand-sky/20">
-                      <Icon size={14} />
-                    </span>
-                    <div className="min-w-0">
-                      <div className="font-display text-[13px] sm:text-sm font-bold text-brand-navy leading-tight">{t(b.titleKey)}</div>
-                      <p className="mt-0.5 text-[11px] sm:text-xs text-brand-muted leading-snug">{t(b.textKey)}</p>
-                    </div>
-                  </li>
-                )
-              })}
+              <InfoRow icon={<MapPin size={14} />} label={t('about.label.phone').replace(/.*/, t('location.label.address'))} value={agency.address} />
+              <InfoRow icon={<Phone size={14} />} label={t('about.label.phone')} value={agency.phone} />
+              <InfoRow icon={<Mail size={14} />} label={t('about.label.email')} value={agency.email} />
+              <InfoRow icon={<Clock size={14} />} label={t('location.label.workingHours')} value={t('agency.workingHours')} />
+              <InfoRow icon={<Globe size={14} />} label={t('location.label.website')} value={agency.website} />
             </ul>
           </div>
         </motion.div>
