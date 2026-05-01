@@ -36,7 +36,7 @@ export function News() {
               initial={CARD_INITIAL}
               whileInView={CARD_WHILE_IN_VIEW}
               viewport={CARD_VIEWPORT}
-              transition= duration: 0.6, delay: i * 0.05 
+              transition= duration: 0.6, delay: i * 0.08 
               className="group relative rounded-3xl bg-gradient-to-b from-white to-brand-mist border border-slate-100 p-7 shadow-card hover:shadow-glow hover:-translate-y-1 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice/70 blur-2xl pointer-events-none" aria-hidden="true" />

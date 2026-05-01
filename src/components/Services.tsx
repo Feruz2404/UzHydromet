@@ -51,7 +51,7 @@ export function Services() {
               initial={CARD_INITIAL}
               whileInView={CARD_WHILE_IN_VIEW}
               viewport={CARD_VIEWPORT}
-              transition= duration: 0.5, delay: i * 0.03 
+              transition= duration: 0.5, delay: i * 0.04 
               className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />
