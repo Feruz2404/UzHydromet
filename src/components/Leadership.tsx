@@ -11,6 +11,11 @@ const headerMotion = {
   transition: { duration: 0.6 }
 }
 
+const CARD_INITIAL = { opacity: 0, y: 20 }
+const CARD_WHILE_IN_VIEW = { opacity: 1, y: 0 }
+const CARD_VIEWPORT = { once: true }
+const CARD_TRANSITION = { duration: 0.6 }
+
 function initialsOf(name: string): string {
   const parts = name.split(' ').filter(Boolean)
   const a = parts[0]?.charAt(0) ?? ''
@@ -42,10 +47,10 @@ export function Leadership() {
           {leaders.map((l) => (
             <motion.div
               key={l.name}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
-              transition= duration: 0.6 
+              initial={CARD_INITIAL}
+              whileInView={CARD_WHILE_IN_VIEW}
+              viewport={CARD_VIEWPORT}
+              transition={CARD_TRANSITION}
               className="relative rounded-3xl bg-gradient-to-br from-white via-white to-brand-mist border border-slate-100 p-7 shadow-card hover:shadow-glow transition-all overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-40 h-40 -translate-y-12 translate-x-12 rounded-full bg-brand-ice/60 blur-2xl pointer-events-none" aria-hidden="true" />

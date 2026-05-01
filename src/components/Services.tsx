@@ -20,6 +20,10 @@ const headerMotion = {
   transition: { duration: 0.5 }
 }
 
+const CARD_INITIAL = { opacity: 0, y: 20 }
+const CARD_WHILE_IN_VIEW = { opacity: 1, y: 0 }
+const CARD_VIEWPORT = { once: true }
+
 function ServiceIcon({ id }: { id: string }) {
   if (id === 'meteo') return <CloudRain size={22} />
   if (id === 'hydro') return <Waves size={22} />
@@ -44,9 +48,9 @@ export function Services() {
           {services.map((s, i) => (
             <motion.div
               key={s.id}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
+              initial={CARD_INITIAL}
+              whileInView={CARD_WHILE_IN_VIEW}
+              viewport={CARD_VIEWPORT}
               transition= duration: 0.5, delay: i * 0.03 
               className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >

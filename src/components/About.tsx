@@ -18,6 +18,10 @@ const leftMotion = {
   transition: { duration: 0.6 }
 }
 
+const CARD_INITIAL = { opacity: 0, y: 20 }
+const CARD_WHILE_IN_VIEW = { opacity: 1, y: 0 }
+const CARD_VIEWPORT = { once: true }
+
 function CardIcon({ kind }: { kind: string }) {
   if (kind === 'cloudsun') return <CloudSun size={20} />
   if (kind === 'therm') return <Thermometer size={20} />
@@ -57,9 +61,9 @@ export function About() {
           {cards.map((c, i) => (
             <motion.div
               key={c.titleKey}
-              initial= opacity: 0, y: 20 
-              whileInView= opacity: 1, y: 0 
-              viewport= once: true 
+              initial={CARD_INITIAL}
+              whileInView={CARD_WHILE_IN_VIEW}
+              viewport={CARD_VIEWPORT}
               transition= duration: 0.6, delay: i * 0.05 
               className="rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
             >
