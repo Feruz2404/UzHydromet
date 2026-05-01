@@ -1,4 +1,4 @@
-﻿import { Header } from '../components/Header'
+import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { WeatherSection } from '../components/WeatherSection'
 import { About } from '../components/About'
@@ -31,4 +31,3 @@ export default function HomePage() {
     </div>
   )
 }
-

@@ -14,9 +14,7 @@ export function Footer() {
             </span>
             <div className="font-semibold">UzGidromet</div>
           </div>
-          <p className="mt-3 text-sm text-white/70">
-            {t('footer.tagline')}
-          </p>
+          <p className="mt-3 text-sm text-white/70">{t('footer.tagline')}</p>
         </div>
         <div>
           <div className="text-sm font-semibold">{t('footer.quickLinks')}</div>
@@ -43,7 +41,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 text-xs text-white/60 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>{t('footer.copyright')}</div>
-          <div>{agency.workingHours}</div>
+          <div>{t('agency.workingHours')}</div>
         </div>
       </div>
     </footer>

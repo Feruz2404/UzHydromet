@@ -2,19 +2,15 @@ export const agency = {
   shortName: 'UzGidromet',
   altName: "O'zgidromet",
   fullName: 'Hydrometeorological Service Agency of the Republic of Uzbekistan',
-  about:
-    "O'zgidromet is a state agency responsible for meteorological, climate, hydrological, and agrometeorological observations in the Republic of Uzbekistan.",
   address: '72A Osiyo Street, Tashkent, Uzbekistan 100052',
   phone: '55 503 1222 (100)',
   email: 'info@meteo.uz',
   website: 'gov.uz/oz/hydromet',
-  workingHours: 'Monday - Friday, 09:00 - 18:00',
   mapEmbedUrl:
     'https://www.google.com/maps?q=72A%20Osiyo%20Street%2C%20Tashkent%2C%20Uzbekistan%20100052&output=embed',
   mapOpenUrl:
     'https://www.google.com/maps/search/?api=1&query=72A%20Osiyo%20Street%2C%20Tashkent%2C%20Uzbekistan%20100052',
   weather: {
-    city: 'Tashkent, Uzbekistan',
     latitude: 41.2995,
     longitude: 69.2401
   }
@@ -22,56 +18,52 @@ export const agency = {
 
 export type Leader = {
   name: string
-  position: string
+  positionKey: string
   phone: string
   email: string
-  receptionDay: string
+  dayKey: string
   receptionTime: string
-  office: string
-  description: string
+  officeKey: string
+  descriptionKey: string
 }
 
 export const leaders: Leader[] = [
   {
     name: "Xabibullayev Sherzod Xabibullaxo'jayevich",
-    position: 'Agency Director',
+    positionKey: 'leadership.director.position',
     phone: '55 503 1222 (100)',
     email: 'info@meteo.uz',
-    receptionDay: 'Thursday',
+    dayKey: 'reception.day.thursday',
     receptionTime: '11:00 - 13:00',
-    office: 'Information will be added',
-    description:
-      'Leads the Hydrometeorological Service Agency and oversees national hydrometeorological observations.'
+    officeKey: 'leadership.director.office',
+    descriptionKey: 'leadership.director.description'
   }
 ]
 
 export type NewsItem = {
-  title: string
-  date: string
-  summary: string
-  tag: string
+  titleKey: string
+  dateKey: string
+  summaryKey: string
+  tagKey: string
 }
 
 export const news: NewsItem[] = [
   {
-    title: 'Weather Monitoring System',
-    date: '2026',
-    summary:
-      'Modern monitoring infrastructure supports continuous weather observation across all regions.',
-    tag: 'Announcement'
+    titleKey: 'news.item1.title',
+    dateKey: 'news.item1.date',
+    summaryKey: 'news.item1.summary',
+    tagKey: 'news.item1.tag'
   },
   {
-    title: 'Climate Observations',
-    date: '2026',
-    summary:
-      'Long-term climate analysis efforts contribute to national planning and adaptation strategies.',
-    tag: 'Update'
+    titleKey: 'news.item2.title',
+    dateKey: 'news.item2.date',
+    summaryKey: 'news.item2.summary',
+    tagKey: 'news.item2.tag'
   },
   {
-    title: 'Severe Weather Alerts',
-    date: '2026',
-    summary:
-      'Public early warning channels keep citizens informed about dangerous weather events.',
-    tag: 'Notice'
+    titleKey: 'news.item3.title',
+    dateKey: 'news.item3.date',
+    summaryKey: 'news.item3.summary',
+    tagKey: 'news.item3.tag'
   }
 ]
