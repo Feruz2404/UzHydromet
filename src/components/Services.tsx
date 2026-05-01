@@ -13,17 +13,6 @@ const services = [
   { id: 'alerts', titleKey: 'services.alerts.title', textKey: 'services.alerts.text' }
 ] as const
 
-const headerMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5 }
-}
-
-const CARD_INITIAL = { opacity: 0, y: 20 }
-const CARD_WHILE_IN_VIEW = { opacity: 1, y: 0 }
-const CARD_VIEWPORT = { once: true }
-
 function ServiceIcon({ id }: { id: string }) {
   if (id === 'meteo') return <CloudRain size={22} />
   if (id === 'hydro') return <Waves size={22} />
@@ -40,7 +29,13 @@ export function Services() {
   return (
     <section id="services" className="py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-12 text-center max-w-2xl mx-auto">
+        <motion.div
+          initial= opacity: 0, y: 20 
+          whileInView= opacity: 1, y: 0 
+          viewport= once: true 
+          transition= duration: 0.5 
+          className="mb-12 text-center max-w-2xl mx-auto"
+        >
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
@@ -48,9 +43,9 @@ export function Services() {
           {services.map((s, i) => (
             <motion.div
               key={s.id}
-              initial={CARD_INITIAL}
-              whileInView={CARD_WHILE_IN_VIEW}
-              viewport={CARD_VIEWPORT}
+              initial= opacity: 0, y: 20 
+              whileInView= opacity: 1, y: 0 
+              viewport= once: true 
               transition= duration: 0.5, delay: i * 0.04 
               className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
