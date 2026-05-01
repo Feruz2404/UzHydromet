@@ -41,32 +41,36 @@ export function Leadership() {
   }
 
   return (
-    <section id="leadership" className="py-12 md:py-16 lg:py-24 bg-white">
+    <section id="leadership" className="py-10 md:py-14 lg:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-8 md:mb-10 max-w-2xl">
-          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('leadership.eyebrow')}</span>
-          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('leadership.title')}</h2>
+        <motion.div {...headerMotion} className="mb-6 md:mb-10 max-w-2xl">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('leadership.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('leadership.title')}</h2>
         </motion.div>
 
-        <div className="grid gap-5">
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-1 gap-4 sm:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar items-start">
           {leaders.map((leader) => {
             const open = expanded[leader.id] ?? null
             const initials = getInitials(leader.name)
             const telHref = `tel:${leader.phone.replace(/[^0-9+]/g, '')}`
             return (
-              <motion.article key={leader.id} {...cardMotion} className="rounded-3xl bg-white border border-slate-100 shadow-card hover:shadow-glow transition-all overflow-hidden">
-                <div className="grid gap-5 md:gap-6 p-5 sm:p-6 lg:p-7 lg:grid-cols-12 lg:items-start">
-                  <div className="lg:col-span-2 flex lg:block items-center gap-4">
+              <motion.article
+                key={leader.id}
+                {...cardMotion}
+                className="snap-start min-w-[86vw] sm:min-w-0 shrink-0 sm:shrink rounded-3xl bg-white border border-slate-100 shadow-card hover:shadow-glow transition-all overflow-hidden flex flex-col"
+              >
+                <div className="grid gap-4 md:gap-6 p-4 sm:p-6 lg:p-7 lg:grid-cols-12 lg:items-start">
+                  <div className="lg:col-span-2 flex lg:block items-center gap-3">
                     {leader.image ? (
-                      <img src={leader.image} alt={leader.name} className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 rounded-2xl object-cover bg-brand-mist border border-slate-100 shrink-0" />
+                      <img src={leader.image} alt={leader.name} className="h-14 w-14 sm:h-20 sm:w-20 lg:h-28 lg:w-28 rounded-2xl object-cover bg-brand-mist border border-slate-100 shrink-0" />
                     ) : (
-                      <div aria-hidden="true" className="h-16 w-16 sm:h-20 sm:w-20 lg:h-28 lg:w-28 shrink-0 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-deep text-white flex items-center justify-center font-display text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight shadow-card">
+                      <div aria-hidden="true" className="h-14 w-14 sm:h-20 sm:w-20 lg:h-28 lg:w-28 shrink-0 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-deep text-white flex items-center justify-center font-display text-lg sm:text-2xl lg:text-3xl font-extrabold tracking-tight shadow-card">
                         {initials}
                       </div>
                     )}
                     <div className="lg:hidden flex-1 min-w-0">
-                      <h3 className="font-display text-base sm:text-lg font-extrabold text-brand-navy leading-tight break-words">{leader.name}</h3>
-                      <p className="mt-1 text-sm text-brand-muted leading-snug">{t(leader.positionKey)}</p>
+                      <h3 className="font-display text-[15px] sm:text-lg font-extrabold text-brand-navy leading-tight break-words">{leader.name}</h3>
+                      <p className="mt-1 text-[12px] sm:text-sm text-brand-muted leading-snug">{t(leader.positionKey)}</p>
                     </div>
                   </div>
 
@@ -76,14 +80,14 @@ export function Leadership() {
                   </div>
 
                   <div className="lg:col-span-5">
-                    <ul className="space-y-2.5 text-sm">
-                      <li className="flex items-start gap-2.5">
-                        <Phone size={15} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
+                    <ul className="space-y-1.5 sm:space-y-2 text-[12.5px] sm:text-sm">
+                      <li className="flex items-start gap-2">
+                        <Phone size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
                         <span className="sr-only">{t('leadership.label.phone')}: </span>
                         <a href={telHref} className="text-brand-navy hover:text-brand-deep break-words">{leader.phone}</a>
                       </li>
-                      <li className="flex items-start gap-2.5">
-                        <Mail size={15} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
+                      <li className="flex items-start gap-2">
+                        <Mail size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
                         <span className="sr-only">{t('leadership.label.email')}: </span>
                         {leader.emailPending || !leader.email ? (
                           <span className="italic text-brand-muted">{t('leadership.infoPending')}</span>
@@ -91,18 +95,18 @@ export function Leadership() {
                           <a href={`mailto:${leader.email}`} className="text-brand-navy hover:text-brand-deep break-all">{leader.email}</a>
                         )}
                       </li>
-                      <li className="flex items-start gap-2.5">
-                        <Globe size={15} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
+                      <li className="flex items-start gap-2">
+                        <Globe size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
                         <span className="sr-only">{t('leadership.label.website')}: </span>
                         <a href={leader.websiteUrl} target="_blank" rel="noopener noreferrer" className="text-brand-navy hover:text-brand-deep break-all">{leader.website}</a>
                       </li>
-                      <li className="flex items-start gap-2.5">
-                        <MapPin size={15} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
+                      <li className="flex items-start gap-2">
+                        <MapPin size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
                         <span className="sr-only">{t('leadership.label.address')}: </span>
                         <span className="text-brand-muted leading-snug break-words">{t(leader.addressKey)}</span>
                       </li>
-                      <li className="flex items-start gap-2.5">
-                        <CalendarClock size={15} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
+                      <li className="flex items-start gap-2">
+                        <CalendarClock size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />
                         <span className="sr-only">{t('leadership.label.reception')}: </span>
                         <span className="text-brand-muted">{t(leader.dayKey)}, {leader.receptionTime}</span>
                       </li>
@@ -111,18 +115,18 @@ export function Leadership() {
                 </div>
 
                 {(leader.showResponsibilities || leader.showBiography) && (
-                  <div className="px-5 sm:px-6 lg:px-7 pb-5 sm:pb-6 lg:pb-7">
-                    <div className="flex flex-col sm:flex-row gap-2.5">
+                  <div className="px-4 sm:px-6 lg:px-7 pb-4 sm:pb-6 lg:pb-7 mt-auto">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       {leader.showResponsibilities && (
                         <button
                           type="button"
                           onClick={() => toggle(leader.id, 'responsibilities')}
                           aria-expanded={open === 'responsibilities'}
-                          className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto ${open === 'responsibilities' ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card' : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'}`}
+                          className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${open === 'responsibilities' ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card' : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'}`}
                         >
-                          <FileText size={15} aria-hidden="true" />
+                          <FileText size={14} aria-hidden="true" />
                           {t('leadership.action.responsibilities')}
-                          <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open === 'responsibilities' ? 'rotate-180' : ''}`} />
+                          <ChevronDown size={13} aria-hidden="true" className={`transition-transform ${open === 'responsibilities' ? 'rotate-180' : ''}`} />
                         </button>
                       )}
                       {leader.showBiography && (
@@ -130,22 +134,22 @@ export function Leadership() {
                           type="button"
                           onClick={() => toggle(leader.id, 'biography')}
                           aria-expanded={open === 'biography'}
-                          className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all w-full sm:w-auto ${open === 'biography' ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card' : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'}`}
+                          className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${open === 'biography' ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card' : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'}`}
                         >
-                          <BookOpen size={15} aria-hidden="true" />
+                          <BookOpen size={14} aria-hidden="true" />
                           {t('leadership.action.biography')}
-                          <ChevronDown size={14} aria-hidden="true" className={`transition-transform ${open === 'biography' ? 'rotate-180' : ''}`} />
+                          <ChevronDown size={13} aria-hidden="true" className={`transition-transform ${open === 'biography' ? 'rotate-180' : ''}`} />
                         </button>
                       )}
                     </div>
 
                     {open === 'responsibilities' && (
-                      <div className="mt-4 rounded-2xl bg-brand-mist/60 border border-slate-100 p-5 text-sm text-brand-navy leading-relaxed">
+                      <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed">
                         {t(leader.responsibilitiesKey)}
                       </div>
                     )}
                     {open === 'biography' && (
-                      <div className="mt-4 rounded-2xl bg-brand-mist/60 border border-slate-100 p-5 text-sm text-brand-navy leading-relaxed">
+                      <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed">
                         {t(leader.biographyKey)}
                       </div>
                     )}

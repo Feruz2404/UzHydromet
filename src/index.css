@@ -22,6 +22,7 @@ body {
   color: var(--brand-ink);
   background-color: #FFFFFF;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 * {
@@ -40,6 +41,8 @@ body {
     background-image: linear-gradient(rgba(15,79,125,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(15,79,125,0.06) 1px, transparent 1px);
     background-size: 48px 48px;
   }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
 @keyframes floatY {
