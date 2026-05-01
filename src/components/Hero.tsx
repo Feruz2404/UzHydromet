@@ -1,4 +1,4 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Activity, MapPin, Calendar, ShieldAlert } from 'lucide-react'
 
 const stats = [
@@ -7,6 +7,18 @@ const stats = [
   { icon: 'cal', label: '7+ Service Areas' },
   { icon: 'alert', label: 'Rapid Alerts' }
 ] as const
+
+const heroMotion = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.6 }
+}
+
+const heroMotionRight = {
+  initial: { opacity: 0, x: 20 },
+  animate: { opacity: 1, x: 0 },
+  transition: { duration: 0.6, delay: 0.2 }
+}
 
 function StatIcon({ kind }: { kind: string }) {
   if (kind === 'activity') return <Activity size={18} />
@@ -30,11 +42,7 @@ export function Hero() {
         </svg>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
+        <motion.div {...heroMotion}>
           <span className="inline-block px-3 py-1 rounded-full bg-[#006BA6]/10 text-[#006BA6] text-xs font-medium">
             Official Government Agency
           </span>
@@ -79,12 +87,7 @@ export function Hero() {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="relative"
-        >
+        <motion.div {...heroMotionRight} className="relative">
           <div className="rounded-2xl bg-white/80 backdrop-blur-xl border border-white shadow-xl p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -115,4 +118,3 @@ export function Hero() {
     </section>
   )
 }
-

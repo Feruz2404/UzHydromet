@@ -1,4 +1,4 @@
-﻿import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle2 } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
@@ -23,6 +23,13 @@ const empty: FormState = {
   subject: '',
   message: '',
   date: ''
+}
+
+const fadeUpMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
 }
 
 type FormErrors = Partial<Record<keyof FormState, string>>
@@ -65,13 +72,7 @@ export function AppointmentForm() {
   return (
     <section id="contact" className="py-16 lg:py-20 bg-white">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
+        <motion.div {...fadeUpMotion} className="mb-10 text-center">
           <span className="text-xs font-medium text-[#006BA6] uppercase">Contact</span>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">Request an Appointment</h2>
           <p className="mt-3 text-slate-600">Fill out the form to request a reception appointment.</p>
@@ -205,4 +206,3 @@ function Field({
     </div>
   )
 }
-

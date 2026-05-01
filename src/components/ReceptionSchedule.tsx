@@ -1,7 +1,14 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
+
+const fadeUpMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
+}
 
 export function ReceptionSchedule() {
   const [query, setQuery] = useState<string>('')
@@ -16,13 +23,7 @@ export function ReceptionSchedule() {
   return (
     <section id="reception" className="py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
+        <motion.div {...fadeUpMotion} className="mb-10 text-center">
           <span className="text-xs font-medium text-[#006BA6] uppercase">Reception Schedule</span>
           <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">Public Reception Hours</h2>
         </motion.div>
@@ -97,4 +98,3 @@ export function ReceptionSchedule() {
     </section>
   )
 }
-
