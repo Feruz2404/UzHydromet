@@ -41,18 +41,18 @@ function ServiceIcon({ id }: { id: string }) {
 export function Services() {
   const { t } = useLanguage()
   return (
-    <section id="services" className="py-16 lg:py-24 bg-brand-mist">
+    <section id="services" className="py-12 md:py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-12 text-center max-w-2xl mx-auto">
+        <motion.div {...headerMotion} className="mb-8 md:mb-12 text-center max-w-2xl mx-auto">
           <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
           <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none">
           {services.map((s) => (
             <motion.div
               key={s.id}
               {...cardMotion}
-              className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
+              className="snap-start min-w-[78vw] sm:min-w-0 shrink-0 sm:shrink group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />
               <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-brand-deep to-brand-primary text-white flex items-center justify-center shadow-card">

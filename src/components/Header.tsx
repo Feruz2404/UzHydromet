@@ -26,25 +26,25 @@ export function Header() {
 
   return (
     <header className={headerClass}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-        <a href="#home" className="flex items-center gap-3 group">
-          <span className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary via-brand-deep to-brand-navy flex items-center justify-center text-white shadow-card">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+        <a href="#home" className="flex items-center gap-2 min-w-0 group">
+          <span className="relative h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-primary via-brand-deep to-brand-navy flex items-center justify-center text-white shadow-card">
             <CloudSun size={20} />
             <span className="absolute -right-0.5 -bottom-0.5 w-2.5 h-2.5 rounded-full bg-brand-cyan ring-2 ring-white" aria-hidden="true" />
           </span>
-          <span className="leading-tight">
-            <span className="block font-display font-bold text-[15px] tracking-tight text-brand-navy">{t('brand.short')}</span>
-            <span className="block text-[11px] text-brand-muted">{t('brand.tagline')}</span>
+          <span className="flex flex-col leading-tight min-w-0">
+            <span className="font-display font-bold text-[15px] tracking-tight text-brand-navy truncate whitespace-nowrap">{t('brand.short')}</span>
+            <span className="hidden sm:block text-[11px] text-brand-muted truncate">{t('brand.tagline')}</span>
           </span>
         </a>
-        <nav aria-label="Primary" className="hidden lg:flex items-center gap-1">
+        <nav aria-label="Primary" className="hidden lg:flex items-center gap-1 shrink-0">
           {linkIds.map((id) => (
             <a key={id} href={`#${id}`} className="px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-brand-deep hover:bg-brand-mist transition">
               {t(`nav.${id}`)}
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <LanguageSwitcher />
           <a href="#contact" className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow hover:from-brand-deep hover:to-brand-navy transition-all">
             {t('header.cta.contact')}
