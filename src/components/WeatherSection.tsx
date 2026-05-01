@@ -74,7 +74,7 @@ export function WeatherSection() {
             <div>
               <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.16em] text-white/70 font-semibold">
                 <MapPin size={12} />
-                {cityShort} \u2022 {t('weather.compactToday')}
+                <span>{cityShort} {'•'} {t('weather.compactToday')}</span>
               </div>
               <div className="mt-1 text-sm text-white/80">{t('weather.lastUpdated')}: <span className="text-white">{updated}</span></div>
             </div>
@@ -126,19 +126,19 @@ export function WeatherSection() {
                 <div>
                   <div className="flex items-baseline gap-1">
                     <span className="font-display text-7xl md:text-8xl font-extrabold leading-none">{Math.round(data.temperature)}</span>
-                    <span className="text-3xl font-semibold text-white/80">\u00B0C</span>
+                    <span className="text-3xl font-semibold text-white/80">{'°C'}</span>
                   </div>
                   <div className="mt-2 text-sm text-white/75">
-                    {t('weather.feelsLike')} <span className="font-semibold text-white">{Math.round(data.apparentTemperature)}\u00B0C</span>
+                    {t('weather.feelsLike')} <span className="font-semibold text-white">{`${Math.round(data.apparentTemperature)}°C`}</span>
                   </div>
                 </div>
               </div>
 
               <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-3">
-                <Stat icon={<Thermometer size={16} />} label={t('weather.label.feels')} value={`${Math.round(data.apparentTemperature)}\u00B0C`} />
+                <Stat icon={<Thermometer size={16} />} label={t('weather.label.feels')} value={`${Math.round(data.apparentTemperature)}°C`} />
                 <Stat icon={<Droplets size={16} />} label={t('weather.label.humidity')} value={`${data.humidity}%`} />
                 <Stat icon={<Wind size={16} />} label={t('weather.label.wind')} value={`${Math.round(data.windSpeed)} km/h`} />
-                <Stat icon={<Compass size={16} />} label={t('weather.label.windDir')} value={`${data.windDirection}\u00B0 ${dirCardinal}`} />
+                <Stat icon={<Compass size={16} />} label={t('weather.label.windDir')} value={`${data.windDirection}° ${dirCardinal}`} />
                 <Stat icon={<Gauge size={16} />} label={t('weather.label.pressure')} value={`${Math.round(data.pressure)} hPa`} />
                 <Stat icon={<Cloud size={16} />} label={t('weather.label.condition')} value={conditionLabel} />
               </div>
@@ -152,4 +152,14 @@ export function WeatherSection() {
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="group rounded-2xl bg-white/[0.06] backdrop-blur-md p-4 ring-1 ring-white/10 hover:ring-white/25 hover:bg-white/
+    <div className="group rounded-2xl bg-white/[0.06] backdrop-blur-md p-4 ring-1 ring-white/10 hover:ring-white/25 hover:bg-white/[0.1] transition">
+      <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-white/65 font-semibold">
+        <span className="w-7 h-7 rounded-lg bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky">
+          {icon}
+        </span>
+        {label}
+      </div>
+      <div className="mt-3 text-2xl font-bold leading-tight">{value}</div>
+    </div>
+  )
+}

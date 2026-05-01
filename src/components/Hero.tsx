@@ -109,10 +109,10 @@ export function Hero() {
                   <span className="font-display text-6xl md:text-7xl font-extrabold leading-none">
                     {data ? Math.round(data.temperature) : '--'}
                   </span>
-                  <span className="text-2xl font-semibold text-white/80">\u00B0C</span>
+                  <span className="text-2xl font-semibold text-white/80">{'°C'}</span>
                 </div>
                 <div className="mt-1 text-xs text-white/70">
-                  {t('weather.feelsLike')} {data ? Math.round(data.apparentTemperature) : '--'}\u00B0C
+                  {t('weather.feelsLike')} {data ? `${Math.round(data.apparentTemperature)}°C` : '--'}
                 </div>
               </div>
               <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur ring-1 ring-white/15 flex items-center justify-center text-brand-sky">
@@ -124,7 +124,7 @@ export function Hero() {
               <MiniStat icon={<Wind size={14} />} value={data ? `${Math.round(data.windSpeed)}` : '--'} unit="km/h" />
               <MiniStat icon={<Droplets size={14} />} value={data ? `${data.humidity}` : '--'} unit="%" />
               <MiniStat icon={<Gauge size={14} />} value={data ? `${Math.round(data.pressure)}` : '--'} unit="hPa" />
-              <MiniStat icon={<Thermometer size={14} />} value={data ? `${Math.round(data.apparentTemperature)}` : '--'} unit="\u00B0" />
+              <MiniStat icon={<Thermometer size={14} />} value={data ? `${Math.round(data.apparentTemperature)}` : '--'} unit={'°'} />
             </div>
 
             <div className="relative mt-5 flex items-center justify-between text-[11px] text-white/70">
