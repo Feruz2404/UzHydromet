@@ -1,42 +1,51 @@
-﻿import { motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Newspaper } from 'lucide-react'
-import { news } from '../data/defaultContent'
+import { motionPreset } from '../lib/motion'
+import { useLanguage } from '../i18n/LanguageContext'
+import { useContent } from '../store/contentStore'
+import { SectionHeader } from './SectionHeader'
+
+const localeMap: Record<string, string> = { uz: 'uz-UZ', ru: 'ru-RU', en: 'en-GB' }
+const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: '2-digit' }
+
+function formatDate(iso: string, lang: string): string {
+  try {
+    const tag = localeMap[lang] || 'en-GB'
+    return new Date(iso).toLocaleDateString(tag, dateOptions)
+  } catch (e) {
+    return iso
+  }
+}
 
 export function News() {
+  const { lang, t } = useLanguage()
+  const { content } = useContent()
   return (
-    <section id="news" className="py-16 lg:py-20 bg-[#F5FAFD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <span className="text-xs font-medium text-[#006BA6] uppercase">News</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">News and Announcements</h2>
-        </motion.div>
-        <div className="grid md:grid-cols-3 gap-5">
-          {news.map((n, i) => (
+    <section id="news" className="section bg-bg">
+      <div className="container-page">
+        <SectionHeader
+          eyebrow={t('news.eyebrow', 'News')}
+          title={t('news.title', 'Latest updates')}
+          description={t('news.subtitle', 'Press releases, climate reports and infrastructure news.')}
+        />
+        <motion.div {...motionPreset.stagger} className="mt-9 grid md:grid-cols-3 gap-5">
+          {content.news.map((n) => (
             <motion.article
-              key={n.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="rounded-2xl bg-white border border-slate-100 p-6 hover:shadow-md transition"
+              key={n.id}
+              {...motionPreset.staggerItem}
+              className="rounded-2xl bg-white border border-slate-100 shadow-sm p-6 grid gap-3 hover:shadow-card transition"
             >
-              <div className="flex items-center gap-2 text-xs text-[#006BA6]">
-                <Newspaper size={14} /> {n.tag}
-              </div>
-              <h3 className="mt-3 font-semibold text-[#003B5C]">{n.title}</h3>
-              <div className="mt-1 text-xs text-slate-500">{n.date}</div>
-              <p className="mt-3 text-sm text-slate-600">{n.summary}</p>
+              <span aria-hidden="true" className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                <Newspaper size={18} />
+              </span>
+              <span className="inline-flex w-fit text-xs uppercase tracking-wider px-2 py-0.5 rounded-md bg-brand-50 text-brand-700 font-semibold">{n.tag[lang]}</span>
+              <h3 className="text-base font-semibold text-ink-900 leading-snug">{n.title[lang]}</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">{n.summary[lang]}</p>
+              <span className="text-xs text-slate-500 mt-1">{formatDate(n.date, lang)}</span>
             </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
 }
-
