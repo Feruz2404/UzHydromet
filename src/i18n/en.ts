@@ -1,6 +1,9 @@
 import type { Dictionary } from './types'
 
 export const en: Dictionary = {
+  'brand.short': "O'zgidromet",
+  'brand.tagline': "Hydrometeorological Service Agency",
+
   'nav.home': "Home",
   'nav.about': "About",
   'nav.weather': "Weather",
@@ -50,6 +53,8 @@ export const en: Dictionary = {
   'weather.subtitleSuffix': " via Open-Meteo.",
   'weather.cityFull': "Tashkent, Uzbekistan",
   'weather.cityShort': "Tashkent",
+  'weather.compactToday': "Today",
+  'weather.fullDashboard': "Open dashboard",
   'weather.lastUpdated': "Last updated",
   'weather.refresh': "Refresh",
   'weather.refreshAria': "Refresh weather data",
@@ -75,6 +80,14 @@ export const en: Dictionary = {
   'weather.code.snowShowers': "Snow showers",
   'weather.code.thunderstorm': "Thunderstorm",
   'weather.code.unknown': "Unknown",
+  'weather.windCardinal.N': "N",
+  'weather.windCardinal.NE': "NE",
+  'weather.windCardinal.E': "E",
+  'weather.windCardinal.SE': "SE",
+  'weather.windCardinal.S': "S",
+  'weather.windCardinal.SW': "SW",
+  'weather.windCardinal.W': "W",
+  'weather.windCardinal.NW': "NW",
 
   'services.eyebrow': "Our Services",
   'services.title': "Comprehensive Hydrometeorological Services",
@@ -155,6 +168,7 @@ export const en: Dictionary = {
 
   'news.eyebrow': "News",
   'news.title': "News and Announcements",
+  'news.readMore': "Read more",
   'news.item1.title': "Weather Monitoring System",
   'news.item1.date': "2026",
   'news.item1.summary': "Modern monitoring infrastructure supports continuous weather observation across all regions.",
@@ -173,7 +187,7 @@ export const en: Dictionary = {
   'footer.contact': "Contact",
   'footer.admin': "Administrator",
   'footer.adminText': "Admin panel for content management is coming soon.",
-  'footer.copyright': "© 2026 Hydrometeorological Service Agency of the Republic of Uzbekistan. All rights reserved.",
+  'footer.copyright': "\u00A9 2026 Hydrometeorological Service Agency of the Republic of Uzbekistan. All rights reserved.",
 
   'agency.workingHours': "Monday - Friday, 09:00 - 18:00",
 

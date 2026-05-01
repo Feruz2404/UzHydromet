@@ -1,6 +1,9 @@
 import type { Dictionary } from './types'
 
 export const uz: Dictionary = {
+  'brand.short': "O'zgidromet",
+  'brand.tagline': "Gidrometeorologiya xizmati agentligi",
+
   'nav.home': "Bosh sahifa",
   'nav.about': "Agentlik haqida",
   'nav.weather': "Ob-havo",
@@ -32,7 +35,7 @@ export const uz: Dictionary = {
 
   'about.eyebrow': "Biz haqimizda",
   'about.title': "Gidrometeorologiya xizmati agentligi",
-  'about.body': "O'zgidromet — O'zbekiston Respublikasida meteorologik, iqlim, gidrologik va agrometeorologik kuzatuvlarni amalga oshiruvchi davlat tashkiloti.",
+  'about.body': "O'zgidromet \u2014 O'zbekiston Respublikasida meteorologik, iqlim, gidrologik va agrometeorologik kuzatuvlarni amalga oshiruvchi davlat tashkiloti.",
   'about.label.phone': "Telefon",
   'about.label.email': "Elektron pochta",
   'about.card.weather.title': "Ob-havo prognozi",
@@ -50,6 +53,8 @@ export const uz: Dictionary = {
   'weather.subtitleSuffix': " uchun joriy kuzatuvlar.",
   'weather.cityFull': "Toshkent, O'zbekiston",
   'weather.cityShort': "Toshkent",
+  'weather.compactToday': "Bugungi sharoit",
+  'weather.fullDashboard': "To'liq panelni ko'rish",
   'weather.lastUpdated': "Oxirgi yangilanish",
   'weather.refresh': "Yangilash",
   'weather.refreshAria': "Ob-havoni yangilash",
@@ -75,6 +80,14 @@ export const uz: Dictionary = {
   'weather.code.snowShowers': "Qor jalalari",
   'weather.code.thunderstorm': "Momoqaldiroq",
   'weather.code.unknown': "Noma'lum",
+  'weather.windCardinal.N': "Sh",
+  'weather.windCardinal.NE': "Sh-Sh.Sh",
+  'weather.windCardinal.E': "Sh.Sh",
+  'weather.windCardinal.SE': "J.Sh.Sh",
+  'weather.windCardinal.S': "J",
+  'weather.windCardinal.SW': "J.G'",
+  'weather.windCardinal.W': "G'",
+  'weather.windCardinal.NW': "Sh.G'",
 
   'services.eyebrow': "Bizning xizmatlar",
   'services.title': "Keng qamrovli gidrometeorologik xizmatlar",
@@ -155,6 +168,7 @@ export const uz: Dictionary = {
 
   'news.eyebrow': "Yangiliklar",
   'news.title': "Yangiliklar va e'lonlar",
+  'news.readMore': "Batafsil",
   'news.item1.title': "Ob-havo monitoringi tizimi",
   'news.item1.date': "2026",
   'news.item1.summary': "Zamonaviy monitoring infratuzilmasi mamlakat bo'ylab uzluksiz ob-havo kuzatuvini ta'minlaydi.",
@@ -173,7 +187,7 @@ export const uz: Dictionary = {
   'footer.contact': "Aloqa",
   'footer.admin': "Administrator",
   'footer.adminText': "Tarkibni boshqarish uchun admin panel tez orada mavjud bo'ladi.",
-  'footer.copyright': "© 2026 O'zbekiston Respublikasi Gidrometeorologiya xizmati agentligi. Barcha huquqlar himoyalangan.",
+  'footer.copyright': "\u00A9 2026 O'zbekiston Respublikasi Gidrometeorologiya xizmati agentligi. Barcha huquqlar himoyalangan.",
 
   'agency.workingHours': "Dushanba - Juma, 09:00 - 18:00",
 
