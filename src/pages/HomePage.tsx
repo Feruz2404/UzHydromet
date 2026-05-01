@@ -1,4 +1,4 @@
-﻿import { Header } from '../components/Header'
+import { Header } from '../components/Header'
 import { Hero } from '../components/Hero'
 import { WeatherSection } from '../components/WeatherSection'
 import { About } from '../components/About'
@@ -11,9 +11,9 @@ import { News } from '../components/News'
 import { Footer } from '../components/Footer'
 import { BackToTop } from '../components/BackToTop'
 
-export default function HomePage() {
+export function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-bg">
       <Header />
       <main className="flex-1">
         <Hero />
@@ -31,4 +31,3 @@ export default function HomePage() {
     </div>
   )
 }
-
