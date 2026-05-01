@@ -1,111 +1,89 @@
-﻿import { motion } from 'framer-motion'
-import { Activity, MapPin, Calendar, ShieldAlert } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Activity, MapPin, Calendar, ShieldAlert, CloudSun } from 'lucide-react'
+import { motionPreset } from '../lib/motion'
+import { useLanguage } from '../i18n/LanguageContext'
+import { useContent } from '../store/contentStore'
 
-const stats = [
-  { icon: 'activity', label: '24/7 Monitoring' },
-  { icon: 'map', label: '14 Regions' },
-  { icon: 'cal', label: '7+ Service Areas' },
-  { icon: 'alert', label: 'Rapid Alerts' }
-] as const
+type StatIconKind = 'activity' | 'map' | 'cal' | 'alert'
+type Stat = { id: string; icon: StatIconKind; labelKey: string; fallback: string }
 
-function StatIcon({ kind }: { kind: string }) {
-  if (kind === 'activity') return <Activity size={18} />
-  if (kind === 'map') return <MapPin size={18} />
-  if (kind === 'cal') return <Calendar size={18} />
+const stats: Stat[] = [
+  { id: 'monitoring', icon: 'activity', labelKey: 'hero.stat.monitoring', fallback: '24/7 Monitoring' },
+  { id: 'regions', icon: 'map', labelKey: 'hero.stat.regions', fallback: '14 Regions' },
+  { id: 'services', icon: 'cal', labelKey: 'hero.stat.services', fallback: '7+ Services' },
+  { id: 'alerts', icon: 'alert', labelKey: 'hero.stat.alerts', fallback: 'Rapid Alerts' }
+]
+
+type Kpi = { id: string; labelKey: string; fallback: string; value: string }
+
+const kpis: Kpi[] = [
+  { id: 'stations', labelKey: 'hero.kpi.stations', fallback: 'Stations', value: '42' },
+  { id: 'sensors', labelKey: 'hero.kpi.sensors', fallback: 'Sensors', value: '186' },
+  { id: 'reports', labelKey: 'hero.kpi.reports', fallback: 'Daily reports', value: '24' },
+  { id: 'regions', labelKey: 'hero.kpi.regions', fallback: 'Regions', value: '14' }
+]
+
+function StatIcon(props: { kind: StatIconKind }) {
+  if (props.kind === 'activity') return <Activity size={18} />
+  if (props.kind === 'map') return <MapPin size={18} />
+  if (props.kind === 'cal') return <Calendar size={18} />
   return <ShieldAlert size={18} />
 }
 
 export function Hero() {
+  const { lang, t } = useLanguage()
+  const { content } = useContent()
   return (
-    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#F5FAFD] to-white">
-      <div className="absolute inset-0 -z-10 opacity-50" aria-hidden="true">
+    <section id="home" className="relative overflow-hidden bg-gradient-to-b from-[#F5FAFD] via-white to-white">
+      <div aria-hidden="true" className="absolute inset-0 -z-10 opacity-60">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(56,189,248,0.25),transparent_60%)]" />
-        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
-          <defs>
-            <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(0,107,166,0.08)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_85%,rgba(0,107,166,0.15),transparent_55%)]" />
       </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="inline-block px-3 py-1 rounded-full bg-[#006BA6]/10 text-[#006BA6] text-xs font-medium">
-            Official Government Agency
+      <div className="container-page py-14 lg:py-20 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <motion.div {...motionPreset.fadeUpEager}>
+          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold uppercase tracking-[0.2em]">
+            <CloudSun size={14} />
+            {t('hero.eyebrow', 'Official Government Agency')}
           </span>
-          <h1 className="mt-4 text-3xl md:text-4xl lg:text-5xl font-bold text-[#0F172A] leading-tight">
-            Hydrometeorological Service Agency of the Republic of Uzbekistan
+          <h1 className="mt-5 text-3xl md:text-4xl lg:text-5xl xl:text-[3.25rem] font-bold text-ink-900 leading-tight tracking-tight">
+            {content.hero.title[lang]}
           </h1>
           <p className="mt-5 text-base md:text-lg text-slate-600 max-w-xl">
-            A reliable information center for weather, climate, hydrology, and agrometeorological observations.
+            {content.hero.subtitle[lang]}
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <a
-              href="#weather"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-[#006BA6] text-white font-medium hover:bg-[#003B5C] transition"
-            >
-              View Weather
-            </a>
-            <a
-              href="#reception"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white border border-slate-200 text-[#003B5C] font-medium hover:border-[#006BA6] transition"
-            >
-              Reception Hours
-            </a>
-            <a
-              href="#location"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white border border-slate-200 text-[#003B5C] font-medium hover:border-[#006BA6] transition"
-            >
-              Open Map
-            </a>
+            <a href="#weather" className="btn-primary">{t('hero.cta.weather', 'View weather')}</a>
+            <a href="#reception" className="btn-secondary">{t('hero.cta.reception', 'Reception hours')}</a>
+            <a href="#location" className="btn-secondary">{t('hero.cta.location', 'Open map')}</a>
           </div>
-          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {stats.map((m) => (
-              <div
-                key={m.label}
-                className="rounded-xl bg-white/70 backdrop-blur border border-white shadow-sm p-3 flex items-center gap-2"
-              >
-                <span className="w-8 h-8 rounded-lg bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
-                  <StatIcon kind={m.icon} />
+          <div className="mt-9 grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {stats.map((s) => (
+              <div key={s.id} className="rounded-xl bg-white/80 backdrop-blur border border-white shadow-sm p-3 flex items-center gap-2">
+                <span aria-hidden="true" className="w-9 h-9 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <StatIcon kind={s.icon} />
                 </span>
-                <span className="text-xs font-medium text-slate-700">{m.label}</span>
+                <span className="text-xs font-medium text-slate-700">{t(s.labelKey, s.fallback)}</span>
               </div>
             ))}
           </div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="relative"
-        >
-          <div className="rounded-2xl bg-white/80 backdrop-blur-xl border border-white shadow-xl p-6">
+        <motion.div {...motionPreset.slideLeft} className="relative">
+          <div className="rounded-2xl bg-white/85 backdrop-blur-xl border border-white shadow-card p-6">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs text-slate-500">Live Monitoring Dashboard</div>
-                <div className="text-lg font-semibold text-[#003B5C]">Tashkent</div>
+                <div className="text-xs uppercase tracking-[0.18em] text-slate-500">{t('hero.live.label', 'Live monitoring')}</div>
+                <div className="text-lg font-semibold text-brand-800">{t('hero.live.city', 'Tashkent')}</div>
               </div>
-              <span className="flex items-center gap-2 text-xs text-emerald-600">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Active
+              <span className="flex items-center gap-2 text-xs text-emerald-600 font-medium">
+                <span aria-hidden="true" className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                {t('hero.live.active', 'Active')}
               </span>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-3">
-              {[
-                { k: 'Stations', v: '42' },
-                { k: 'Sensors', v: '186' },
-                { k: 'Daily Reports', v: '24' },
-                { k: 'Regions', v: '14' }
-              ].map((s) => (
-                <div key={s.k} className="rounded-xl bg-gradient-to-br from-[#F5FAFD] to-white border border-slate-100 p-3">
-                  <div className="text-xs text-slate-500">{s.k}</div>
-                  <div className="text-2xl font-bold text-[#003B5C]">{s.v}</div>
+              {kpis.map((c) => (
+                <div key={c.id} className="rounded-xl bg-gradient-to-br from-[#F5FAFD] to-white border border-slate-100 p-4">
+                  <div className="text-xs text-slate-500">{t(c.labelKey, c.fallback)}</div>
+                  <div className="text-2xl font-bold text-brand-800 mt-1">{c.value}</div>
                 </div>
               ))}
             </div>
@@ -115,4 +93,3 @@ export function Hero() {
     </section>
   )
 }
-
