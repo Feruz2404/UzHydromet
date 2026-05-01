@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 
 export default function App() {
@@ -11,4 +11,3 @@ export default function App() {
     </BrowserRouter>
   )
 }
-
