@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { en } from '../locales/en'
 import { ru } from '../locales/ru'
 import { uz } from '../locales/uz'
@@ -6,7 +6,7 @@ import type { Dictionary, Locale } from '../locales/types'
 
 const dictionaries: Record<Locale, Dictionary> = { en, ru, uz }
 
-type LanguageContextValue = {
+export type LanguageContextValue = {
   lang: Locale
   setLang: (l: Locale) => void
   t: (key: string, fallback?: string) => string
@@ -20,15 +20,15 @@ function readInitial(): Locale {
   try {
     const v = window.localStorage.getItem(STORAGE_KEY)
     if (v === 'uz' || v === 'ru' || v === 'en') return v
-  } catch {}
+  } catch (e) { /* ignore */ }
   return 'uz'
 }
 
-export function LanguageProvider({ children }: { children: ReactNode }) {
+export function LanguageProvider(props: { children: ReactNode }) {
   const [lang, setLangState] = useState<Locale>(readInitial)
   useEffect(() => {
     document.documentElement.lang = lang
-    try { window.localStorage.setItem(STORAGE_KEY, lang) } catch {}
+    try { window.localStorage.setItem(STORAGE_KEY, lang) } catch (e) { /* ignore */ }
   }, [lang])
   const setLang = useCallback((l: Locale) => setLangState(l), [])
   const t = useCallback((key: string, fallback?: string): string => {
@@ -38,7 +38,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (fallback !== undefined) return fallback
     return key
   }, [lang])
-  return <Ctx.Provider value= lang, setLang, t >{children}</Ctx.Provider>
+  const value = useMemo<LanguageContextValue>(
+    () => ({ lang, setLang, t }),
+    [lang, setLang, t]
+  )
+  return <Ctx.Provider value={value}>{props.children}</Ctx.Provider>
 }
 
 export function useLanguage(): LanguageContextValue {
