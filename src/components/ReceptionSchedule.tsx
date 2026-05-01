@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Search } from 'lucide-react'
+import { Search, ArrowRight } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
-const fadeUpMotion = {
+const headerMotion = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
@@ -24,57 +24,57 @@ export function ReceptionSchedule() {
   }, [query, t])
 
   return (
-    <section id="reception" className="py-16 lg:py-20 bg-white">
+    <section id="reception" className="py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeUpMotion} className="mb-10 text-center">
-          <span className="text-xs font-medium text-[#006BA6] uppercase tracking-wider">{t('reception.eyebrow')}</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">{t('reception.title')}</h2>
+        <motion.div {...headerMotion} className="mb-10 text-center max-w-2xl mx-auto">
+          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('reception.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('reception.title')}</h2>
         </motion.div>
 
         <div className="mb-6 flex justify-end">
-          <label className="relative w-full md:w-72">
+          <label className="relative w-full md:w-80">
             <span className="sr-only">{t('reception.searchSr')}</span>
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-brand-muted" size={16} />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('reception.searchPlaceholder')}
-              className="w-full pl-9 pr-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#006BA6]"
+              className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-white text-sm shadow-card focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-sky/20 transition"
             />
           </label>
         </div>
 
-        <div className="hidden md:block overflow-hidden rounded-xl border border-slate-100 shadow-sm">
+        <div className="hidden md:block overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
           <table className="w-full text-sm">
-            <thead className="bg-[#F5FAFD] text-left text-slate-600">
+            <thead className="bg-gradient-to-r from-brand-mist to-white text-left text-brand-muted">
               <tr>
-                <th className="px-4 py-3">{t('reception.col.leader')}</th>
-                <th className="px-4 py-3">{t('reception.col.position')}</th>
-                <th className="px-4 py-3">{t('reception.col.day')}</th>
-                <th className="px-4 py-3">{t('reception.col.time')}</th>
-                <th className="px-4 py-3">{t('reception.col.phone')}</th>
-                <th className="px-4 py-3" aria-label={t('reception.col.action')}></th>
+                <th className="px-5 py-4 font-semibold">{t('reception.col.leader')}</th>
+                <th className="px-5 py-4 font-semibold">{t('reception.col.position')}</th>
+                <th className="px-5 py-4 font-semibold">{t('reception.col.day')}</th>
+                <th className="px-5 py-4 font-semibold">{t('reception.col.time')}</th>
+                <th className="px-5 py-4 font-semibold">{t('reception.col.phone')}</th>
+                <th className="px-5 py-4 font-semibold" aria-label={t('reception.col.action')}></th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((l) => (
-                <tr key={l.name} className="border-t border-slate-100">
-                  <td className="px-4 py-3 font-medium text-[#003B5C]">{l.name}</td>
-                  <td className="px-4 py-3 text-slate-600">{t(l.positionKey)}</td>
-                  <td className="px-4 py-3 text-slate-600">{t(l.dayKey)}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.receptionTime}</td>
-                  <td className="px-4 py-3 text-slate-600">{l.phone}</td>
-                  <td className="px-4 py-3 text-right">
-                    <a href="#contact" className="text-[#006BA6] font-medium hover:underline">
-                      {t('reception.book')}
+                <tr key={l.name} className="border-t border-slate-100 hover:bg-brand-mist/40 transition">
+                  <td className="px-5 py-4 font-semibold text-brand-navy">{l.name}</td>
+                  <td className="px-5 py-4 text-brand-muted">{t(l.positionKey)}</td>
+                  <td className="px-5 py-4 text-brand-muted">{t(l.dayKey)}</td>
+                  <td className="px-5 py-4 text-brand-muted">{l.receptionTime}</td>
+                  <td className="px-5 py-4 text-brand-muted">{l.phone}</td>
+                  <td className="px-5 py-4 text-right">
+                    <a href="#contact" className="inline-flex items-center gap-1.5 text-brand-deep font-semibold hover:text-brand-navy">
+                      {t('reception.book')} <ArrowRight size={14} />
                     </a>
                   </td>
                 </tr>
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-6 text-center text-slate-500">{t('reception.empty')}</td>
+                  <td colSpan={6} className="px-5 py-8 text-center text-brand-muted">{t('reception.empty')}</td>
                 </tr>
               )}
             </tbody>
@@ -83,18 +83,18 @@ export function ReceptionSchedule() {
 
         <div className="md:hidden grid gap-3">
           {filtered.map((l) => (
-            <div key={l.name} className="rounded-xl bg-white border border-slate-100 p-4 shadow-sm">
-              <div className="font-semibold text-[#003B5C]">{l.name}</div>
-              <div className="text-sm text-slate-600">{t(l.positionKey)}</div>
-              <div className="mt-2 text-sm text-slate-600">{t(l.dayKey)} | {l.receptionTime}</div>
-              <div className="text-sm text-slate-600">{l.phone}</div>
-              <a href="#contact" className="mt-3 inline-block text-[#006BA6] font-medium">
-                {t('reception.bookAppointment')}
+            <div key={l.name} className="rounded-2xl bg-white border border-slate-100 p-5 shadow-card">
+              <div className="font-display font-bold text-brand-navy break-words">{l.name}</div>
+              <div className="text-sm text-brand-muted">{t(l.positionKey)}</div>
+              <div className="mt-3 text-sm text-brand-muted">{t(l.dayKey)} {'•'} {l.receptionTime}</div>
+              <div className="text-sm text-brand-muted">{l.phone}</div>
+              <a href="#contact" className="mt-4 inline-flex items-center gap-1.5 text-brand-deep font-semibold">
+                {t('reception.bookAppointment')} <ArrowRight size={14} />
               </a>
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="text-center text-slate-500 py-6">{t('reception.empty')}</div>
+            <div className="text-center text-brand-muted py-8">{t('reception.empty')}</div>
           )}
         </div>
       </div>

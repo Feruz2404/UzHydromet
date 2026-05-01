@@ -1,6 +1,6 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Send } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
@@ -26,7 +26,7 @@ const empty: FormState = {
   date: ''
 }
 
-const fadeUpMotion = {
+const headerMotion = {
   initial: { opacity: 0, y: 20 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
@@ -72,20 +72,20 @@ export function AppointmentForm() {
   }
 
   return (
-    <section id="contact" className="py-16 lg:py-20 bg-white">
+    <section id="contact" className="py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeUpMotion} className="mb-10 text-center">
-          <span className="text-xs font-medium text-[#006BA6] uppercase tracking-wider">{t('contact.eyebrow')}</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">{t('contact.title')}</h2>
-          <p className="mt-3 text-slate-600">{t('contact.subtitle')}</p>
+        <motion.div {...headerMotion} className="mb-10 text-center max-w-2xl mx-auto">
+          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('contact.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('contact.title')}</h2>
+          <p className="mt-3 text-brand-muted">{t('contact.subtitle')}</p>
         </motion.div>
 
         {success && (
-          <div className="mb-6 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 flex items-center gap-3">
-            <CheckCircle2 size={20} />
+          <div className="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 p-5 flex items-start gap-3">
+            <CheckCircle2 size={22} className="mt-0.5 flex-shrink-0" />
             <div>
-              <div className="font-medium">{t('contact.success.title')}</div>
-              <div className="text-sm">{t('contact.success.text')}</div>
+              <div className="font-display font-bold">{t('contact.success.title')}</div>
+              <div className="text-sm mt-0.5">{t('contact.success.text')}</div>
             </div>
           </div>
         )}
@@ -93,22 +93,22 @@ export function AppointmentForm() {
         <form
           onSubmit={onSubmit}
           noValidate
-          className="grid sm:grid-cols-2 gap-4 rounded-2xl bg-[#F5FAFD] border border-slate-100 p-6 shadow-sm"
+          className="grid sm:grid-cols-2 gap-5 rounded-3xl bg-white border border-slate-100 p-7 lg:p-8 shadow-card"
         >
           <Field label={t('contact.field.firstName')} error={errors.firstName} htmlFor="f-firstName">
-            <input id="f-firstName" autoComplete="given-name" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.firstName} onChange={(e) => update('firstName', e.target.value)} />
+            <input id="f-firstName" autoComplete="given-name" className="form-input" value={form.firstName} onChange={(e) => update('firstName', e.target.value)} />
           </Field>
           <Field label={t('contact.field.lastName')} error={errors.lastName} htmlFor="f-lastName">
-            <input id="f-lastName" autoComplete="family-name" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.lastName} onChange={(e) => update('lastName', e.target.value)} />
+            <input id="f-lastName" autoComplete="family-name" className="form-input" value={form.lastName} onChange={(e) => update('lastName', e.target.value)} />
           </Field>
           <Field label={t('contact.field.phone')} error={errors.phone} htmlFor="f-phone">
-            <input id="f-phone" type="tel" autoComplete="tel" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+            <input id="f-phone" type="tel" autoComplete="tel" className="form-input" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
           </Field>
           <Field label={t('contact.field.email')} htmlFor="f-email">
-            <input id="f-email" type="email" autoComplete="email" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.email} onChange={(e) => update('email', e.target.value)} />
+            <input id="f-email" type="email" autoComplete="email" className="form-input" value={form.email} onChange={(e) => update('email', e.target.value)} />
           </Field>
           <Field label={t('contact.field.leader')} error={errors.leader} htmlFor="f-leader">
-            <select id="f-leader" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.leader} onChange={(e) => update('leader', e.target.value)}>
+            <select id="f-leader" className="form-input" value={form.leader} onChange={(e) => update('leader', e.target.value)}>
               <option value="">{t('contact.selectLeader')}</option>
               {leaders.map((l) => (
                 <option key={l.name} value={l.name}>
@@ -118,20 +118,21 @@ export function AppointmentForm() {
             </select>
           </Field>
           <Field label={t('contact.field.preferredDate')} htmlFor="f-date">
-            <input id="f-date" type="date" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.date} onChange={(e) => update('date', e.target.value)} />
+            <input id="f-date" type="date" className="form-input" value={form.date} onChange={(e) => update('date', e.target.value)} />
           </Field>
           <div className="sm:col-span-2">
             <Field label={t('contact.field.subject')} error={errors.subject} htmlFor="f-subject">
-              <input id="f-subject" className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.subject} onChange={(e) => update('subject', e.target.value)} />
+              <input id="f-subject" className="form-input" value={form.subject} onChange={(e) => update('subject', e.target.value)} />
             </Field>
           </div>
           <div className="sm:col-span-2">
             <Field label={t('contact.field.message')} htmlFor="f-message">
-              <textarea id="f-message" rows={4} className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#006BA6]" value={form.message} onChange={(e) => update('message', e.target.value)} />
+              <textarea id="f-message" rows={4} className="form-input resize-none" value={form.message} onChange={(e) => update('message', e.target.value)} />
             </Field>
           </div>
-          <div className="sm:col-span-2 flex justify-end">
-            <button type="submit" className="px-6 py-3 rounded-lg bg-[#006BA6] text-white font-medium hover:bg-[#003B5C] transition shadow-sm shadow-[#006BA6]/20">
+          <div className="sm:col-span-2 flex justify-end pt-1">
+            <button type="submit" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white font-semibold shadow-card hover:shadow-glow transition-all">
+              <Send size={16} />
               {t('contact.submit')}
             </button>
           </div>
@@ -144,11 +145,11 @@ export function AppointmentForm() {
 function Field({ label, error, htmlFor, children }: { label: string; error?: string; htmlFor: string; children: ReactNode }) {
   return (
     <div className="text-sm">
-      <label htmlFor={htmlFor} className="text-slate-700 font-medium">
+      <label htmlFor={htmlFor} className="block text-[11px] uppercase tracking-wider text-brand-muted font-semibold">
         {label}
       </label>
-      <div className="mt-1">{children}</div>
-      {error && <span className="mt-1 block text-xs text-red-600">{error}</span>}
+      <div className="mt-2">{children}</div>
+      {error && <span className="mt-1.5 block text-xs text-red-600">{error}</span>}
     </div>
   )
 }

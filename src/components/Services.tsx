@@ -2,6 +2,20 @@ import { motion } from 'framer-motion'
 import { CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 
+const headerMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 }
+}
+
+const cardMotion = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 }
+}
+
 const services = [
   { id: 'meteo', titleKey: 'services.meteo.title', textKey: 'services.meteo.text' },
   { id: 'hydro', titleKey: 'services.hydro.title', textKey: 'services.hydro.text' },
@@ -12,13 +26,6 @@ const services = [
   { id: 'digital', titleKey: 'services.digital.title', textKey: 'services.digital.text' },
   { id: 'alerts', titleKey: 'services.alerts.title', textKey: 'services.alerts.text' }
 ] as const
-
-const fadeUpMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 }
-}
 
 function ServiceIcon({ id }: { id: string }) {
   if (id === 'meteo') return <CloudRain size={22} />
@@ -34,24 +41,25 @@ function ServiceIcon({ id }: { id: string }) {
 export function Services() {
   const { t } = useLanguage()
   return (
-    <section id="services" className="py-16 lg:py-20 bg-white">
+    <section id="services" className="py-16 lg:py-24 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeUpMotion} className="mb-10 text-center">
-          <span className="text-xs font-medium text-[#006BA6] uppercase tracking-wider">{t('services.eyebrow')}</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">{t('services.title')}</h2>
+        <motion.div {...headerMotion} className="mb-12 text-center max-w-2xl mx-auto">
+          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {services.map((s) => (
             <motion.div
               key={s.id}
-              {...fadeUpMotion}
-              className="rounded-xl bg-gradient-to-b from-white to-[#F5FAFD] border border-slate-100 p-5 hover:shadow-lg hover:-translate-y-0.5 hover:border-[#38BDF8]/40 transition"
+              {...cardMotion}
+              className="group relative rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
-              <div className="w-11 h-11 rounded-xl bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
+              <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />
+              <div className="relative w-12 h-12 rounded-xl bg-gradient-to-br from-brand-deep to-brand-primary text-white flex items-center justify-center shadow-card">
                 <ServiceIcon id={s.id} />
               </div>
-              <div className="mt-3 font-semibold text-[#003B5C]">{t(s.titleKey)}</div>
-              <div className="mt-1 text-sm text-slate-600">{t(s.textKey)}</div>
+              <div className="relative mt-4 font-display text-lg font-bold text-brand-navy">{t(s.titleKey)}</div>
+              <div className="relative mt-1.5 text-sm text-brand-muted leading-relaxed">{t(s.textKey)}</div>
             </motion.div>
           ))}
         </div>

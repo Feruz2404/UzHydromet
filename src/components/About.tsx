@@ -1,7 +1,22 @@
+import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { CloudSun, Thermometer, Droplets, Sprout } from 'lucide-react'
+import { CloudSun, Thermometer, Droplets, Sprout, Phone, Mail } from 'lucide-react'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
+
+const introMotion = {
+  initial: { opacity: 0, y: 20 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 }
+}
+
+const cardMotion = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.5 }
+}
 
 const cards = [
   { kind: 'cloudsun', titleKey: 'about.card.weather.title', textKey: 'about.card.weather.text' },
@@ -10,13 +25,6 @@ const cards = [
   { kind: 'sprout', titleKey: 'about.card.agro.title', textKey: 'about.card.agro.text' }
 ] as const
 
-const fadeUpMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 }
-}
-
 function CardIcon({ kind }: { kind: string }) {
   if (kind === 'cloudsun') return <CloudSun size={20} />
   if (kind === 'therm') return <Thermometer size={20} />
@@ -24,34 +32,46 @@ function CardIcon({ kind }: { kind: string }) {
   return <Sprout size={20} />
 }
 
+function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return (
+    <div className="p-4 rounded-xl bg-brand-mist border border-slate-100 flex items-center gap-3">
+      <span className="w-10 h-10 rounded-lg bg-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30 flex-shrink-0">
+        {icon}
+      </span>
+      <div className="min-w-0">
+        <div className="text-[11px] uppercase tracking-wider text-brand-muted font-semibold">{label}</div>
+        <div className="text-sm font-semibold text-brand-navy break-words">{value}</div>
+      </div>
+    </div>
+  )
+}
+
 export function About() {
   const { t } = useLanguage()
   return (
-    <section id="about" className="py-16 lg:py-20 bg-[#F5FAFD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
-        <motion.div {...fadeUpMotion}>
-          <span className="text-xs font-medium text-[#006BA6] uppercase tracking-wider">{t('about.eyebrow')}</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">{t('about.title')}</h2>
-          <p className="mt-4 text-slate-600 leading-relaxed">{t('about.body')}</p>
-          <div className="mt-6 grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-white border border-slate-100">
-              <div className="text-xs text-slate-500">{t('about.label.phone')}</div>
-              <div className="text-sm font-medium text-[#003B5C]">{agency.phone}</div>
-            </div>
-            <div className="p-3 rounded-lg bg-white border border-slate-100">
-              <div className="text-xs text-slate-500">{t('about.label.email')}</div>
-              <div className="text-sm font-medium text-[#003B5C]">{agency.email}</div>
-            </div>
+    <section id="about" className="py-16 lg:py-24 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-10 lg:gap-12 items-start">
+        <motion.div {...introMotion} className="lg:col-span-5">
+          <span className="text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('about.eyebrow')}</span>
+          <h2 className="mt-3 font-display text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('about.title')}</h2>
+          <p className="mt-5 text-brand-muted leading-relaxed">{t('about.body')}</p>
+          <div className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <ContactRow icon={<Phone size={16} />} label={t('about.label.phone')} value={agency.phone} />
+            <ContactRow icon={<Mail size={16} />} label={t('about.label.email')} value={agency.email} />
           </div>
         </motion.div>
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
           {cards.map((c) => (
-            <motion.div key={c.titleKey} {...fadeUpMotion} className="rounded-xl bg-white p-5 border border-slate-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition">
-              <div className="w-10 h-10 rounded-lg bg-[#006BA6]/10 text-[#006BA6] flex items-center justify-center">
+            <motion.div
+              key={c.titleKey}
+              {...cardMotion}
+              className="rounded-2xl bg-white p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
+            >
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-ice to-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30">
                 <CardIcon kind={c.kind} />
               </div>
-              <div className="mt-3 font-semibold text-[#003B5C]">{t(c.titleKey)}</div>
-              <div className="mt-1 text-sm text-slate-600">{t(c.textKey)}</div>
+              <div className="mt-4 font-display text-lg font-bold text-brand-navy">{t(c.titleKey)}</div>
+              <div className="mt-1.5 text-sm text-brand-muted leading-relaxed">{t(c.textKey)}</div>
             </motion.div>
           ))}
         </div>
