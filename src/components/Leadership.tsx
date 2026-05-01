@@ -1,70 +1,57 @@
-﻿import { motion } from 'framer-motion'
-import { Phone, Mail, Calendar, Clock, MapPin } from 'lucide-react'
-import { leaders } from '../data/defaultContent'
+import { motion } from 'framer-motion'
+import { Phone, Mail, Clock, MapPin } from 'lucide-react'
+import { motionPreset } from '../lib/motion'
+import { useLanguage } from '../i18n/LanguageContext'
+import { useContent } from '../store/contentStore'
+import { SectionHeader } from './SectionHeader'
 
-function initialsOf(name: string): string {
-  const parts = name.split(' ').filter(Boolean)
-  const a = parts[0]?.charAt(0) ?? ''
-  const b = parts[1]?.charAt(0) ?? ''
-  return (a + b).toUpperCase()
+function initials(name: string): string {
+  const parts = name.split(' ')
+  if (parts.length === 0) return ''
+  const first = parts[0].charAt(0)
+  if (parts.length === 1) return first
+  const second = parts[1].charAt(0)
+  return first + second
 }
 
 export function Leadership() {
+  const { lang, t } = useLanguage()
+  const { content } = useContent()
   return (
-    <section id="leadership" className="py-16 lg:py-20 bg-[#F5FAFD]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="mb-10 text-center"
-        >
-          <span className="text-xs font-medium text-[#006BA6] uppercase">Leadership</span>
-          <h2 className="mt-2 text-3xl md:text-4xl font-bold text-[#003B5C]">Agency Leadership</h2>
-        </motion.div>
-        <div className="grid lg:grid-cols-2 gap-6">
-          {leaders.map((l, i) => (
-            <motion.div
-              key={l.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="rounded-2xl bg-white border border-slate-100 p-6 shadow-sm hover:shadow-md transition"
+    <section id="leadership" className="section bg-bg">
+      <div className="container-page">
+        <SectionHeader
+          eyebrow={t('leaders.eyebrow', 'Leadership')}
+          title={t('leaders.title', 'Agency leadership')}
+          description={t('leaders.subtitle', 'Direct contacts and reception details for the senior leadership team.')}
+        />
+        <motion.div {...motionPreset.stagger} className="mt-9 grid md:grid-cols-2 gap-5">
+          {content.leaders.map((p) => (
+            <motion.article
+              key={p.id}
+              {...motionPreset.staggerItem}
+              className="rounded-2xl bg-white border border-slate-100 shadow-sm p-6 grid gap-4"
             >
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#006BA6] to-[#003B5C] text-white flex items-center justify-center text-xl font-bold">
-                  {initialsOf(l.name)}
+                <div aria-hidden="true" className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 text-white flex items-center justify-center text-xl font-bold">
+                  {initials(p.name)}
                 </div>
-                <div>
-                  <div className="font-semibold text-[#003B5C]">{l.name}</div>
-                  <div className="text-sm text-slate-500">{l.position}</div>
-                </div>
-              </div>
-              <p className="mt-4 text-sm text-slate-600">{l.description}</p>
-              <div className="mt-4 grid sm:grid-cols-2 gap-2 text-sm">
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Calendar size={14} /> Reception: {l.receptionDay}
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Clock size={14} /> {l.receptionTime}
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Phone size={14} /> {l.phone}
-                </div>
-                <div className="flex items-center gap-2 text-slate-600">
-                  <Mail size={14} /> {l.email}
-                </div>
-                <div className="flex items-center gap-2 text-slate-600 sm:col-span-2">
-                  <MapPin size={14} /> {l.office}
+                <div className="min-w-0">
+                  <div className="text-base font-semibold text-ink-900 truncate">{p.name}</div>
+                  <div className="text-sm text-brand-700 font-medium">{p.position[lang]}</div>
                 </div>
               </div>
-            </motion.div>
+              <p className="text-sm text-slate-600 leading-relaxed">{p.description[lang]}</p>
+              <ul className="grid sm:grid-cols-2 gap-3 text-sm">
+                <li className="flex items-center gap-2 text-slate-700"><Phone size={14} className="text-brand-600" /> {p.phone}</li>
+                <li className="flex items-center gap-2 text-slate-700"><Mail size={14} className="text-brand-600" /> {p.email}</li>
+                <li className="flex items-center gap-2 text-slate-700"><Clock size={14} className="text-brand-600" /> {p.receptionDay[lang]} {p.receptionTime}</li>
+                <li className="flex items-center gap-2 text-slate-700"><MapPin size={14} className="text-brand-600" /> {p.office[lang]}</li>
+              </ul>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
 }
-
