@@ -26,14 +26,15 @@ export function Header() {
 
   return (
     <header className={headerClass}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-2 sm:gap-3">
         <a href="#home" className="flex items-center gap-2 min-w-0 group">
-          <span className="relative h-10 w-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-primary via-brand-deep to-brand-navy flex items-center justify-center text-white shadow-card">
-            <CloudSun size={20} />
+          <span className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 rounded-xl bg-gradient-to-br from-brand-primary via-brand-deep to-brand-navy flex items-center justify-center text-white shadow-card">
+            <CloudSun size={18} className="sm:hidden" />
+            <CloudSun size={20} className="hidden sm:block" />
             <span className="absolute -right-0.5 -bottom-0.5 w-2.5 h-2.5 rounded-full bg-brand-cyan ring-2 ring-white" aria-hidden="true" />
           </span>
           <span className="flex flex-col leading-tight min-w-0">
-            <span className="font-display font-bold text-[15px] tracking-tight text-brand-navy truncate whitespace-nowrap">{t('brand.short')}</span>
+            <span className="font-display font-bold text-[13.5px] sm:text-[15px] tracking-tight text-brand-navy truncate whitespace-nowrap">{t('brand.short')}</span>
             <span className="hidden sm:block text-[11px] text-brand-muted truncate">{t('brand.tagline')}</span>
           </span>
         </a>
@@ -44,7 +45,7 @@ export function Header() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
           <LanguageSwitcher />
           <a href="#contact" className="hidden md:inline-flex items-center px-4 py-2 rounded-lg bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow hover:from-brand-deep hover:to-brand-navy transition-all">
             {t('header.cta.contact')}
@@ -52,7 +53,7 @@ export function Header() {
           <button
             type="button"
             onClick={toggle}
-            className="lg:hidden p-2 text-slate-700 rounded-md hover:bg-slate-100"
+            className="lg:hidden p-1.5 sm:p-2 text-slate-700 rounded-md hover:bg-slate-100"
             aria-label={t('header.toggleMenu')}
             aria-expanded={open}
           >

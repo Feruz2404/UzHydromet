@@ -1,17 +1,11 @@
 import { motion } from 'framer-motion'
 import type { ReactNode } from 'react'
-import { RefreshCw, Wind, Droplets, Gauge, Thermometer, Compass, Cloud, MapPin, Activity, AlertCircle } from 'lucide-react'
+import { RefreshCw, Wind, Droplets, Gauge, Compass, MapPin, Activity, AlertCircle } from 'lucide-react'
 import { useWeather } from '../hooks/useWeather'
 import { describeWeather, weatherIconFor } from '../data/weatherCodes'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
-
-const fadeUpMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 }
-}
+import { fadeInUpInView } from '../lib/motion'
 
 const LOCALE_BY_LANG: Record<string, string> = {
   uz: 'en-GB',
@@ -40,10 +34,10 @@ export function WeatherSection() {
   const dirCardinal = data ? t(`weather.windCardinal.${cardinalOf(data.windDirection)}`) : ''
 
   return (
-    <section id="weather" className="relative py-10 md:py-14 lg:py-20 bg-gradient-to-b from-white via-brand-mist to-white">
+    <section id="weather" className="relative py-8 md:py-12 lg:py-20 bg-gradient-to-b from-white via-brand-mist to-white">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand-sky/30 to-transparent" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeUpMotion} className="mb-6 md:mb-10 max-w-3xl mx-auto text-center">
+        <motion.div {...fadeInUpInView} className="mb-5 md:mb-10 max-w-3xl mx-auto text-center">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-ice text-brand-deep text-[10px] sm:text-[11px] font-semibold tracking-[0.14em] uppercase ring-1 ring-brand-sky/30">
             <Activity size={12} />
             {t('weather.eyebrow')}
@@ -56,7 +50,7 @@ export function WeatherSection() {
           </p>
         </motion.div>
 
-        <div className="relative rounded-3xl bg-weather-grad text-white p-4 sm:p-6 md:p-8 lg:p-10 shadow-glow ring-1 ring-white/10 overflow-hidden">
+        <div className="relative rounded-2xl sm:rounded-3xl bg-weather-grad text-white p-4 sm:p-6 md:p-8 lg:p-10 shadow-glow ring-1 ring-white/10 overflow-hidden">
           <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
             <div className="absolute -top-24 -right-16 w-80 h-80 rounded-full bg-brand-cyan/25 blur-3xl" />
             <div className="absolute bottom-0 -left-24 w-80 h-80 rounded-full bg-brand-sky/15 blur-3xl" />
@@ -91,14 +85,14 @@ export function WeatherSection() {
           </div>
 
           {loading && !data && (
-            <div className="relative mt-8 md:mt-12 text-center text-white/85">
+            <div className="relative mt-6 md:mt-12 text-center text-white/85">
               <RefreshCw className="inline-block animate-spin mr-2 align-middle" size={16} />
               <span className="align-middle">{t('weather.loading')}</span>
             </div>
           )}
 
           {error && !loading && (
-            <div className="relative mt-8 md:mt-12 text-center">
+            <div className="relative mt-6 md:mt-12 text-center">
               <AlertCircle className="inline-block mr-2 align-middle" size={16} />
               <span className="text-white/90 align-middle">{t('weather.errorLoad')}</span>
               <button
@@ -112,8 +106,8 @@ export function WeatherSection() {
           )}
 
           {data && info && Icon && (
-            <div className="relative mt-5 md:mt-8 grid lg:grid-cols-5 gap-4 md:gap-5">
-              <div className="lg:col-span-2 rounded-2xl bg-white/[0.07] backdrop-blur-md p-4 sm:p-6 ring-1 ring-white/10 flex flex-col justify-between min-h-[180px] sm:min-h-[220px] md:min-h-[260px]">
+            <div className="relative mt-4 md:mt-8 grid lg:grid-cols-5 gap-3 md:gap-5">
+              <div className="lg:col-span-2 rounded-2xl bg-white/[0.07] backdrop-blur-md p-4 sm:p-6 ring-1 ring-white/10 flex flex-col justify-between gap-4 min-h-[140px] sm:min-h-[200px] md:min-h-[260px]">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="text-[10px] sm:text-[11px] uppercase tracking-[0.16em] text-white/60 font-semibold">{t('weather.label.condition')}</div>
@@ -134,13 +128,11 @@ export function WeatherSection() {
                 </div>
               </div>
 
-              <div className="lg:col-span-3 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-3 gap-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-1 md:pb-0 no-scrollbar">
-                <Stat icon={<Thermometer size={16} />} label={t('weather.label.feels')} value={`${Math.round(data.apparentTemperature)}\u00B0C`} />
+              <div className="lg:col-span-3 -mx-4 px-4 md:mx-0 md:px-0 flex md:grid md:grid-cols-2 gap-3 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none pb-1 md:pb-0 no-scrollbar">
                 <Stat icon={<Droplets size={16} />} label={t('weather.label.humidity')} value={`${data.humidity}%`} />
                 <Stat icon={<Wind size={16} />} label={t('weather.label.wind')} value={`${Math.round(data.windSpeed)} km/h`} />
                 <Stat icon={<Compass size={16} />} label={t('weather.label.windDir')} value={`${data.windDirection}\u00B0 ${dirCardinal}`} />
                 <Stat icon={<Gauge size={16} />} label={t('weather.label.pressure')} value={`${Math.round(data.pressure)} hPa`} />
-                <Stat icon={<Cloud size={16} />} label={t('weather.label.condition')} value={conditionLabel} />
               </div>
             </div>
           )}
@@ -152,7 +144,7 @@ export function WeatherSection() {
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
-    <div className="group rounded-2xl bg-white/[0.06] backdrop-blur-md p-3 sm:p-4 ring-1 ring-white/10 hover:ring-white/25 hover:bg-white/[0.1] transition snap-start min-w-[52vw] sm:min-w-[40vw] md:min-w-0 shrink-0 md:shrink">
+    <div className="group rounded-2xl bg-white/[0.06] backdrop-blur-md p-3 sm:p-4 ring-1 ring-white/10 hover:ring-white/25 hover:bg-white/[0.1] transition snap-start min-w-[44vw] sm:min-w-[40vw] md:min-w-0 shrink-0 md:shrink">
       <div className="flex items-center gap-2 text-[10px] sm:text-[11px] uppercase tracking-wider text-white/65 font-semibold">
         <span className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky shrink-0">
           {icon}

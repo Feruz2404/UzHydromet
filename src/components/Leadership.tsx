@@ -37,6 +37,8 @@ export function Leadership() {
         </motion.div>
 
         <MobileCarousel
+          autoPlay
+          intervalMs={7000}
           ariaLabel={t('leadership.title')}
           desktopBreakpointPx={640}
           className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-1 gap-4 sm:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar items-start"
