@@ -3,18 +3,7 @@ import type { ReactNode } from 'react'
 import { CloudSun, Calendar, MapPin, Activity, Phone, Mail, Clock, Globe } from 'lucide-react'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
-
-const heroMotion = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7 }
-}
-
-const heroMotionRight = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.7, delay: 0.15 }
-}
+import { fadeInUp, fadeInUpDelayed } from '../lib/motion'
 
 function InfoRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return (
@@ -39,7 +28,7 @@ export function Hero() {
       <div aria-hidden="true" className="pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full bg-brand-cyan/15 blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-6 md:gap-8 lg:gap-12 items-center">
-        <motion.div {...heroMotion} className="lg:col-span-7">
+        <motion.div {...fadeInUp} className="lg:col-span-7">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em] shadow-sm">
             <Activity size={12} />
             {t('hero.eyebrow')}
@@ -66,13 +55,13 @@ export function Hero() {
           </div>
         </motion.div>
 
-        <motion.div {...heroMotionRight} className="lg:col-span-5">
+        <motion.div {...fadeInUpDelayed} className="lg:col-span-5">
           <div className="relative rounded-2xl sm:rounded-3xl bg-white border border-slate-100 shadow-card p-4 sm:p-5 lg:p-7">
             <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('hero.institutional.eyebrow')}</span>
             <h2 className="mt-2 font-display text-base sm:text-lg lg:text-2xl font-extrabold text-brand-ink leading-tight">{t('hero.institutional.title')}</h2>
             <p className="mt-2 text-xs sm:text-sm text-brand-muted leading-relaxed">{t('hero.institutional.subtitle')}</p>
             <ul className="mt-4 space-y-2.5 sm:space-y-3">
-              <InfoRow icon={<MapPin size={14} />} label={t('about.label.phone').replace(/.*/, t('location.label.address'))} value={agency.address} />
+              <InfoRow icon={<MapPin size={14} />} label={t('location.label.address')} value={agency.address} />
               <InfoRow icon={<Phone size={14} />} label={t('about.label.phone')} value={agency.phone} />
               <InfoRow icon={<Mail size={14} />} label={t('about.label.email')} value={agency.email} />
               <InfoRow icon={<Clock size={14} />} label={t('location.label.workingHours')} value={t('agency.workingHours')} />

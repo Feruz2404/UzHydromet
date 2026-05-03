@@ -8,7 +8,7 @@ export function BackToTop() {
 
   useEffect(() => {
     const onScroll = () => setShow(window.scrollY > 400)
-    window.addEventListener('scroll', onScroll)
+    window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -19,7 +19,7 @@ export function BackToTop() {
     <button
       type="button"
       onClick={scrollToTop}
-      className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-40 w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#006BA6] text-white shadow-lg hover:bg-[#003B5C] transition flex items-center justify-center"
+      className="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#006BA6] text-white shadow-lg hover:bg-[#003B5C] transition flex items-center justify-center"
       aria-label={t('common.backToTop')}
     >
       <ArrowUp size={16} className="sm:hidden" />

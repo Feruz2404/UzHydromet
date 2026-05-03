@@ -1,16 +1,11 @@
 import { motion } from 'framer-motion'
 import { CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
+import { fadeInUpInViewQuick } from '../lib/motion'
+import { MobileCarousel } from './ui/MobileCarousel'
 
 const headerMotion = {
   initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5 }
-}
-
-const cardMotion = {
-  initial: { opacity: 0, y: 16 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
   transition: { duration: 0.5 }
@@ -47,11 +42,17 @@ export function Services() {
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
           <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar">
+        <MobileCarousel
+          autoPlay
+          intervalMs={4800}
+          ariaLabel={t('services.title')}
+          desktopBreakpointPx={640}
+          className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar"
+        >
           {services.map((s) => (
             <motion.div
               key={s.id}
-              {...cardMotion}
+              {...fadeInUpInViewQuick}
               className="snap-start min-w-[72vw] sm:min-w-0 shrink-0 sm:shrink group relative rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />
@@ -62,7 +63,7 @@ export function Services() {
               <div className="relative mt-1.5 text-[13px] sm:text-sm text-brand-muted leading-relaxed">{t(s.textKey)}</div>
             </motion.div>
           ))}
-        </div>
+        </MobileCarousel>
       </div>
     </section>
   )

@@ -3,20 +3,8 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, Globe, MapPin, CalendarClock, ChevronDown, FileText, BookOpen } from 'lucide-react'
 import { leaders } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
-
-const headerMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 }
-}
-
-const cardMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5 }
-}
+import { fadeInUpInView, fadeInUpInViewQuick } from '../lib/motion'
+import { MobileCarousel } from './ui/MobileCarousel'
 
 type ExpandedKind = 'responsibilities' | 'biography' | null
 
@@ -43,12 +31,16 @@ export function Leadership() {
   return (
     <section id="leadership" className="py-10 md:py-14 lg:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-6 md:mb-10 max-w-2xl">
+        <motion.div {...fadeInUpInView} className="mb-6 md:mb-10 max-w-2xl">
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('leadership.eyebrow')}</span>
           <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('leadership.title')}</h2>
         </motion.div>
 
-        <div className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-1 gap-4 sm:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar items-start">
+        <MobileCarousel
+          ariaLabel={t('leadership.title')}
+          desktopBreakpointPx={640}
+          className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-1 gap-4 sm:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar items-start"
+        >
           {leaders.map((leader) => {
             const open = expanded[leader.id] ?? null
             const initials = getInitials(leader.name)
@@ -56,7 +48,7 @@ export function Leadership() {
             return (
               <motion.article
                 key={leader.id}
-                {...cardMotion}
+                {...fadeInUpInViewQuick}
                 className="snap-start min-w-[86vw] sm:min-w-0 shrink-0 sm:shrink rounded-3xl bg-white border border-slate-100 shadow-card hover:shadow-glow transition-all overflow-hidden flex flex-col"
               >
                 <div className="grid gap-4 md:gap-6 p-4 sm:p-6 lg:p-7 lg:grid-cols-12 lg:items-start">
@@ -158,7 +150,7 @@ export function Leadership() {
               </motion.article>
             )
           })}
-        </div>
+        </MobileCarousel>
       </div>
     </section>
   )
