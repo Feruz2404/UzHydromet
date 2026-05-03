@@ -1,15 +1,8 @@
 import { motion } from 'framer-motion'
 import { CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
-import { fadeInUpInViewQuick } from '../lib/motion'
+import { fadeInUpInView, fadeInUpInViewQuick } from '../lib/motion'
 import { MobileCarousel } from './ui/MobileCarousel'
-
-const headerMotion = {
-  initial: { opacity: 0, y: 20 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.5 }
-}
 
 const services = [
   { id: 'meteo', titleKey: 'services.meteo.title', textKey: 'services.meteo.text' },
@@ -38,7 +31,7 @@ export function Services() {
   return (
     <section id="services" className="py-10 md:py-14 lg:py-20 bg-brand-mist">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...headerMotion} className="mb-6 md:mb-12 text-center max-w-2xl mx-auto">
+        <motion.div {...fadeInUpInView} className="mb-6 md:mb-12 text-center max-w-2xl mx-auto">
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('services.eyebrow')}</span>
           <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight text-balance">{t('services.title')}</h2>
         </motion.div>
