@@ -18,7 +18,7 @@ function readAuth(): boolean {
 }
 
 export default function AdminPage() {
-  const { settings } = useAdmin()
+  const { settings, setAdminToken } = useAdmin()
   const [authed, setAuthed] = useState<boolean>(readAuth)
   const [tab, setTab] = useState<Tab>('settings')
 
@@ -32,6 +32,8 @@ export default function AdminPage() {
 
   function logout() {
     try { window.sessionStorage.removeItem('uzhydromet:admin:auth') } catch { /* ignore */ }
+    // Also clear the admin secret used for /api/admin/* writes.
+    setAdminToken(null)
     setAuthed(false)
   }
 
