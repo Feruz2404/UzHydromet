@@ -88,8 +88,8 @@ export function SiteSettingsTab() {
       )}
 
       <div className="rounded-2xl bg-white border border-slate-100 shadow-card p-5 sm:p-6 grid sm:grid-cols-2 gap-5">
-        <ImageUpload label="Sayt logosi" bucket="site-assets" value={draft.logoUrl} onChange={(url) => setField('logoUrl', url)} onClear={() => setField('logoUrl', '')} helperText="PNG yoki SVG, <2MB. Header'da chiqadi." />
-        <ImageUpload label="Footer logosi" bucket="site-assets" value={draft.footerLogoUrl} onChange={(url) => setField('footerLogoUrl', url)} onClear={() => setField('footerLogoUrl', '')} helperText="Optional. Footer uchun alohida logo." />
+        <ImageUpload label="Sayt logosi" kind="site-logo" value={draft.logoUrl} onChange={(url) => setField('logoUrl', url)} onClear={() => setField('logoUrl', '')} helperText="PNG, JPG, WEBP yoki SVG, <2MB. Header'da chiqadi." />
+        <ImageUpload label="Footer logosi" kind="footer-logo" value={draft.footerLogoUrl} onChange={(url) => setField('footerLogoUrl', url)} onClear={() => setField('footerLogoUrl', '')} helperText="Optional. Footer uchun alohida logo." />
       </div>
 
       <div className="rounded-2xl bg-white border border-slate-100 shadow-card p-5 sm:p-6 grid sm:grid-cols-2 gap-5">
