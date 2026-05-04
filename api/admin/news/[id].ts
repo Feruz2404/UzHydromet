@@ -1,15 +1,20 @@
 // PUT, DELETE /api/admin/news/:id
+// Backed by the public.news table.
+// All responses use the standard { ok, data } / { ok, error, details? } envelope.
 
 import {
   supabaseAdmin,
   checkAdminAuth,
   parseJson,
-  errorMessage,
   pickFields,
   queryParam,
+  dbErrorEnvelope,
+  unexpectedErrorEnvelope,
   type ReqLike,
   type ResLike
 } from '../../_supabaseAdmin'
+
+const LOG = 'news/:id'
 
 const FIELDS = [
   'title',
@@ -22,35 +27,41 @@ const FIELDS = [
 ] as const
 
 export default async function handler(req: ReqLike, res: ResLike): Promise<void> {
-  if (req.method === 'OPTIONS') { res.status(204).json({}); return }
-  if (!checkAdminAuth(req)) { res.status(401).json({ error: 'unauthorized' }); return }
-  const sb = supabaseAdmin()
-  if (!sb) { res.status(500).json({ error: 'supabase_not_configured' }); return }
-  const id = queryParam(req, 'id')
-  if (!id) { res.status(400).json({ error: 'missing_id' }); return }
   try {
+    if (req.method === 'OPTIONS') { res.status(204).json({ ok: true }); return }
+    if (!checkAdminAuth(req)) { res.status(401).json({ ok: false, error: 'unauthorized' }); return }
+    const sb = supabaseAdmin()
+    if (!sb) { res.status(500).json({ ok: false, error: 'server_not_configured' }); return }
+    const id = queryParam(req, 'id')
+    if (!id) { res.status(400).json({ ok: false, error: 'missing_id' }); return }
+
     if (req.method === 'PUT') {
       const body = parseJson<Record<string, unknown>>(req.body)
-      if (!body) { res.status(400).json({ error: 'invalid_body' }); return }
+      if (!body) { res.status(400).json({ ok: false, error: 'invalid_body' }); return }
       const patch = pickFields(body, FIELDS)
-      const upd = await sb.from('news_items').update(patch).eq('id', id).select('*').single()
+      const upd = await sb.from('news').update(patch).eq('id', id).select('*').single()
       if (upd.error) {
-        const code = upd.error.code === 'PGRST116' ? 404 : 500
-        res.status(code).json({ error: upd.error.message })
+        if (upd.error.code === 'PGRST116') {
+          res.status(404).json({ ok: false, error: 'not_found' })
+          return
+        }
+        res.status(500).json(dbErrorEnvelope(LOG, upd.error))
         return
       }
-      res.status(200).json({ data: upd.data })
+      res.status(200).json({ ok: true, data: upd.data })
       return
     }
+
     if (req.method === 'DELETE') {
-      const del = await sb.from('news_items').delete().eq('id', id)
-      if (del.error) { res.status(500).json({ error: del.error.message }); return }
-      res.status(200).json({ data: { id } })
+      const del = await sb.from('news').delete().eq('id', id)
+      if (del.error) { res.status(500).json(dbErrorEnvelope(LOG, del.error)); return }
+      res.status(200).json({ ok: true, data: { id } })
       return
     }
+
     res.setHeader('Allow', 'PUT, DELETE')
-    res.status(405).json({ error: 'method_not_allowed' })
+    res.status(405).json({ ok: false, error: 'method_not_allowed' })
   } catch (e) {
-    res.status(500).json({ error: errorMessage(e) })
+    res.status(500).json(unexpectedErrorEnvelope(LOG, e))
   }
 }

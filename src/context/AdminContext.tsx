@@ -156,8 +156,14 @@ async function loadFromSupabase(): Promise<{
   const [s, l, n] = await Promise.all([
     supabase.from('site_settings').select('*').order('updated_at', { ascending: false }).limit(1).maybeSingle(),
     supabase.from('leaders').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true }),
-    supabase.from('news_items').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true })
+    supabase.from('news').select('*').order('sort_order', { ascending: true }).order('created_at', { ascending: true })
   ])
+  // eslint-disable-next-line no-console
+  if (s.error) console.warn('[admin] site_settings query failed (' + (s.error.code ?? '') + '): ' + s.error.message + '. Run the SQL migrations in supabase/migrations/.')
+  // eslint-disable-next-line no-console
+  if (l.error) console.warn('[admin] leaders query failed (' + (l.error.code ?? '') + '): ' + l.error.message + '. Run the SQL migrations in supabase/migrations/.')
+  // eslint-disable-next-line no-console
+  if (n.error) console.warn('[admin] news query failed (' + (n.error.code ?? '') + '): ' + n.error.message + '. Run the SQL migrations in supabase/migrations/.')
   return {
     settings: s.error ? null : mapSettings((s.data as SettingsRow | null) ?? null),
     leaders: l.error || !l.data ? [] : (l.data as LeaderRow[]).map(mapLeader),
@@ -166,16 +172,24 @@ async function loadFromSupabase(): Promise<{
   }
 }
 
+/**
+ * Fetch a JSON admin endpoint and unwrap the standard envelope.
+ * Endpoints return { ok: true, data } on success, or
+ * { ok: false, error: <code>, details?: <safe text> } on failure.
+ * On failure this throws an Error whose .message is `<code>` or
+ * `<code> \u2014 <details>` so the UI can display it directly.
+ */
 async function adminFetch<T>(path: string, init: RequestInit, token: string | null): Promise<T> {
   if (!token) throw new Error("Admin sessiyasi tugadi. Qayta kiring.")
   const headers = new Headers(init.headers)
-  headers.set('content-type', 'application/json')
+  if (init.body && !(init.body instanceof FormData)) headers.set('content-type', 'application/json')
   headers.set('x-admin-secret', token)
   const res = await fetch(path, { ...init, headers })
-  let json: { data?: T; error?: string } = {}
-  try { json = (await res.json()) as { data?: T; error?: string } } catch { /* ignore */ }
-  if (!res.ok) {
-    const msg = json.error ?? `HTTP ${res.status}`
+  let json: { ok?: boolean; data?: T; error?: string; details?: string } = {}
+  try { json = (await res.json()) as typeof json } catch { /* non-JSON */ }
+  if (!res.ok || json.ok === false) {
+    const code = json.error ?? `HTTP ${res.status}`
+    const msg = json.details ? `${code} \u2014 ${json.details}` : code
     throw new Error(msg)
   }
   return json.data as T
@@ -360,7 +374,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       headers: { 'x-admin-secret': adminToken },
       body: fd
     })
-    let json: { ok?: boolean; url?: string; path?: string; error?: string; bucket?: string } = {}
+    let json: { ok?: boolean; url?: string; path?: string; error?: string; details?: string; bucket?: string } = {}
     try {
       json = (await res.json()) as typeof json
     } catch {
@@ -368,7 +382,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
     if (!res.ok || !json.ok || !json.url || !json.path) {
       const code = json.error ?? `HTTP ${res.status}`
-      const detail = json.bucket ? `${code} (${json.bucket})` : code
+      const detail = json.details ? `${code} \u2014 ${json.details}` : (json.bucket ? `${code} (${json.bucket})` : code)
       throw new Error(detail)
     }
     return { url: json.url, path: json.path }

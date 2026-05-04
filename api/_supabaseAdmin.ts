@@ -2,11 +2,11 @@
 // Used by Vercel serverless functions under /api/admin/*.
 //
 // Reads:
-//   - VITE_SUPABASE_URL (or SUPABASE_URL fallback) — Supabase project URL
-//   - SUPABASE_SERVICE_ROLE_KEY — server-only key, NEVER expose to client
-//   - ADMIN_SECRET — shared secret for the x-admin-secret header gate
+//   - VITE_SUPABASE_URL (or SUPABASE_URL fallback) \u2014 Supabase project URL
+//   - SUPABASE_SERVICE_ROLE_KEY \u2014 server-only key, NEVER expose to client
+//   - ADMIN_SECRET \u2014 shared secret for the x-admin-secret header gate
 //
-// All three are configured in Vercel → Project Settings → Environment
+// All three are configured in Vercel \u2192 Project Settings \u2192 Environment
 // Variables. Missing vars are logged to server logs (visible in Vercel
 // Functions logs) so deployment misconfiguration is easy to diagnose,
 // while public responses stay generic to avoid leaking which secret is
@@ -24,10 +24,11 @@ export function supabaseAdmin(): SupabaseClient | null {
     const missing: string[] = []
     if (!url) missing.push('VITE_SUPABASE_URL (or SUPABASE_URL)')
     if (!key) missing.push('SUPABASE_SERVICE_ROLE_KEY')
+    // eslint-disable-next-line no-console
     console.error(
       '[supabaseAdmin] Server Supabase client is not configured. Missing env: ' +
         missing.join(', ') +
-        '. Set these in Vercel → Project Settings → Environment Variables.'
+        '. Set these in Vercel \u2192 Project Settings \u2192 Environment Variables.'
     )
     return null
   }
@@ -58,9 +59,10 @@ export function checkAdminAuth(req: ReqLike): boolean {
   if (!expected) {
     if (!warnedMissingAdminSecret) {
       warnedMissingAdminSecret = true
+      // eslint-disable-next-line no-console
       console.error(
         '[checkAdminAuth] ADMIN_SECRET is not configured. All admin writes will be rejected. ' +
-          'Set ADMIN_SECRET in Vercel → Project Settings → Environment Variables.'
+          'Set ADMIN_SECRET in Vercel \u2192 Project Settings \u2192 Environment Variables.'
       )
     }
     return false
@@ -101,4 +103,52 @@ export function pickFields<T extends string>(
     }
   }
   return out
+}
+
+// --------------------------------------------------------------------------
+// Standardized response envelope helpers.
+// All /api/admin/* endpoints respond with { ok: true, data } on success or
+// { ok: false, error: <code>, details?: <safe text> } on failure.
+// --------------------------------------------------------------------------
+
+export type DbError = {
+  code?: string
+  message?: string
+  details?: string
+  hint?: string
+}
+
+function sanitizeMessage(s: unknown): string {
+  const raw = typeof s === 'string' ? s : (s instanceof Error ? s.message : String(s ?? ''))
+  return raw.replace(/[\r\n]+/g, ' ').slice(0, 240)
+}
+
+/**
+ * Format a Postgres / Supabase REST error into the public envelope shape.
+ * Logs the full error to Vercel logs prefixed by `prefix`, then returns a
+ * sanitized payload safe to send to the browser.
+ */
+export function dbErrorEnvelope(
+  prefix: string,
+  err: DbError | unknown
+): { ok: false; error: 'database_error'; details: string } {
+  const e = (err && typeof err === 'object' ? (err as DbError) : null)
+  const raw = e?.message || e?.details || (typeof err === 'string' ? err : 'unknown_error')
+  const safe = sanitizeMessage(raw)
+  // eslint-disable-next-line no-console
+  console.error('[' + prefix + '] database error: ' + safe, err)
+  return { ok: false, error: 'database_error', details: safe }
+}
+
+/**
+ * Format any caught exception into the public envelope shape.
+ */
+export function unexpectedErrorEnvelope(
+  prefix: string,
+  err: unknown
+): { ok: false; error: 'server_error'; details: string } {
+  const safe = sanitizeMessage(err)
+  // eslint-disable-next-line no-console
+  console.error('[' + prefix + '] handler crashed: ' + safe, err)
+  return { ok: false, error: 'server_error', details: safe }
 }
