@@ -12,7 +12,8 @@
 // while public responses stay generic to avoid leaking which secret is
 // missing.
 
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 let cached: SupabaseClient | null = null
 
@@ -105,12 +106,6 @@ export function pickFields<T extends string>(
   return out
 }
 
-// --------------------------------------------------------------------------
-// Standardized response envelope helpers.
-// All /api/admin/* endpoints respond with { ok: true, data } on success or
-// { ok: false, error: <code>, details?: <safe text> } on failure.
-// --------------------------------------------------------------------------
-
 export type DbError = {
   code?: string
   message?: string
@@ -123,11 +118,6 @@ function sanitizeMessage(s: unknown): string {
   return raw.replace(/[\r\n]+/g, ' ').slice(0, 240)
 }
 
-/**
- * Format a Postgres / Supabase REST error into the public envelope shape.
- * Logs the full error to Vercel logs prefixed by `prefix`, then returns a
- * sanitized payload safe to send to the browser.
- */
 export function dbErrorEnvelope(
   prefix: string,
   err: DbError | unknown
@@ -140,9 +130,6 @@ export function dbErrorEnvelope(
   return { ok: false, error: 'database_error', details: safe }
 }
 
-/**
- * Format any caught exception into the public envelope shape.
- */
 export function unexpectedErrorEnvelope(
   prefix: string,
   err: unknown
