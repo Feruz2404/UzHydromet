@@ -100,11 +100,8 @@ export function LeadersTab() {
         sortOrder: editing.sortOrder,
         isActive: editing.isActive
       }
-      if (isNew) {
-        await createLeader(patch)
-      } else {
-        await updateLeader(editing.id, patch)
-      }
+      if (isNew) await createLeader(patch)
+      else await updateLeader(editing.id, patch)
       showToast('success', isNew ? 'Yangi rahbar qo\'shildi' : 'Saqlandi')
       setEditing(null)
       setErrors({})
@@ -142,12 +139,8 @@ export function LeadersTab() {
         </div>
       </header>
 
-      {!configured && (
-        <div className="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 text-sm">Supabase env sozlanmagan. Saqlash uchun env o'zgaruvchilarni qo'shing.</div>
-      )}
-      {loading && configured && (
-        <div className="rounded-xl bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 text-sm flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Yuklanmoqda...</div>
-      )}
+      {!configured && (<div className="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 text-sm">Supabase env sozlanmagan. Saqlash uchun env o'zgaruvchilarni qo'shing.</div>)}
+      {loading && configured && (<div className="rounded-xl bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 text-sm flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Yuklanmoqda...</div>)}
       {toast?.kind === 'success' && <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm">{toast.message}</div>}
       {toast?.kind === 'error' && <div className="rounded-xl bg-red-50 border border-red-200 text-red-800 px-4 py-2 text-sm">{toast.message}</div>}
 
@@ -161,45 +154,23 @@ export function LeadersTab() {
             <div className="sm:col-span-2">
               <ImageUpload label="Rasmi" bucket="leader-photos" value={editing.photoUrl} onChange={(url) => setField('photoUrl', url)} onClear={() => setField('photoUrl', '')} helperText="Kvadrat rasm tavsiya etiladi." rounded="2xl" />
             </div>
-            <Field label="F.I.Sh" error={errors.fullName}>
-              <input className="form-input" value={editing.fullName} onChange={(e) => setField('fullName', e.target.value)} />
-            </Field>
-            <Field label="Lavozimi" error={errors.position}>
-              <input className="form-input" value={editing.position} onChange={(e) => setField('position', e.target.value)} />
-            </Field>
-            <Field label="Qabul kuni">
-              <input className="form-input" value={editing.receptionDay} placeholder="Masalan: Payshanba" onChange={(e) => setField('receptionDay', e.target.value)} />
-            </Field>
-            <Field label="Qabul vaqti">
-              <input className="form-input" value={editing.receptionTime} placeholder="Masalan: 10:00 - 12:00" onChange={(e) => setField('receptionTime', e.target.value)} />
-            </Field>
-            <Field label="Telefon" error={errors.phone}>
-              <input className="form-input" value={editing.phone} onChange={(e) => setField('phone', e.target.value)} />
-            </Field>
-            <Field label="Email" error={errors.email}>
-              <input className="form-input" type="email" value={editing.email} onChange={(e) => setField('email', e.target.value)} />
-            </Field>
-            <Field label="Veb-sayt">
-              <input className="form-input" value={editing.websiteUrl ?? ''} placeholder="https://..." onChange={(e) => setField('websiteUrl', e.target.value)} />
-            </Field>
-            <Field label="Manzil">
-              <input className="form-input" value={editing.address ?? ''} placeholder="Toshkent, ..." onChange={(e) => setField('address', e.target.value)} />
-            </Field>
+            <Field label="F.I.Sh" error={errors.fullName}><input className="form-input" value={editing.fullName} onChange={(e) => setField('fullName', e.target.value)} /></Field>
+            <Field label="Lavozimi" error={errors.position}><input className="form-input" value={editing.position} onChange={(e) => setField('position', e.target.value)} /></Field>
+            <Field label="Qabul kuni"><input className="form-input" value={editing.receptionDay} placeholder="Masalan: Payshanba" onChange={(e) => setField('receptionDay', e.target.value)} /></Field>
+            <Field label="Qabul vaqti"><input className="form-input" value={editing.receptionTime} placeholder="Masalan: 10:00 - 12:00" onChange={(e) => setField('receptionTime', e.target.value)} /></Field>
+            <Field label="Telefon" error={errors.phone}><input className="form-input" value={editing.phone} onChange={(e) => setField('phone', e.target.value)} /></Field>
+            <Field label="Email" error={errors.email}><input className="form-input" type="email" value={editing.email} onChange={(e) => setField('email', e.target.value)} /></Field>
+            <Field label="Veb-sayt"><input className="form-input" value={editing.websiteUrl ?? ''} placeholder="https://..." onChange={(e) => setField('websiteUrl', e.target.value)} /></Field>
+            <Field label="Manzil"><input className="form-input" value={editing.address ?? ''} placeholder="Toshkent, ..." onChange={(e) => setField('address', e.target.value)} /></Field>
             <div className="sm:col-span-2">
-              <Field label="Vazifalari (mas'uliyatlari)">
-                <textarea className="form-input resize-none" rows={5} value={editing.responsibilities ?? ''} placeholder="Rahbarning asosiy vazifalari va mas'uliyatlari..." onChange={(e) => setField('responsibilities', e.target.value)} />
-              </Field>
-              <p className="mt-1.5 text-xs text-brand-muted">Saytdagi public Rahbariyat bo'limida ochiladigan panel sifatida ko'rsatiladi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+              <Field label="Vazifalari (mas'uliyatlari)"><textarea className="form-input resize-none" rows={5} value={editing.responsibilities ?? ''} placeholder="Rahbarning asosiy vazifalari..." onChange={(e) => setField('responsibilities', e.target.value)} /></Field>
+              <p className="mt-1.5 text-xs text-brand-muted">Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
             </div>
             <div className="sm:col-span-2">
-              <Field label="Biografiya">
-                <textarea className="form-input resize-none" rows={6} value={editing.biography ?? ''} placeholder="Tarjimai hol matni: ta'lim, ish faoliyati, asosiy yutuqlar..." onChange={(e) => setField('biography', e.target.value)} />
-              </Field>
-              <p className="mt-1.5 text-xs text-brand-muted">Saytdagi public Rahbariyat bo'limida ochiladigan panel sifatida ko'rsatiladi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+              <Field label="Biografiya"><textarea className="form-input resize-none" rows={6} value={editing.biography ?? ''} placeholder="Tarjimai hol matni: ta'lim, ish faoliyati, asosiy yutuqlar..." onChange={(e) => setField('biography', e.target.value)} /></Field>
+              <p className="mt-1.5 text-xs text-brand-muted">Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
             </div>
-            <Field label="Tartib raqami">
-              <input className="form-input" type="number" value={editing.sortOrder} onChange={(e) => setField('sortOrder', Number(e.target.value || 0))} />
-            </Field>
+            <Field label="Tartib raqami"><input className="form-input" type="number" value={editing.sortOrder} onChange={(e) => setField('sortOrder', Number(e.target.value || 0))} /></Field>
             <Field label="Holati">
               <label className="inline-flex items-center gap-2 mt-2 text-sm text-brand-navy">
                 <input type="checkbox" checked={editing.isActive} onChange={(e) => setField('isActive', e.target.checked)} className="w-4 h-4 accent-brand-primary" />
@@ -218,9 +189,7 @@ export function LeadersTab() {
       )}
 
       <div className="rounded-2xl bg-white border border-slate-100 shadow-card divide-y divide-slate-100">
-        {sorted.length === 0 && !loading && (
-          <div className="p-10 text-center text-brand-muted">Rahbarlar bazada mavjud emas. "Yangi rahbar" tugmasi orqali qo'shing.</div>
-        )}
+        {sorted.length === 0 && !loading && (<div className="p-10 text-center text-brand-muted">Rahbarlar bazada mavjud emas. "Yangi rahbar" tugmasi orqali qo'shing.</div>)}
         {sorted.map((l) => {
           const hasResp = Boolean(l.responsibilities && l.responsibilities.trim())
           const hasBio = Boolean(l.biography && l.biography.trim())
@@ -229,11 +198,7 @@ export function LeadersTab() {
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <GripVertical size={16} className="text-brand-muted shrink-0 hidden sm:block" aria-hidden="true" />
                 <div className="h-12 w-12 rounded-xl bg-brand-mist border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                  {l.photoUrl ? (
-                    <img src={l.photoUrl} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <span className="font-display font-bold text-brand-deep text-sm">{(l.fullName.split(/\s+/).map((p) => p.charAt(0)).slice(0, 2).join('') || '\u2014').toUpperCase()}</span>
-                  )}
+                  {l.photoUrl ? <img src={l.photoUrl} alt="" className="w-full h-full object-cover" /> : <span className="font-display font-bold text-brand-deep text-sm">{(l.fullName.split(/\s+/).map((p) => p.charAt(0)).slice(0, 2).join('') || '\u2014').toUpperCase()}</span>}
                 </div>
                 <div className="min-w-0">
                   <div className="font-display font-bold text-brand-navy break-words">{l.fullName || 'Nomsiz rahbar'}</div>
@@ -242,10 +207,32 @@ export function LeadersTab() {
                     <span>#{l.sortOrder}</span>
                     <span aria-hidden="true">{'\u2022'}</span>
                     <span>{l.isActive ? 'Faol' : 'Faol emas'}</span>
-                    {hasResp && (
-                      <>
-                        <span aria-hidden="true">{'\u2022'}</span>
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Vazifalari</span>
-                      </>
-                    )}
-                    {hasBio && (
+                    {hasResp && (<><span aria-hidden="true">{'\u2022'}</span><span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Vazifalari</span></>)}
+                    {hasBio && (<><span aria-hidden="true">{'\u2022'}</span><span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Biografiya</span></>)}
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => startEdit(l)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-brand-navy text-xs font-semibold hover:border-brand-primary hover:text-brand-deep transition disabled:opacity-60"><Pencil size={13} /> Tahrirlash</button>
+                <button type="button" onClick={() => remove(l.id)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-red-600 text-xs font-semibold hover:border-red-300 transition disabled:opacity-60">
+                  {deletingId === l.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                  {deletingId === l.id ? 'O\'chirilmoqda' : "O'chirish"}
+                </button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
+  return (
+    <div className="text-sm">
+      <label className="block text-[11px] uppercase tracking-wider text-brand-muted font-semibold">{label}</label>
+      <div className="mt-2">{children}</div>
+      {error && <span className="mt-1.5 block text-xs text-red-600">{error}</span>}
+    </div>
+  )
+}
