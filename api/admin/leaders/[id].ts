@@ -19,6 +19,10 @@ const FIELDS = [
   'reception_time',
   'phone',
   'email',
+  'website_url',
+  'address',
+  'responsibilities',
+  'biography',
   'sort_order',
   'is_active'
 ] as const

@@ -17,6 +17,10 @@ function emptyLeader(sortOrder: number): Leader {
     receptionTime: '',
     phone: '',
     email: '',
+    websiteUrl: '',
+    address: '',
+    responsibilities: '',
+    biography: '',
     sortOrder,
     isActive: true
   }
@@ -46,7 +50,13 @@ export function LeadersTab() {
   }
 
   function startEdit(leader: Leader) {
-    setEditing({ ...leader })
+    setEditing({
+      ...leader,
+      websiteUrl: leader.websiteUrl ?? '',
+      address: leader.address ?? '',
+      responsibilities: leader.responsibilities ?? '',
+      biography: leader.biography ?? ''
+    })
     setErrors({})
   }
 
@@ -75,20 +85,25 @@ export function LeadersTab() {
     const isNew = editing.id.startsWith('__new_') || !dbLeaders.some((l) => l.id === editing.id)
     setSaving(true)
     try {
+      const patch: Partial<Leader> = {
+        fullName: editing.fullName,
+        position: editing.position,
+        photoUrl: editing.photoUrl,
+        receptionDay: editing.receptionDay,
+        receptionTime: editing.receptionTime,
+        phone: editing.phone,
+        email: editing.email,
+        websiteUrl: editing.websiteUrl ?? '',
+        address: editing.address ?? '',
+        responsibilities: editing.responsibilities ?? '',
+        biography: editing.biography ?? '',
+        sortOrder: editing.sortOrder,
+        isActive: editing.isActive
+      }
       if (isNew) {
-        await createLeader({
-          fullName: editing.fullName,
-          position: editing.position,
-          photoUrl: editing.photoUrl,
-          receptionDay: editing.receptionDay,
-          receptionTime: editing.receptionTime,
-          phone: editing.phone,
-          email: editing.email,
-          sortOrder: editing.sortOrder,
-          isActive: editing.isActive
-        })
+        await createLeader(patch)
       } else {
-        await updateLeader(editing.id, editing)
+        await updateLeader(editing.id, patch)
       }
       showToast('success', isNew ? 'Yangi rahbar qo\'shildi' : 'Saqlandi')
       setEditing(null)
@@ -120,7 +135,7 @@ export function LeadersTab() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brand-navy">Rahbar xodimlar</h2>
-          <p className="text-sm text-brand-muted">Qabul jadvali ma'lumotlari va kontaktlar. Supabase bazasida saqlanadi.</p>
+          <p className="text-sm text-brand-muted">Qabul jadvali, kontaktlar, vazifalari va biografiya. Supabase bazasida saqlanadi.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={startCreate} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow transition"><Plus size={14} /> Yangi rahbar</button>
@@ -164,6 +179,24 @@ export function LeadersTab() {
             <Field label="Email" error={errors.email}>
               <input className="form-input" type="email" value={editing.email} onChange={(e) => setField('email', e.target.value)} />
             </Field>
+            <Field label="Veb-sayt">
+              <input className="form-input" value={editing.websiteUrl ?? ''} placeholder="https://..." onChange={(e) => setField('websiteUrl', e.target.value)} />
+            </Field>
+            <Field label="Manzil">
+              <input className="form-input" value={editing.address ?? ''} placeholder="Toshkent, ..." onChange={(e) => setField('address', e.target.value)} />
+            </Field>
+            <div className="sm:col-span-2">
+              <Field label="Vazifalari (mas'uliyatlari)">
+                <textarea className="form-input resize-none" rows={5} value={editing.responsibilities ?? ''} placeholder="Rahbarning asosiy vazifalari va mas'uliyatlari..." onChange={(e) => setField('responsibilities', e.target.value)} />
+              </Field>
+              <p className="mt-1.5 text-xs text-brand-muted">Saytdagi public Rahbariyat bo'limida ochiladigan panel sifatida ko'rsatiladi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+            </div>
+            <div className="sm:col-span-2">
+              <Field label="Biografiya">
+                <textarea className="form-input resize-none" rows={6} value={editing.biography ?? ''} placeholder="Tarjimai hol matni: ta'lim, ish faoliyati, asosiy yutuqlar..." onChange={(e) => setField('biography', e.target.value)} />
+              </Field>
+              <p className="mt-1.5 text-xs text-brand-muted">Saytdagi public Rahbariyat bo'limida ochiladigan panel sifatida ko'rsatiladi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+            </div>
             <Field label="Tartib raqami">
               <input className="form-input" type="number" value={editing.sortOrder} onChange={(e) => setField('sortOrder', Number(e.target.value || 0))} />
             </Field>
@@ -188,43 +221,31 @@ export function LeadersTab() {
         {sorted.length === 0 && !loading && (
           <div className="p-10 text-center text-brand-muted">Rahbarlar bazada mavjud emas. "Yangi rahbar" tugmasi orqali qo'shing.</div>
         )}
-        {sorted.map((l) => (
-          <div key={l.id} className="p-4 sm:p-5 flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 min-w-0 flex-1">
-              <GripVertical size={16} className="text-brand-muted shrink-0 hidden sm:block" aria-hidden="true" />
-              <div className="h-12 w-12 rounded-xl bg-brand-mist border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
-                {l.photoUrl ? (
-                  <img src={l.photoUrl} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="font-display font-bold text-brand-deep text-sm">{(l.fullName.split(/\s+/).map((p) => p.charAt(0)).slice(0, 2).join('') || '\u2014').toUpperCase()}</span>
-                )}
-              </div>
-              <div className="min-w-0">
-                <div className="font-display font-bold text-brand-navy break-words">{l.fullName || 'Nomsiz rahbar'}</div>
-                <div className="text-xs text-brand-muted leading-snug break-words">{l.position}</div>
-                <div className="text-[11px] text-brand-muted mt-0.5">#{l.sortOrder} {'\u2022'} {l.isActive ? 'Faol' : 'Faol emas'}</div>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <button type="button" onClick={() => startEdit(l)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-brand-navy text-xs font-semibold hover:border-brand-primary hover:text-brand-deep transition disabled:opacity-60"><Pencil size={13} /> Tahrirlash</button>
-              <button type="button" onClick={() => remove(l.id)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-red-600 text-xs font-semibold hover:border-red-300 transition disabled:opacity-60">
-                {deletingId === l.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
-                {deletingId === l.id ? 'O\'chirilmoqda' : "O'chirish"}
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function Field({ label, error, children }: { label: string; error?: string; children: ReactNode }) {
-  return (
-    <div className="text-sm">
-      <label className="block text-[11px] uppercase tracking-wider text-brand-muted font-semibold">{label}</label>
-      <div className="mt-2">{children}</div>
-      {error && <span className="mt-1.5 block text-xs text-red-600">{error}</span>}
-    </div>
-  )
-}
+        {sorted.map((l) => {
+          const hasResp = Boolean(l.responsibilities && l.responsibilities.trim())
+          const hasBio = Boolean(l.biography && l.biography.trim())
+          return (
+            <div key={l.id} className="p-4 sm:p-5 flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <GripVertical size={16} className="text-brand-muted shrink-0 hidden sm:block" aria-hidden="true" />
+                <div className="h-12 w-12 rounded-xl bg-brand-mist border border-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
+                  {l.photoUrl ? (
+                    <img src={l.photoUrl} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="font-display font-bold text-brand-deep text-sm">{(l.fullName.split(/\s+/).map((p) => p.charAt(0)).slice(0, 2).join('') || '\u2014').toUpperCase()}</span>
+                  )}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-display font-bold text-brand-navy break-words">{l.fullName || 'Nomsiz rahbar'}</div>
+                  <div className="text-xs text-brand-muted leading-snug break-words">{l.position}</div>
+                  <div className="text-[11px] text-brand-muted mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                    <span>#{l.sortOrder}</span>
+                    <span aria-hidden="true">{'\u2022'}</span>
+                    <span>{l.isActive ? 'Faol' : 'Faol emas'}</span>
+                    {hasResp && (
+                      <>
+                        <span aria-hidden="true">{'\u2022'}</span>
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Vazifalari</span>
+                      </>
+                    )}
+                    {hasBio && (

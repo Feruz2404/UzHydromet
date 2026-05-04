@@ -22,13 +22,17 @@ export type Leader = {
   receptionTime: string
   phone: string
   email: string
+  // Direct DB-backed contact / content fields (admin-managed)
+  websiteUrl?: string
+  address?: string
+  responsibilities?: string
+  biography?: string
   sortOrder: number
   isActive: boolean
   // Optional i18n fallbacks (used by seeded leaders only when DB is empty)
   positionKey?: string
   dayKey?: string
   addressKey?: string
-  websiteUrl?: string
   responsibilitiesKey?: string
   biographyKey?: string
   showResponsibilities?: boolean
