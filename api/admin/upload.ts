@@ -12,8 +12,9 @@
 // Storage prior to first upload.
 //
 // All responses are JSON of shape { ok: true, url, path } or
-// { ok: false, error: <code>, ... }. The handler is wrapped in a defensive
-// try/catch so it always returns clean JSON instead of crashing the function.
+// { ok: false, error: <code>, details?: <safe message> }. The handler is
+// wrapped in a defensive try/catch so it always returns clean JSON instead of
+// crashing the function (no FUNCTION_INVOCATION_FAILED).
 
 import { createClient } from '@supabase/supabase-js'
 import type { ReqLike, ResLike } from '../_supabaseAdmin'
@@ -50,6 +51,11 @@ const FOLDER_BY_KIND: Record<string, string> = {
 
 type StreamLike = {
   on: (event: 'data' | 'end' | 'error', listener: (arg?: unknown) => void) => StreamLike
+}
+
+function safeText(s: unknown): string {
+  const raw = typeof s === 'string' ? s : (s instanceof Error ? s.message : String(s ?? ''))
+  return raw.replace(/[\r\n]+/g, ' ').slice(0, 240)
 }
 
 function readBody(req: ReqLike): Promise<Buffer> {
@@ -188,7 +194,7 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('[upload] failed to read request body:', e)
-      res.status(400).json({ ok: false, error: 'invalid_body' })
+      res.status(400).json({ ok: false, error: 'invalid_body', details: safeText(e) })
       return
     }
 
@@ -198,7 +204,7 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('[upload] multipart parse failed:', e)
-      res.status(400).json({ ok: false, error: 'invalid_body' })
+      res.status(400).json({ ok: false, error: 'invalid_body', details: safeText(e) })
       return
     }
 
@@ -210,7 +216,7 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
 
     const fileType = (file.contentType || '').toLowerCase()
     if (!ALLOWED_TYPES.has(fileType)) {
-      res.status(400).json({ ok: false, error: 'invalid_file_type' })
+      res.status(400).json({ ok: false, error: 'invalid_file_type', details: fileType })
       return
     }
 
@@ -247,7 +253,7 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
       }
       // eslint-disable-next-line no-console
       console.error('[upload] supabase upload error:', message, up.error)
-      res.status(500).json({ ok: false, error: 'upload_failed' })
+      res.status(500).json({ ok: false, error: 'upload_failed', details: safeText(message) })
       return
     }
 
@@ -257,7 +263,7 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     // eslint-disable-next-line no-console
     console.error('[upload] handler crashed:', e)
     try {
-      res.status(500).json({ ok: false, error: 'upload_failed' })
+      res.status(500).json({ ok: false, error: 'upload_failed', details: safeText(e) })
     } catch {
       // last-resort: nothing more we can do
     }
