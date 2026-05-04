@@ -47,7 +47,10 @@ export function NewsTab() {
 
   function addItem() {
     const tempId = `__new_${Date.now()}`
-    setDrafts((arr) => [...arr, { id: tempId, title: '', summary: '', date: '', tag: '', url: '', sortOrder: arr.length, isActive: true }])
+    setDrafts((arr) => [
+      ...arr,
+      { id: tempId, title: '', summary: '', date: '', tag: '', url: '', sortOrder: arr.length, isActive: true }
+    ])
   }
 
   async function remove(id: string) {
@@ -90,5 +93,74 @@ export function NewsTab() {
       {loading && configured && (
         <div className="rounded-xl bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 text-sm flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Yuklanmoqda...</div>
       )}
-      {toast?.kind === 'success' && <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm">{toast.message}</div>}
-      {toast?.kind === 'error' && <div className="rounded-xl bg-red-50 border border-red-200 text-red-800
+      {toast?.kind === 'success' && (
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm">{toast.message}</div>
+      )}
+      {toast?.kind === 'error' && (
+        <div className="rounded-xl bg-red-50 border border-red-200 text-red-800 px-4 py-2 text-sm">{toast.message}</div>
+      )}
+
+      {settings.officialNewsUrl && (
+        <div className="rounded-xl bg-brand-mist border border-slate-100 px-4 py-3 text-sm text-brand-navy flex items-start gap-2">
+          <ExternalLink size={14} className="mt-0.5 text-brand-deep" />
+          <div>Default rasmiy yangiliklar URL'i: <a href={settings.officialNewsUrl} target="_blank" rel="noopener noreferrer" className="text-brand-deep font-semibold break-all">{settings.officialNewsUrl}</a></div>
+        </div>
+      )}
+
+      {drafts.length === 0 && !loading && (
+        <div className="rounded-2xl bg-white border border-slate-100 shadow-card p-10 text-center text-brand-muted">Yangiliklar bazada mavjud emas. "Qo'shish" tugmasi orqali yarating.</div>
+      )}
+
+      <div className="grid gap-4">
+        {drafts.map((n, i) => (
+          <div key={n.id} className="rounded-2xl bg-white border border-slate-100 shadow-card p-5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-xs text-brand-muted">{n.id.startsWith('__new_') ? 'Yangi (saqlanmagan)' : `ID: ${n.id}`}</div>
+              <button type="button" onClick={() => remove(n.id)} disabled={deletingId === n.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-red-600 text-xs font-semibold hover:border-red-300 transition disabled:opacity-60">
+                {deletingId === n.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                {deletingId === n.id ? "O'chirilmoqda" : "O'chirish"}
+              </button>
+            </div>
+            <div className="mt-3 grid sm:grid-cols-2 gap-4">
+              <Field label="Sarlavha">
+                <input className="form-input" placeholder="Sarlavha" value={n.title ?? ''} onChange={(e) => setField(i, { title: e.target.value })} />
+              </Field>
+              <Field label="Tag (badge)">
+                <input className="form-input" placeholder="E\u2019lon" value={n.tag ?? ''} onChange={(e) => setField(i, { tag: e.target.value })} />
+              </Field>
+              <Field label="Yil / sana">
+                <input className="form-input" placeholder="2026" value={n.date ?? ''} onChange={(e) => setField(i, { date: e.target.value })} />
+              </Field>
+              <Field label="Batafsil link (ixtiyoriy)">
+                <input className="form-input" placeholder="https://gov.uz/oz/hydromet/news/..." value={n.url ?? ''} onChange={(e) => setField(i, { url: e.target.value })} />
+              </Field>
+              <Field label="Tartib raqami">
+                <input className="form-input" type="number" value={n.sortOrder ?? 0} onChange={(e) => setField(i, { sortOrder: Number(e.target.value || 0) })} />
+              </Field>
+              <Field label="Holati">
+                <label className="inline-flex items-center gap-2 mt-2 text-sm text-brand-navy">
+                  <input type="checkbox" checked={n.isActive !== false} onChange={(e) => setField(i, { isActive: e.target.checked })} className="w-4 h-4 accent-brand-primary" />
+                  Faol (saytda ko'rsatilsin)
+                </label>
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Qisqa matn (description)">
+                  <textarea rows={3} className="form-input resize-none" placeholder="" value={n.summary ?? ''} onChange={(e) => setField(i, { summary: e.target.value })} />
+                </Field>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Field({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="text-sm">
+      <label className="block text-[11px] uppercase tracking-wider text-brand-muted font-semibold">{label}</label>
+      <div className="mt-2">{children}</div>
+    </div>
+  )
+}
