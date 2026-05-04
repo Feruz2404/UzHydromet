@@ -3,8 +3,13 @@ import type { Dictionary, Lang } from './types'
 import { uz } from './uz'
 import { ru } from './ru'
 import { en } from './en'
+import { extraDictionaries } from './extra'
 
-const dictionaries: Record<Lang, Dictionary> = { uz, ru, en }
+const dictionaries: Record<Lang, Dictionary> = {
+  uz: { ...uz, ...extraDictionaries.uz },
+  ru: { ...ru, ...extraDictionaries.ru },
+  en: { ...en, ...extraDictionaries.en }
+}
 const STORAGE_KEY = 'uzhydromet:lang'
 
 export type LanguageContextValue = {
