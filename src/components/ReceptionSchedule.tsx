@@ -71,7 +71,7 @@ export function ReceptionSchedule() {
           </div>
         )}
 
-        {/* Desktop table — only at lg (1024px+) so iPad portrait/landscape doesn't squeeze columns */}
+        {/* Desktop table at lg+ (1024px+) so iPad doesn't squeeze columns */}
         <div className="hidden lg:block overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
           <table className="w-full text-sm table-fixed">
             <colgroup>
@@ -127,7 +127,7 @@ export function ReceptionSchedule() {
           </table>
         </div>
 
-        {/* Mobile + tablet (390px / 430px / 768px / 1024px-1) — premium card grid, no split words */}
+        {/* Tablet + mobile (<1024px): premium card grid, no split words */}
         <div className="lg:hidden grid grid-cols-1 md:grid-cols-2 gap-4">
           {filtered.map((l) => {
             const position = l.positionKey ? t(l.positionKey) : l.position
