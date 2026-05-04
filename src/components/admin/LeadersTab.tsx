@@ -152,7 +152,7 @@ export function LeadersTab() {
           </div>
           <div className="mt-4 grid sm:grid-cols-2 gap-5">
             <div className="sm:col-span-2">
-              <ImageUpload label="Rasmi" bucket="leader-photos" value={editing.photoUrl} onChange={(url) => setField('photoUrl', url)} onClear={() => setField('photoUrl', '')} helperText="Kvadrat rasm tavsiya etiladi." rounded="2xl" />
+              <ImageUpload label="Rasmi" kind="leader-photo" value={editing.photoUrl} onChange={(url) => setField('photoUrl', url)} onClear={() => setField('photoUrl', '')} helperText="Kvadrat rasm tavsiya etiladi." rounded="2xl" />
             </div>
             <Field label="F.I.Sh" error={errors.fullName}><input className="form-input" value={editing.fullName} onChange={(e) => setField('fullName', e.target.value)} /></Field>
             <Field label="Lavozimi" error={errors.position}><input className="form-input" value={editing.position} onChange={(e) => setField('position', e.target.value)} /></Field>

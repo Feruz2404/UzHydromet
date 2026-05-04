@@ -1,11 +1,11 @@
 import { useRef, useState, type ChangeEvent } from 'react'
 import { Upload, X, ImageIcon, Loader2 } from 'lucide-react'
-import { useAdmin } from '../../context/AdminContext'
+import { useAdmin, type UploadKind } from '../../context/AdminContext'
 
 export type ImageUploadProps = {
   label: string
   value?: string
-  bucket: 'site-assets' | 'leader-photos'
+  kind: UploadKind
   onChange: (url: string) => void
   onClear?: () => void
   helperText?: string
@@ -14,10 +14,15 @@ export type ImageUploadProps = {
   maxBytes?: number
 }
 
+const ACCEPTED_MIME = 'image/png,image/jpeg,image/jpg,image/webp,image/svg+xml'
+const ALLOWED_MIME: ReadonlySet<string> = new Set([
+  'image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/svg+xml'
+])
+
 export function ImageUpload({
   label,
   value,
-  bucket,
+  kind,
   onChange,
   onClear,
   helperText,
@@ -40,8 +45,9 @@ export function ImageUpload({
     const file = e.target.files?.[0]
     e.target.value = ''
     if (!file) return
-    if (!file.type.startsWith('image/')) {
-      setError('Faqat rasm fayllarini yuklash mumkin')
+    const fileType = (file.type || '').toLowerCase()
+    if (!ALLOWED_MIME.has(fileType)) {
+      setError('Faqat PNG, JPG, WEBP yoki SVG fayllarni yuklash mumkin')
       return
     }
     if (file.size > maxBytes) {
@@ -50,18 +56,7 @@ export function ImageUpload({
     }
     setUploading(true)
     try {
-      const base64 = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(typeof reader.result === 'string' ? reader.result : '')
-        reader.onerror = () => reject(new Error("faylni o'qib bo'lmadi"))
-        reader.readAsDataURL(file)
-      })
-      const result = await uploadImage({
-        bucket,
-        filename: file.name,
-        contentType: file.type,
-        base64
-      })
+      const result = await uploadImage(file, kind)
       onChange(result.url)
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'upload_failed'
@@ -115,7 +110,7 @@ export function ImageUpload({
           {error && <span className="text-[11px] text-red-600">{error}</span>}
         </div>
       </div>
-      <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={handleFile} />
+      <input ref={inputRef} type="file" accept={ACCEPTED_MIME} className="hidden" onChange={handleFile} />
     </div>
   )
 }

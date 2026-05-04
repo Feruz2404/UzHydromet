@@ -1,75 +1,265 @@
 // POST /api/admin/upload
-// Body: { bucket: 'site-assets' | 'leader-photos', filename: string,
-//         contentType: string, base64: string }
-// Returns: { data: { url, path, bucket } }
+// Accepts: multipart/form-data
+//   - file:  the uploaded image (required)
+//   - kind:  'site-logo' | 'footer-logo' | 'leader-photo' | 'asset' (optional)
+//
+// Required env (server-only):
+//   - VITE_SUPABASE_URL or SUPABASE_URL
+//   - SUPABASE_SERVICE_ROLE_KEY  (NEVER exposed to the client)
+//   - ADMIN_SECRET               (header gate: x-admin-secret)
+//
+// Storage bucket: hydromet-assets (Public). Must be created in Supabase
+// Storage prior to first upload.
+//
+// All responses are JSON of shape { ok: true, url, path } or
+// { ok: false, error: <code>, ... }. The handler is wrapped in a defensive
+// try/catch so it always returns clean JSON instead of crashing the function.
 
-import {
-  supabaseAdmin,
-  checkAdminAuth,
-  parseJson,
-  errorMessage,
-  type ReqLike,
-  type ResLike
-} from '../_supabaseAdmin'
+import { createClient } from '@supabase/supabase-js'
+import type { ReqLike, ResLike } from '../_supabaseAdmin'
 
 export const config = {
-  api: { bodyParser: { sizeLimit: '6mb' } }
+  // We parse multipart manually from the raw stream.
+  api: { bodyParser: false }
 }
 
-const ALLOWED_BUCKETS = new Set(['site-assets', 'leader-photos'])
-const MAX_BYTES = 5_000_000
+const BUCKET = 'hydromet-assets'
+const MAX_BYTES = 2 * 1024 * 1024 // 2MB
 
-type Body = {
-  bucket?: string
-  filename?: string
-  contentType?: string
-  base64?: string
+const ALLOWED_TYPES: ReadonlySet<string> = new Set([
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/svg+xml'
+])
+
+const EXT_BY_TYPE: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/webp': 'webp',
+  'image/svg+xml': 'svg'
+}
+
+const FOLDER_BY_KIND: Record<string, string> = {
+  'site-logo': 'logos',
+  'footer-logo': 'logos',
+  'leader-photo': 'leaders'
+}
+
+type StreamLike = {
+  on: (event: 'data' | 'end' | 'error', listener: (arg?: unknown) => void) => StreamLike
+}
+
+function readBody(req: ReqLike): Promise<Buffer> {
+  return new Promise((resolve, reject) => {
+    const stream = req as unknown as StreamLike
+    const chunks: Buffer[] = []
+    stream.on('data', (chunk) => {
+      if (Buffer.isBuffer(chunk)) chunks.push(chunk)
+      else if (typeof chunk === 'string') chunks.push(Buffer.from(chunk))
+    })
+    stream.on('end', () => resolve(Buffer.concat(chunks)))
+    stream.on('error', (err) => {
+      reject(err instanceof Error ? err : new Error(String(err)))
+    })
+  })
+}
+
+type ParsedFile = {
+  fieldName: string
+  filename: string
+  contentType: string
+  data: Buffer
+}
+type ParsedMultipart = {
+  fields: Record<string, string>
+  files: ParsedFile[]
+}
+
+function parseMultipart(buf: Buffer, boundary: string): ParsedMultipart {
+  const fields: Record<string, string> = {}
+  const files: ParsedFile[] = []
+  const delimiter = Buffer.from('--' + boundary)
+  const headerSep = Buffer.from('\r\n\r\n')
+
+  let pos = buf.indexOf(delimiter)
+  if (pos < 0) return { fields, files }
+  pos += delimiter.length
+
+  while (pos < buf.length) {
+    // After delimiter, expect either '--' (final) or CRLF.
+    if (buf[pos] === 0x2d && buf[pos + 1] === 0x2d) break
+    if (buf[pos] === 0x0d && buf[pos + 1] === 0x0a) pos += 2
+    if (pos >= buf.length) break
+
+    const headerEnd = buf.indexOf(headerSep, pos)
+    if (headerEnd < 0) break
+    const headers = buf.slice(pos, headerEnd).toString('utf8')
+    const dataStart = headerEnd + headerSep.length
+    const nextDelim = buf.indexOf(delimiter, dataStart)
+    if (nextDelim < 0) break
+    const dataEnd = nextDelim - 2 // strip trailing CRLF before next delimiter
+    if (dataEnd < dataStart) break
+    const data = buf.slice(dataStart, dataEnd)
+
+    const dispMatch = /content-disposition:\s*form-data;([^\r\n]+)/i.exec(headers)
+    if (dispMatch) {
+      const disp = dispMatch[1]
+      const nameMatch = /name="([^"]*)"/i.exec(disp)
+      const filenameMatch = /filename="([^"]*)"/i.exec(disp)
+      const ctMatch = /content-type:\s*([^\r\n;]+)/i.exec(headers)
+      const fieldName = nameMatch ? nameMatch[1] : ''
+      if (filenameMatch && fieldName) {
+        files.push({
+          fieldName,
+          filename: filenameMatch[1],
+          contentType: ctMatch ? ctMatch[1].trim().toLowerCase() : 'application/octet-stream',
+          data
+        })
+      } else if (fieldName) {
+        fields[fieldName] = data.toString('utf8')
+      }
+    }
+    pos = nextDelim + delimiter.length
+  }
+
+  return { fields, files }
+}
+
+function getHeader(req: ReqLike, name: string): string {
+  const v = req.headers[name.toLowerCase()]
+  if (Array.isArray(v)) return v[0] ?? ''
+  return typeof v === 'string' ? v : ''
+}
+
+function looksLikeBucketMissing(message: string): boolean {
+  const m = message.toLowerCase()
+  if (m.includes('bucket not found')) return true
+  if (m.includes('the resource was not found')) return true
+  if (m.includes('not found') && m.includes('bucket')) return true
+  return false
 }
 
 export default async function handler(req: ReqLike, res: ResLike): Promise<void> {
-  if (req.method === 'OPTIONS') { res.status(204).json({}); return }
-  if (!checkAdminAuth(req)) { res.status(401).json({ error: 'unauthorized' }); return }
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', 'POST')
-    res.status(405).json({ error: 'method_not_allowed' })
-    return
-  }
-  const sb = supabaseAdmin()
-  if (!sb) { res.status(500).json({ error: 'supabase_not_configured' }); return }
   try {
-    const body = parseJson<Body>(req.body)
-    if (!body) { res.status(400).json({ error: 'invalid_body' }); return }
-    const bucket = (body.bucket ?? '').trim()
-    if (!ALLOWED_BUCKETS.has(bucket)) {
-      res.status(400).json({ error: 'invalid_bucket' })
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST')
+      res.status(405).json({ ok: false, error: 'method_not_allowed' })
       return
     }
-    const filename = (body.filename ?? '').trim()
-    if (!filename) { res.status(400).json({ error: 'missing_filename' }); return }
-    const contentType = (body.contentType ?? '').trim() || 'application/octet-stream'
-    if (!contentType.startsWith('image/')) {
-      res.status(400).json({ error: 'invalid_content_type' })
-      return
-    }
-    const rawB64 = (body.base64 ?? '').replace(/^data:[^;]+;base64,/, '')
-    if (!rawB64) { res.status(400).json({ error: 'missing_base64' }); return }
-    const buffer = Buffer.from(rawB64, 'base64')
-    if (buffer.length === 0) { res.status(400).json({ error: 'empty_payload' }); return }
-    if (buffer.length > MAX_BYTES) { res.status(400).json({ error: 'file_too_large' }); return }
 
-    const safeName = filename.replace(/[^\w.\-+]/g, '_').slice(-160)
-    const path = `${Date.now()}_${Math.floor(Math.random() * 1_000_000)}_${safeName}`
-    const up = await sb.storage.from(bucket).upload(path, buffer, {
-      contentType,
-      upsert: false,
+    const url = (process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? '').trim()
+    const key = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
+    const adminSecret = (process.env.ADMIN_SECRET ?? '').trim()
+    const missing: string[] = []
+    if (!url) missing.push('VITE_SUPABASE_URL (or SUPABASE_URL)')
+    if (!key) missing.push('SUPABASE_SERVICE_ROLE_KEY')
+    if (!adminSecret) missing.push('ADMIN_SECRET')
+    if (missing.length > 0) {
+      // eslint-disable-next-line no-console
+      console.error('[upload] server_not_configured. Missing env: ' + missing.join(', '))
+      res.status(500).json({ ok: false, error: 'server_not_configured' })
+      return
+    }
+
+    const provided = getHeader(req, 'x-admin-secret').trim()
+    if (!provided || provided !== adminSecret) {
+      res.status(401).json({ ok: false, error: 'unauthorized' })
+      return
+    }
+
+    const ctHeader = getHeader(req, 'content-type')
+    if (!/multipart\/form-data/i.test(ctHeader)) {
+      res.status(400).json({ ok: false, error: 'invalid_content_type' })
+      return
+    }
+    const boundaryMatch = /boundary=(?:"([^"]+)"|([^;\s]+))/i.exec(ctHeader)
+    const boundary = boundaryMatch ? (boundaryMatch[1] ?? boundaryMatch[2] ?? '').trim() : ''
+    if (!boundary) {
+      res.status(400).json({ ok: false, error: 'invalid_content_type' })
+      return
+    }
+
+    let raw: Buffer
+    try {
+      raw = await readBody(req)
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[upload] failed to read request body:', e)
+      res.status(400).json({ ok: false, error: 'invalid_body' })
+      return
+    }
+
+    let parsed: ParsedMultipart
+    try {
+      parsed = parseMultipart(raw, boundary)
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[upload] multipart parse failed:', e)
+      res.status(400).json({ ok: false, error: 'invalid_body' })
+      return
+    }
+
+    const file = parsed.files.find((f) => f.fieldName === 'file') ?? parsed.files[0]
+    if (!file || file.data.length === 0) {
+      res.status(400).json({ ok: false, error: 'missing_file' })
+      return
+    }
+
+    const fileType = (file.contentType || '').toLowerCase()
+    if (!ALLOWED_TYPES.has(fileType)) {
+      res.status(400).json({ ok: false, error: 'invalid_file_type' })
+      return
+    }
+
+    if (file.data.length > MAX_BYTES) {
+      res.status(400).json({ ok: false, error: 'file_too_large' })
+      return
+    }
+
+    const kindRaw = (parsed.fields.kind ?? '').trim()
+    const kind = kindRaw || 'asset'
+    const ext = EXT_BY_TYPE[fileType] ?? 'bin'
+    const folder = FOLDER_BY_KIND[kind] ?? 'misc'
+    const ts = Date.now()
+    const rand = Math.floor(Math.random() * 1_000_000).toString(36)
+    const path = `${folder}/${kind}-${ts}-${rand}.${ext}`
+
+    const sb = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    })
+
+    const up = await sb.storage.from(BUCKET).upload(path, file.data, {
+      contentType: fileType,
+      upsert: true,
       cacheControl: '3600'
     })
-    if (up.error) { res.status(500).json({ error: up.error.message }); return }
-    const pub = sb.storage.from(bucket).getPublicUrl(up.data.path)
-    res.status(200).json({
-      data: { url: pub.data.publicUrl, path: up.data.path, bucket }
-    })
+
+    if (up.error) {
+      const message = up.error.message ?? ''
+      if (looksLikeBucketMissing(message)) {
+        // eslint-disable-next-line no-console
+        console.error('[upload] storage_bucket_missing: ' + BUCKET + ' (' + message + ')')
+        res.status(500).json({ ok: false, error: 'storage_bucket_missing', bucket: BUCKET })
+        return
+      }
+      // eslint-disable-next-line no-console
+      console.error('[upload] supabase upload error:', message, up.error)
+      res.status(500).json({ ok: false, error: 'upload_failed' })
+      return
+    }
+
+    const pub = sb.storage.from(BUCKET).getPublicUrl(up.data.path)
+    res.status(200).json({ ok: true, url: pub.data.publicUrl, path: up.data.path })
   } catch (e) {
-    res.status(500).json({ error: errorMessage(e) })
+    // eslint-disable-next-line no-console
+    console.error('[upload] handler crashed:', e)
+    try {
+      res.status(500).json({ ok: false, error: 'upload_failed' })
+    } catch {
+      // last-resort: nothing more we can do
+    }
   }
 }

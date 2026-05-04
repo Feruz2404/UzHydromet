@@ -200,12 +200,7 @@ type State = {
   configured: boolean
 }
 
-type UploadArgs = {
-  bucket: 'site-assets' | 'leader-photos'
-  filename: string
-  contentType: string
-  base64: string
-}
+export type UploadKind = 'site-logo' | 'footer-logo' | 'leader-photo'
 
 type AdminContextValue = {
   // Public-facing (DB or static fallback)
@@ -236,7 +231,7 @@ type AdminContextValue = {
   createNews: (input: Partial<NewsItem>) => Promise<NewsItem>
   updateNews: (id: string, patch: Partial<NewsItem>) => Promise<NewsItem>
   deleteNews: (id: string) => Promise<void>
-  uploadImage: (args: UploadArgs) => Promise<{ url: string; path: string }>
+  uploadImage: (file: File, kind: UploadKind) => Promise<{ url: string; path: string }>
 }
 
 const Ctx = createContext<AdminContextValue | null>(null)
@@ -355,12 +350,28 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     setState((s) => ({ ...s, dbNews: s.dbNews.filter((n) => n.id !== id) }))
   }, [adminToken])
 
-  const uploadImage = useCallback(async (args: UploadArgs): Promise<{ url: string; path: string }> => {
-    const data = await adminFetch<{ url: string; path: string; bucket: string }>('/api/admin/upload', {
+  const uploadImage = useCallback(async (file: File, kind: UploadKind): Promise<{ url: string; path: string }> => {
+    if (!adminToken) throw new Error("Admin sessiyasi tugadi. Qayta kiring.")
+    const fd = new FormData()
+    fd.append('file', file)
+    fd.append('kind', kind)
+    const res = await fetch('/api/admin/upload', {
       method: 'POST',
-      body: JSON.stringify(args)
-    }, adminToken)
-    return { url: data.url, path: data.path }
+      headers: { 'x-admin-secret': adminToken },
+      body: fd
+    })
+    let json: { ok?: boolean; url?: string; path?: string; error?: string; bucket?: string } = {}
+    try {
+      json = (await res.json()) as typeof json
+    } catch {
+      // server returned non-JSON (shouldn't happen with the new handler)
+    }
+    if (!res.ok || !json.ok || !json.url || !json.path) {
+      const code = json.error ?? `HTTP ${res.status}`
+      const detail = json.bucket ? `${code} (${json.bucket})` : code
+      throw new Error(detail)
+    }
+    return { url: json.url, path: json.path }
   }, [adminToken])
 
   // Public-facing values (DB or static fallback)
