@@ -238,11 +238,14 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     const smtpHost = (process.env.SMTP_HOST ?? '').trim()
     if (smtpHost) {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        // nodemailer is an OPTIONAL runtime dependency — only used when SMTP_HOST
+        // is set. We don't ship it in package.json so Resend-only deployments
+        // stay lean; the .catch(() => null) below handles a missing module.
+        // @ts-expect-error optional runtime dependency, may not be installed
         const nm: any = await import('nodemailer').then((m) => m.default ?? m).catch(() => null)
         if (!nm) {
           // eslint-disable-next-line no-console
-          console.error('nodemailer not installed; cannot send via SMTP')
+          console.error('nodemailer not installed; cannot send via SMTP. Install nodemailer or use RESEND_API_KEY instead.')
           res.status(500).json({ error: 'smtp_unavailable' })
           return
         }
