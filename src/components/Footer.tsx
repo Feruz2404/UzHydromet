@@ -1,9 +1,14 @@
 import { CloudSun, MapPin, Phone, Mail, Clock } from 'lucide-react'
-import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useAdmin } from '../context/AdminContext'
 
 export function Footer() {
   const { t } = useLanguage()
+  const { settings } = useAdmin()
+  const brandName = settings.agencyName.trim() || t('brand.short')
+  const tagline = settings.shortDescription.trim() || t('brand.tagline')
+  const logo = settings.footerLogoUrl || settings.logoUrl
+
   return (
     <footer className="relative bg-gradient-to-br from-brand-navy via-brand-deep to-brand-navy text-white overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -13,12 +18,18 @@ export function Footer() {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12 lg:py-14 grid md:grid-cols-12 gap-6 md:gap-10">
         <div className="md:col-span-4">
           <div className="flex items-center gap-3">
-            <span className="w-11 h-11 shrink-0 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky">
-              <CloudSun size={22} />
-            </span>
+            {logo ? (
+              <span className="w-11 h-11 shrink-0 rounded-xl bg-white/10 ring-1 ring-white/15 overflow-hidden flex items-center justify-center">
+                <img src={logo} alt={brandName} className="w-full h-full object-contain" />
+              </span>
+            ) : (
+              <span className="w-11 h-11 shrink-0 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky">
+                <CloudSun size={22} />
+              </span>
+            )}
             <div className="min-w-0">
-              <div className="font-display font-extrabold text-base sm:text-lg leading-tight truncate">{t('brand.short')}</div>
-              <div className="text-[10px] sm:text-[11px] text-white/70 truncate">{t('brand.tagline')}</div>
+              <div className="font-display font-extrabold text-base sm:text-lg leading-tight truncate">{brandName}</div>
+              <div className="text-[10px] sm:text-[11px] text-white/70 truncate">{tagline}</div>
             </div>
           </div>
           <p className="mt-4 sm:mt-5 text-[13px] sm:text-sm text-white/70 leading-relaxed max-w-sm">{t('footer.tagline')}</p>
@@ -40,19 +51,19 @@ export function Footer() {
           <ul className="mt-3 sm:mt-4 space-y-2.5 sm:space-y-3 text-[13px] sm:text-sm text-white/85">
             <li className="flex items-start gap-2.5">
               <MapPin size={16} className="mt-0.5 text-brand-sky flex-shrink-0" />
-              <span className="break-words">{agency.address}</span>
+              <span className="break-words">{settings.address}</span>
             </li>
             <li className="flex items-start gap-2.5">
               <Phone size={16} className="mt-0.5 text-brand-sky flex-shrink-0" />
-              <span className="break-words">{agency.phone}</span>
+              <span className="break-words">{settings.phone}</span>
             </li>
             <li className="flex items-start gap-2.5">
               <Mail size={16} className="mt-0.5 text-brand-sky flex-shrink-0" />
-              <span className="break-all">{agency.email}</span>
+              <span className="break-all">{settings.email}</span>
             </li>
             <li className="flex items-start gap-2.5">
               <Clock size={16} className="mt-0.5 text-brand-sky flex-shrink-0" />
-              <span>{t('agency.workingHours')}</span>
+              <span>{settings.workingHours}</span>
             </li>
           </ul>
         </div>
