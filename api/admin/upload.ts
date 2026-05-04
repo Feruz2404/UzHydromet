@@ -10,24 +10,18 @@
 //
 // Storage bucket: hydromet-assets (Public).
 //
-// All responses are JSON. Success: { ok: true, url, path }. Failure:
-// { ok: false, error: <code>, details?: <safe message> }.
-//
-// We do NOT statically import @supabase/supabase-js here \u2014 see
-// api/_supabaseAdmin.ts for the full explanation. The supabaseAdmin()
-// helper handles dynamic import + caching + clear error reporting.
-//
-// We also do NOT use `export const config = { api: { bodyParser: false } }`
-// because that is a Next.js Pages Router-only directive that breaks Vercel
-// non-Next functions. Vercel's default body parser ignores multipart anyway,
-// so we just read the stream directly with safety fallbacks.
+// IMPORTANT: keep the `.js` extension on the relative import below.
+// package.json has "type": "module" so Vercel runs the compiled
+// api/*.js files in Node.js ESM mode, where ESM Node requires explicit
+// file extensions on relative imports. Without `.js` the runtime fails
+// with ERR_MODULE_NOT_FOUND at module-load.
 
 import {
   supabaseAdmin,
   supabaseLoadError,
   type ReqLike,
   type ResLike
-} from '../_supabaseAdmin'
+} from '../_supabaseAdmin.js'
 
 const BUCKET = 'hydromet-assets'
 const MAX_BYTES = 2 * 1024 * 1024 // 2MB

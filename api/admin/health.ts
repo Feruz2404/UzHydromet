@@ -1,24 +1,23 @@
 // GET /api/admin/health
 // Unauthenticated diagnostic endpoint. Reports deploy version, presence of
-// required env vars (without leaking values), and now also the result of
-// actually loading the Supabase admin client via the same code path that
+// required env vars (without leaking values), and the result of actually
+// loading the Supabase admin client via the same code path that
 // /api/admin/site-settings, leaders, news, and upload use.
 //
-// We deliberately import a *value* (supabaseAdmin) here, not just a type,
-// so this endpoint exercises the full dynamic-import path. If this endpoint
-// itself starts returning FUNCTION_INVOCATION_FAILED we know the crash is
-// at module-load when value-importing from _supabaseAdmin.ts. If it returns
-// 200 with supabase.loaded:false and a real error message, we know the
-// dynamic import fails at runtime and we have the exact reason.
+// IMPORTANT: the relative import below MUST keep the `.js` extension.
+// package.json has "type": "module", so Vercel runs the compiled
+// api/*.js files in Node.js ESM mode, and ESM Node requires explicit
+// file extensions on relative imports. Without `.js` the runtime fails
+// with ERR_MODULE_NOT_FOUND at module-load (see commit message).
 
 import {
   supabaseAdmin,
   supabaseLoadError,
   type ReqLike,
   type ResLike
-} from '../_supabaseAdmin'
+} from '../_supabaseAdmin.js'
 
-const VERSION = '2026-05-04T17:51Z'
+const VERSION = '2026-05-04T17:58Z'
 
 export default async function handler(req: ReqLike, res: ResLike): Promise<void> {
   // eslint-disable-next-line no-console

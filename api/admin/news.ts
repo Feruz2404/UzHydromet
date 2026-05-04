@@ -12,7 +12,7 @@ import {
   unexpectedErrorEnvelope,
   type ReqLike,
   type ResLike
-} from '../_supabaseAdmin'
+} from '../_supabaseAdmin.js'
 
 const LOG = 'news'
 
