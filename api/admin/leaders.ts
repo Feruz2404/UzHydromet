@@ -5,6 +5,7 @@
 
 import {
   supabaseAdmin,
+  supabaseLoadError,
   checkAdminAuth,
   parseJson,
   pickFields,
@@ -33,11 +34,20 @@ const FIELDS = [
 ] as const
 
 export default async function handler(req: ReqLike, res: ResLike): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log('[' + LOG + '] handler invoked, method=' + (req.method ?? 'unknown'))
   try {
     if (req.method === 'OPTIONS') { res.status(204).json({ ok: true }); return }
     if (!checkAdminAuth(req)) { res.status(401).json({ ok: false, error: 'unauthorized' }); return }
-    const sb = supabaseAdmin()
-    if (!sb) { res.status(500).json({ ok: false, error: 'server_not_configured' }); return }
+    const sb = await supabaseAdmin()
+    if (!sb) {
+      res.status(500).json({
+        ok: false,
+        error: 'server_not_configured',
+        details: supabaseLoadError() ?? 'env or runtime issue'
+      })
+      return
+    }
 
     if (req.method === 'GET') {
       const { data, error } = await sb

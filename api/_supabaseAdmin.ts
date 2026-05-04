@@ -1,42 +1,90 @@
 // Server-only Supabase helpers. NEVER import this from src/.
 // Used by Vercel serverless functions under /api/admin/*.
 //
+// IMPORTANT: We intentionally do NOT statically import @supabase/supabase-js
+// at the top level. A static `import { createClient } from '@supabase/supabase-js'`
+// caused FUNCTION_INVOCATION_FAILED at module-load time on Vercel under our
+// "type": "module" + Vite (non-Next) project shape \u2014 every admin endpoint
+// crashed before hitting our try/catch, returning bare HTTP 500 to the UI.
+// The fix matches the working pattern in api/reception-request.ts: dynamic
+// import inside an async helper, wrapped in try/catch.
+//
+// The `import type { SupabaseClient }` line below is compile-time only and is
+// stripped by tsc/esbuild before bundling, so it carries zero runtime cost
+// and cannot cause a load-time crash.
+//
 // Reads:
 //   - VITE_SUPABASE_URL (or SUPABASE_URL fallback) \u2014 Supabase project URL
 //   - SUPABASE_SERVICE_ROLE_KEY \u2014 server-only key, NEVER expose to client
 //   - ADMIN_SECRET \u2014 shared secret for the x-admin-secret header gate
-//
-// All three are configured in Vercel \u2192 Project Settings \u2192 Environment
-// Variables. Missing vars are logged to server logs (visible in Vercel
-// Functions logs) so deployment misconfiguration is easy to diagnose,
-// while public responses stay generic to avoid leaking which secret is
-// missing.
 
-import { createClient } from '@supabase/supabase-js'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 let cached: SupabaseClient | null = null
+let cachedLoadError: string | null = null
 
-export function supabaseAdmin(): SupabaseClient | null {
+/**
+ * Returns the last recorded reason `supabaseAdmin()` failed to produce a
+ * client, or null if it has not failed. Handlers should include this in
+ * their error envelope so the admin UI can surface the real cause (env
+ * misconfig vs. runtime import failure) instead of an opaque HTTP 500.
+ */
+export function supabaseLoadError(): string | null {
+  return cachedLoadError
+}
+
+export async function supabaseAdmin(): Promise<SupabaseClient | null> {
   if (cached) return cached
+  if (cachedLoadError) {
+    // eslint-disable-next-line no-console
+    console.error('[supabaseAdmin] previously failed to load: ' + cachedLoadError)
+    return null
+  }
   const url = (process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? '').trim()
   const key = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
   if (!url || !key) {
     const missing: string[] = []
     if (!url) missing.push('VITE_SUPABASE_URL (or SUPABASE_URL)')
     if (!key) missing.push('SUPABASE_SERVICE_ROLE_KEY')
+    cachedLoadError = 'missing env: ' + missing.join(', ')
     // eslint-disable-next-line no-console
     console.error(
-      '[supabaseAdmin] Server Supabase client is not configured. Missing env: ' +
-        missing.join(', ') +
-        '. Set these in Vercel \u2192 Project Settings \u2192 Environment Variables.'
+      '[supabaseAdmin] ' + cachedLoadError + '. Set these in Vercel \u2192 Project Settings \u2192 Environment Variables.'
     )
     return null
   }
-  cached = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  })
-  return cached
+  try {
+    const mod = await import('@supabase/supabase-js')
+    // CJS/ESM interop: createClient may live on the namespace or on default.
+    const ns = mod as unknown as Record<string, unknown>
+    const fromNs = ns.createClient
+    const fromDefault =
+      typeof ns.default === 'object' && ns.default !== null
+        ? (ns.default as Record<string, unknown>).createClient
+        : undefined
+    const createClient =
+      typeof fromNs === 'function'
+        ? (fromNs as (u: string, k: string, o?: unknown) => unknown)
+        : typeof fromDefault === 'function'
+          ? (fromDefault as (u: string, k: string, o?: unknown) => unknown)
+          : null
+    if (!createClient) {
+      cachedLoadError = 'createClient is not exported by @supabase/supabase-js'
+      // eslint-disable-next-line no-console
+      console.error('[supabaseAdmin] ' + cachedLoadError)
+      return null
+    }
+    cached = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    }) as SupabaseClient
+    return cached
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    cachedLoadError = 'dynamic import failed: ' + msg.slice(0, 200)
+    // eslint-disable-next-line no-console
+    console.error('[supabaseAdmin] ' + cachedLoadError, e)
+    return null
+  }
 }
 
 export type ReqLike = {
