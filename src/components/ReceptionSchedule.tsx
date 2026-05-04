@@ -71,25 +71,17 @@ export function ReceptionSchedule() {
           </div>
         )}
 
-        {/* Desktop table at lg+ (1024px+) so iPad doesn't squeeze columns */}
+        {/* Desktop table at lg+ (1024px+); column widths via Tailwind on <th> */}
         <div className="hidden lg:block overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-card">
           <table className="w-full text-sm table-fixed">
-            <colgroup>
-              <col style= width: '26%'  />
-              <col style= width: '26%'  />
-              <col style= width: '12%'  />
-              <col style= width: '12%'  />
-              <col style= width: '14%'  />
-              <col style= width: '10%'  />
-            </colgroup>
             <thead className="bg-gradient-to-r from-brand-mist to-white text-left text-brand-muted">
               <tr>
-                <th className="px-5 py-4 font-semibold">{t('reception.col.leader')}</th>
-                <th className="px-5 py-4 font-semibold">{t('reception.col.position')}</th>
-                <th className="px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.day')}</th>
-                <th className="px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.time')}</th>
-                <th className="px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.phone')}</th>
-                <th className="px-5 py-4 font-semibold text-right" aria-label={t('reception.col.action')} />
+                <th className="w-[26%] px-5 py-4 font-semibold">{t('reception.col.leader')}</th>
+                <th className="w-[26%] px-5 py-4 font-semibold">{t('reception.col.position')}</th>
+                <th className="w-[12%] px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.day')}</th>
+                <th className="w-[12%] px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.time')}</th>
+                <th className="w-[14%] px-5 py-4 font-semibold whitespace-nowrap">{t('reception.col.phone')}</th>
+                <th className="w-[10%] px-5 py-4 font-semibold text-right" aria-label={t('reception.col.action')} />
               </tr>
             </thead>
             <tbody>
