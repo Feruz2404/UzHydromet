@@ -15,17 +15,22 @@
 // { ok: false, error: <code>, details?: <safe message> }. The handler is
 // wrapped in a defensive try/catch so it always returns clean JSON instead of
 // crashing the function (no FUNCTION_INVOCATION_FAILED).
+//
+// IMPORTANT: We deliberately do NOT use `export const config = { api: { bodyParser: false } }`.
+// That directive is Next.js-only. In a Vite (non-Next) project on Vercel it
+// is either silently ignored or breaks the function's request lifecycle, which
+// caused 504 timeouts and bare 500 responses in production. Vercel's default
+// body parser ignores multipart/form-data anyway, so we read the stream
+// directly. readBody() below also falls back to req.body if Vercel happens
+// to pre-buffer the request, and applies a safety timeout so the function
+// can never hang.
 
 import { createClient } from '@supabase/supabase-js'
 import type { ReqLike, ResLike } from '../_supabaseAdmin'
 
-export const config = {
-  // We parse multipart manually from the raw stream.
-  api: { bodyParser: false }
-}
-
 const BUCKET = 'hydromet-assets'
 const MAX_BYTES = 2 * 1024 * 1024 // 2MB
+const READ_TIMEOUT_MS = 25_000
 
 const ALLOWED_TYPES: ReadonlySet<string> = new Set([
   'image/png',
@@ -50,7 +55,9 @@ const FOLDER_BY_KIND: Record<string, string> = {
 }
 
 type StreamLike = {
+  readableEnded?: boolean
   on: (event: 'data' | 'end' | 'error', listener: (arg?: unknown) => void) => StreamLike
+  removeListener?: (event: string, listener: (arg?: unknown) => void) => StreamLike
 }
 
 function safeText(s: unknown): string {
@@ -59,16 +66,50 @@ function safeText(s: unknown): string {
 }
 
 function readBody(req: ReqLike): Promise<Buffer> {
-  return new Promise((resolve, reject) => {
-    const stream = req as unknown as StreamLike
+  // 1) If Vercel already buffered the body (Buffer or string), use it directly.
+  const pre = (req as { body?: unknown }).body
+  if (pre) {
+    if (Buffer.isBuffer(pre)) return Promise.resolve(pre)
+    if (typeof pre === 'string') return Promise.resolve(Buffer.from(pre, 'utf8'))
+    // If the platform has already parsed the body into an object (which it
+    // shouldn't for multipart/form-data) we cannot reconstruct the original
+    // multipart bytes. Fail clearly so the caller returns 400, not a hang.
+    return Promise.reject(new Error('body_already_parsed'))
+  }
+  // 2) If the stream has already ended without us having buffered it,
+  // there is nothing to read — fail fast instead of hanging on listeners
+  // that will never fire.
+  const stream = req as unknown as StreamLike
+  if (stream.readableEnded === true) {
+    return Promise.reject(new Error('stream_already_ended'))
+  }
+  // 3) Read from the request stream with a hard timeout.
+  return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = []
+    let settled = false
+    const settleResolve = (buf: Buffer) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      resolve(buf)
+    }
+    const settleReject = (err: Error) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      reject(err)
+    }
+    const timer = setTimeout(
+      () => settleReject(new Error('read_timeout')),
+      READ_TIMEOUT_MS
+    )
     stream.on('data', (chunk) => {
       if (Buffer.isBuffer(chunk)) chunks.push(chunk)
-      else if (typeof chunk === 'string') chunks.push(Buffer.from(chunk))
+      else if (typeof chunk === 'string') chunks.push(Buffer.from(chunk, 'utf8'))
     })
-    stream.on('end', () => resolve(Buffer.concat(chunks)))
+    stream.on('end', () => settleResolve(Buffer.concat(chunks)))
     stream.on('error', (err) => {
-      reject(err instanceof Error ? err : new Error(String(err)))
+      settleReject(err instanceof Error ? err : new Error(String(err)))
     })
   })
 }
@@ -95,7 +136,6 @@ function parseMultipart(buf: Buffer, boundary: string): ParsedMultipart {
   pos += delimiter.length
 
   while (pos < buf.length) {
-    // After delimiter, expect either '--' (final) or CRLF.
     if (buf[pos] === 0x2d && buf[pos + 1] === 0x2d) break
     if (buf[pos] === 0x0d && buf[pos + 1] === 0x0a) pos += 2
     if (pos >= buf.length) break
@@ -106,7 +146,7 @@ function parseMultipart(buf: Buffer, boundary: string): ParsedMultipart {
     const dataStart = headerEnd + headerSep.length
     const nextDelim = buf.indexOf(delimiter, dataStart)
     if (nextDelim < 0) break
-    const dataEnd = nextDelim - 2 // strip trailing CRLF before next delimiter
+    const dataEnd = nextDelim - 2
     if (dataEnd < dataStart) break
     const data = buf.slice(dataStart, dataEnd)
 
@@ -149,6 +189,8 @@ function looksLikeBucketMissing(message: string): boolean {
 }
 
 export default async function handler(req: ReqLike, res: ResLike): Promise<void> {
+  // eslint-disable-next-line no-console
+  console.log('[upload] handler invoked, method=' + (req.method ?? 'unknown'))
   try {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST')
@@ -230,8 +272,8 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     const ext = EXT_BY_TYPE[fileType] ?? 'bin'
     const folder = FOLDER_BY_KIND[kind] ?? 'misc'
     const ts = Date.now()
-    const rand = Math.floor(Math.random() * 1_000_000).toString(36)
-    const path = `${folder}/${kind}-${ts}-${rand}.${ext}`
+    const rand = Math.floor(Math.random() * 1000000).toString(36)
+    const path = folder + '/' + kind + '-' + ts + '-' + rand + '.' + ext
 
     const sb = createClient(url, key, {
       auth: { persistSession: false, autoRefreshToken: false }
