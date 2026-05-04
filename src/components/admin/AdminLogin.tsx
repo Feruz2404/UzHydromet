@@ -1,15 +1,20 @@
 import { useState, type FormEvent } from 'react'
 import { Lock, ShieldCheck } from 'lucide-react'
+import { useAdmin } from '../../context/AdminContext'
 
 export function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
+  const { setAdminToken } = useAdmin()
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
   function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const expected = (import.meta.env.VITE_ADMIN_PASSWORD as string | undefined) ?? 'admin'
-    if (password === expected) {
+    const expected = (import.meta.env.VITE_ADMIN_PASSWORD as string | undefined)?.trim() || 'admin'
+    if (password.trim() === expected) {
       try { window.sessionStorage.setItem('uzhydromet:admin:auth', '1') } catch { /* ignore */ }
+      // The same value is stored as the admin secret and sent as x-admin-secret
+      // when calling /api/admin/* endpoints.
+      setAdminToken(password.trim())
       onSuccess()
     } else {
       setError("Parol noto'g'ri")
@@ -42,7 +47,7 @@ export function AdminLogin({ onSuccess }: { onSuccess: () => void }) {
         </div>
         {error && <div className="mt-2 text-xs text-red-600">{error}</div>}
         <button type="submit" className="mt-5 w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white font-semibold shadow-card hover:shadow-glow transition-all">Kirish</button>
-        <p className="mt-4 text-[11px] text-brand-muted leading-relaxed">Parol <code>VITE_ADMIN_PASSWORD</code> env orqali sozlanadi. Standart qiymat <code>admin</code>.</p>
+        <p className="mt-4 text-[11px] text-brand-muted leading-relaxed">Parol <code>VITE_ADMIN_PASSWORD</code> orqali sozlanadi va serverdagi <code>ADMIN_SECRET</code> bilan bir xil bo'lishi shart. Standart qiymat <code>admin</code>.</p>
       </form>
     </div>
   )

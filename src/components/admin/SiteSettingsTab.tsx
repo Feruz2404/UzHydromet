@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Save, RotateCcw } from 'lucide-react'
+import { Save, RotateCcw, Loader2 } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
 import { ImageUpload } from './ImageUpload'
 import type { SiteSettings } from '../../types/admin'
 
 type Errors = Partial<Record<keyof SiteSettings, string>>
+type Status =
+  | { kind: 'idle' }
+  | { kind: 'saving' }
+  | { kind: 'success'; message: string }
+  | { kind: 'error'; message: string }
 
 export function SiteSettingsTab() {
-  const { settings, updateSettings, resetSettings } = useAdmin()
+  const { settings, saveSettings, loading, configured } = useAdmin()
   const [draft, setDraft] = useState<SiteSettings>(settings)
   const [errors, setErrors] = useState<Errors>({})
-  const [saved, setSaved] = useState<boolean>(false)
+  const [status, setStatus] = useState<Status>({ kind: 'idle' })
 
   useEffect(() => { setDraft(settings) }, [settings])
 
@@ -31,37 +36,60 @@ export function SiteSettingsTab() {
     return Object.keys(next).length === 0
   }
 
-  function save() {
+  async function save() {
+    if (status.kind === 'saving') return
     if (!validate()) return
-    updateSettings(draft)
-    setSaved(true)
-    window.setTimeout(() => setSaved(false), 2500)
-  }
-
-  function reset() {
-    if (window.confirm("Sozlamalarni standart holatga qaytarish? Joriy o'zgarishlar yo'qoladi.")) {
-      resetSettings()
+    setStatus({ kind: 'saving' })
+    try {
+      await saveSettings(draft)
+      setStatus({ kind: 'success', message: "Saqlandi. O'zgarishlar saytda darhol ko'rinadi." })
+      window.setTimeout(() => setStatus({ kind: 'idle' }), 3000)
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : 'unknown_error'
+      setStatus({ kind: 'error', message: `Saqlashda xatolik: ${msg}` })
     }
   }
+
+  function discardChanges() {
+    setDraft(settings)
+    setErrors({})
+    setStatus({ kind: 'idle' })
+  }
+
+  const saving = status.kind === 'saving'
 
   return (
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brand-navy">Sayt sozlamalari</h2>
-          <p className="text-sm text-brand-muted">Logo, agentlik nomi va aloqa ma'lumotlarini boshqaring.</p>
+          <p className="text-sm text-brand-muted">Logo, agentlik nomi va aloqa ma'lumotlarini boshqaring. Ma'lumotlar Supabase bazasida saqlanadi.</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={reset} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-brand-navy text-sm font-semibold hover:border-brand-primary hover:text-brand-deep transition"><RotateCcw size={14} /> Standart holat</button>
-          <button type="button" onClick={save} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow transition"><Save size={14} /> Saqlash</button>
+          <button type="button" onClick={discardChanges} disabled={saving} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-brand-navy text-sm font-semibold hover:border-brand-primary hover:text-brand-deep transition disabled:opacity-60"><RotateCcw size={14} /> O'zgarishlarni bekor qilish</button>
+          <button type="button" onClick={save} disabled={saving} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow transition disabled:opacity-70">
+            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {saving ? 'Saqlanmoqda...' : 'Saqlash'}
+          </button>
         </div>
       </header>
 
-      {saved && <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm">Saqlandi. O'zgarishlar saytda darhol ko'rinadi.</div>}
+      {!configured && (
+        <div className="rounded-xl bg-amber-50 border border-amber-200 text-amber-800 px-4 py-2 text-sm">Supabase env sozlanmagan. Server saqlash uchun <code>VITE_SUPABASE_URL</code>, <code>VITE_SUPABASE_ANON_KEY</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code> va <code>ADMIN_SECRET</code> kerak.</div>
+      )}
+      {loading && configured && (
+        <div className="rounded-xl bg-slate-50 border border-slate-200 text-slate-700 px-4 py-2 text-sm flex items-center gap-2"><Loader2 size={14} className="animate-spin" /> Yuklanmoqda...</div>
+      )}
+      {status.kind === 'success' && (
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 text-sm">{status.message}</div>
+      )}
+      {status.kind === 'error' && (
+        <div className="rounded-xl bg-red-50 border border-red-200 text-red-800 px-4 py-2 text-sm">{status.message}</div>
+      )}
 
       <div className="rounded-2xl bg-white border border-slate-100 shadow-card p-5 sm:p-6 grid sm:grid-cols-2 gap-5">
-        <ImageUpload label="Sayt logosi" value={draft.logoUrl} onChange={(url) => setField('logoUrl', url)} onClear={() => setField('logoUrl', '')} helperText="PNG yoki SVG, <2MB. Header'da chiqadi." />
-        <ImageUpload label="Footer logosi" value={draft.footerLogoUrl} onChange={(url) => setField('footerLogoUrl', url)} onClear={() => setField('footerLogoUrl', '')} helperText="Optional. Footer uchun alohida logo." />
+        <ImageUpload label="Sayt logosi" bucket="site-assets" value={draft.logoUrl} onChange={(url) => setField('logoUrl', url)} onClear={() => setField('logoUrl', '')} helperText="PNG yoki SVG, <2MB. Header'da chiqadi." />
+        <ImageUpload label="Footer logosi" bucket="site-assets" value={draft.footerLogoUrl} onChange={(url) => setField('footerLogoUrl', url)} onClear={() => setField('footerLogoUrl', '')} helperText="Optional. Footer uchun alohida logo." />
       </div>
 
       <div className="rounded-2xl bg-white border border-slate-100 shadow-card p-5 sm:p-6 grid sm:grid-cols-2 gap-5">
