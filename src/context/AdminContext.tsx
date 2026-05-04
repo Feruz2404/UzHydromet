@@ -29,6 +29,10 @@ type LeaderRow = {
   reception_time: string | null
   phone: string | null
   email: string | null
+  website_url: string | null
+  address: string | null
+  responsibilities: string | null
+  biography: string | null
   sort_order: number | null
   is_active: boolean | null
   created_at: string
@@ -75,6 +79,10 @@ function mapLeader(row: LeaderRow): Leader {
     receptionTime: row.reception_time ?? '',
     phone: row.phone ?? '',
     email: row.email ?? '',
+    websiteUrl: row.website_url ?? '',
+    address: row.address ?? '',
+    responsibilities: row.responsibilities ?? '',
+    biography: row.biography ?? '',
     sortOrder: row.sort_order ?? 0,
     isActive: row.is_active ?? true,
     createdAt: row.created_at,
@@ -118,6 +126,10 @@ function toLeaderPatch(l: Partial<Leader>): Record<string, unknown> {
   if (l.receptionTime !== undefined) out.reception_time = l.receptionTime
   if (l.phone !== undefined) out.phone = l.phone
   if (l.email !== undefined) out.email = l.email
+  if (l.websiteUrl !== undefined) out.website_url = l.websiteUrl ? l.websiteUrl : null
+  if (l.address !== undefined) out.address = l.address ? l.address : null
+  if (l.responsibilities !== undefined) out.responsibilities = l.responsibilities ? l.responsibilities : null
+  if (l.biography !== undefined) out.biography = l.biography ? l.biography : null
   if (l.sortOrder !== undefined) out.sort_order = l.sortOrder
   if (l.isActive !== undefined) out.is_active = l.isActive
   return out

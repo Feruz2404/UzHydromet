@@ -49,11 +49,18 @@ export function Leadership() {
               const telHref = `tel:${leader.phone.replace(/[^0-9+]/g, '')}`
               const position = leader.positionKey ? t(leader.positionKey) : leader.position
               const day = leader.dayKey ? t(leader.dayKey) : leader.receptionDay
-              const address = leader.addressKey ? t(leader.addressKey) : settings.address
+              const directAddress = leader.address && leader.address.trim() ? leader.address : ''
+              const address = directAddress ? directAddress : (leader.addressKey ? t(leader.addressKey) : settings.address)
               const websiteUrl = leader.websiteUrl || settings.officialSiteUrl
               const websiteLabel = websiteUrl.replace(/^https?:\/\//, '')
-              const showResp = Boolean(leader.showResponsibilities && leader.responsibilitiesKey)
-              const showBio = Boolean(leader.showBiography && leader.biographyKey)
+              const respText = leader.responsibilities && leader.responsibilities.trim()
+                ? leader.responsibilities
+                : (leader.responsibilitiesKey && (leader.showResponsibilities ?? false)) ? t(leader.responsibilitiesKey) : ''
+              const bioText = leader.biography && leader.biography.trim()
+                ? leader.biography
+                : (leader.biographyKey && (leader.showBiography ?? false)) ? t(leader.biographyKey) : ''
+              const showResp = Boolean(respText)
+              const showBio = Boolean(bioText)
               const hasActions = showResp || showBio
               const respBtn = open === 'responsibilities'
                 ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card'
@@ -96,18 +103,18 @@ export function Leadership() {
                   {hasActions && (
                     <div className="px-4 sm:px-6 lg:px-7 pb-4 sm:pb-6 lg:pb-7 mt-auto">
                       <div className="flex flex-col sm:flex-row gap-2">
-                        {showResp && leader.responsibilitiesKey && (
+                        {showResp && (
                           <button type="button" onClick={() => toggle(leader.id, 'responsibilities')} aria-expanded={open === 'responsibilities'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${respBtn}`}><FileText size={14} aria-hidden="true" />{t('leadership.action.responsibilities')}<ChevronDown size={13} aria-hidden="true" className={open === 'responsibilities' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
                         )}
-                        {showBio && leader.biographyKey && (
+                        {showBio && (
                           <button type="button" onClick={() => toggle(leader.id, 'biography')} aria-expanded={open === 'biography'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${bioBtn}`}><BookOpen size={14} aria-hidden="true" />{t('leadership.action.biography')}<ChevronDown size={13} aria-hidden="true" className={open === 'biography' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
                         )}
                       </div>
-                      {open === 'responsibilities' && leader.responsibilitiesKey && (
-                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed">{t(leader.responsibilitiesKey)}</div>
+                      {open === 'responsibilities' && respText && (
+                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line">{respText}</div>
                       )}
-                      {open === 'biography' && leader.biographyKey && (
-                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed">{t(leader.biographyKey)}</div>
+                      {open === 'biography' && bioText && (
+                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line">{bioText}</div>
                       )}
                     </div>
                   )}
