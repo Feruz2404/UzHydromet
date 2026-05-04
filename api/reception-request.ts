@@ -234,14 +234,13 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
       return
     }
 
-    // SMTP path: requires nodemailer to be installed at runtime.
+    // SMTP fallback path: only used when RESEND_API_KEY is absent and SMTP_HOST is set.
     const smtpHost = (process.env.SMTP_HOST ?? '').trim()
     if (smtpHost) {
       try {
-        // nodemailer is an OPTIONAL runtime dependency — only used when SMTP_HOST
-        // is set. We don't ship it in package.json so Resend-only deployments
-        // stay lean; the .catch(() => null) below handles a missing module.
-        // @ts-expect-error optional runtime dependency, may not be installed
+        // nodemailer is declared in package.json (^6.9.15) with @types/nodemailer
+        // for type-safety. We still use dynamic import + .catch(null) so the
+        // function degrades gracefully if the runtime cannot resolve the module.
         const nm: any = await import('nodemailer').then((m) => m.default ?? m).catch(() => null)
         if (!nm) {
           // eslint-disable-next-line no-console
