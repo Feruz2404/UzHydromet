@@ -8,25 +8,26 @@
 //   - SUPABASE_SERVICE_ROLE_KEY  (NEVER exposed to the client)
 //   - ADMIN_SECRET               (header gate: x-admin-secret)
 //
-// Storage bucket: hydromet-assets (Public). Must be created in Supabase
-// Storage prior to first upload.
+// Storage bucket: hydromet-assets (Public).
 //
-// All responses are JSON of shape { ok: true, url, path } or
-// { ok: false, error: <code>, details?: <safe message> }. The handler is
-// wrapped in a defensive try/catch so it always returns clean JSON instead of
-// crashing the function (no FUNCTION_INVOCATION_FAILED).
+// All responses are JSON. Success: { ok: true, url, path }. Failure:
+// { ok: false, error: <code>, details?: <safe message> }.
 //
-// IMPORTANT: We deliberately do NOT use `export const config = { api: { bodyParser: false } }`.
-// That directive is Next.js-only. In a Vite (non-Next) project on Vercel it
-// is either silently ignored or breaks the function's request lifecycle, which
-// caused 504 timeouts and bare 500 responses in production. Vercel's default
-// body parser ignores multipart/form-data anyway, so we read the stream
-// directly. readBody() below also falls back to req.body if Vercel happens
-// to pre-buffer the request, and applies a safety timeout so the function
-// can never hang.
+// We do NOT statically import @supabase/supabase-js here \u2014 see
+// api/_supabaseAdmin.ts for the full explanation. The supabaseAdmin()
+// helper handles dynamic import + caching + clear error reporting.
+//
+// We also do NOT use `export const config = { api: { bodyParser: false } }`
+// because that is a Next.js Pages Router-only directive that breaks Vercel
+// non-Next functions. Vercel's default body parser ignores multipart anyway,
+// so we just read the stream directly with safety fallbacks.
 
-import { createClient } from '@supabase/supabase-js'
-import type { ReqLike, ResLike } from '../_supabaseAdmin'
+import {
+  supabaseAdmin,
+  supabaseLoadError,
+  type ReqLike,
+  type ResLike
+} from '../_supabaseAdmin'
 
 const BUCKET = 'hydromet-assets'
 const MAX_BYTES = 2 * 1024 * 1024 // 2MB
@@ -57,7 +58,6 @@ const FOLDER_BY_KIND: Record<string, string> = {
 type StreamLike = {
   readableEnded?: boolean
   on: (event: 'data' | 'end' | 'error', listener: (arg?: unknown) => void) => StreamLike
-  removeListener?: (event: string, listener: (arg?: unknown) => void) => StreamLike
 }
 
 function safeText(s: unknown): string {
@@ -66,24 +66,16 @@ function safeText(s: unknown): string {
 }
 
 function readBody(req: ReqLike): Promise<Buffer> {
-  // 1) If Vercel already buffered the body (Buffer or string), use it directly.
   const pre = (req as { body?: unknown }).body
   if (pre) {
     if (Buffer.isBuffer(pre)) return Promise.resolve(pre)
     if (typeof pre === 'string') return Promise.resolve(Buffer.from(pre, 'utf8'))
-    // If the platform has already parsed the body into an object (which it
-    // shouldn't for multipart/form-data) we cannot reconstruct the original
-    // multipart bytes. Fail clearly so the caller returns 400, not a hang.
     return Promise.reject(new Error('body_already_parsed'))
   }
-  // 2) If the stream has already ended without us having buffered it,
-  // there is nothing to read — fail fast instead of hanging on listeners
-  // that will never fire.
   const stream = req as unknown as StreamLike
   if (stream.readableEnded === true) {
     return Promise.reject(new Error('stream_already_ended'))
   }
-  // 3) Read from the request stream with a hard timeout.
   return new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = []
     let settled = false
@@ -198,23 +190,27 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
       return
     }
 
-    const url = (process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? '').trim()
-    const key = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
     const adminSecret = (process.env.ADMIN_SECRET ?? '').trim()
-    const missing: string[] = []
-    if (!url) missing.push('VITE_SUPABASE_URL (or SUPABASE_URL)')
-    if (!key) missing.push('SUPABASE_SERVICE_ROLE_KEY')
-    if (!adminSecret) missing.push('ADMIN_SECRET')
-    if (missing.length > 0) {
+    if (!adminSecret) {
       // eslint-disable-next-line no-console
-      console.error('[upload] server_not_configured. Missing env: ' + missing.join(', '))
-      res.status(500).json({ ok: false, error: 'server_not_configured' })
+      console.error('[upload] ADMIN_SECRET is not configured')
+      res.status(500).json({ ok: false, error: 'server_not_configured', details: 'ADMIN_SECRET missing' })
       return
     }
 
     const provided = getHeader(req, 'x-admin-secret').trim()
     if (!provided || provided !== adminSecret) {
       res.status(401).json({ ok: false, error: 'unauthorized' })
+      return
+    }
+
+    const sb = await supabaseAdmin()
+    if (!sb) {
+      res.status(500).json({
+        ok: false,
+        error: 'server_not_configured',
+        details: supabaseLoadError() ?? 'env or runtime issue'
+      })
       return
     }
 
@@ -274,10 +270,6 @@ export default async function handler(req: ReqLike, res: ResLike): Promise<void>
     const ts = Date.now()
     const rand = Math.floor(Math.random() * 1000000).toString(36)
     const path = folder + '/' + kind + '-' + ts + '-' + rand + '.' + ext
-
-    const sb = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false }
-    })
 
     const up = await sb.storage.from(BUCKET).upload(path, file.data, {
       contentType: fileType,
