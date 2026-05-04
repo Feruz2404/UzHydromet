@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react'
 import { motion } from 'framer-motion'
-import { CloudSun, Thermometer, Droplets, Sprout, Phone, Mail } from 'lucide-react'
-import { agency } from '../data/defaultContent'
+import { CloudSun, Thermometer, Droplets, Sprout, ShieldCheck } from 'lucide-react'
+import { hydrometImportance } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const introMotion = {
@@ -9,6 +8,13 @@ const introMotion = {
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
   transition: { duration: 0.6 }
+}
+
+const blockMotion = {
+  initial: { opacity: 0, y: 16 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.55 }
 }
 
 const cardMotion = {
@@ -32,49 +38,118 @@ function CardIcon({ kind }: { kind: string }) {
   return <Sprout size={20} />
 }
 
-function ContactRow({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
-  return (
-    <div className="p-3 sm:p-4 rounded-xl bg-brand-mist border border-slate-100 flex items-center gap-3">
-      <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30 flex-shrink-0">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <div className="text-[10px] sm:text-[11px] uppercase tracking-wider text-brand-muted font-semibold">{label}</div>
-        <div className="text-[13px] sm:text-sm font-semibold text-brand-navy break-words">{value}</div>
-      </div>
-    </div>
-  )
-}
-
 export function About() {
   const { t } = useLanguage()
   return (
-    <section id="about" className="py-10 md:py-14 lg:py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-12 gap-6 md:gap-10 lg:gap-12 items-start">
-        <motion.div {...introMotion} className="lg:col-span-5">
-          <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('about.eyebrow')}</span>
-          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl font-extrabold text-brand-ink tracking-tight">{t('about.title')}</h2>
-          <p className="mt-3 sm:mt-5 text-sm sm:text-base text-brand-muted leading-relaxed">{t('about.body')}</p>
-          <div className="mt-5 sm:mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <ContactRow icon={<Phone size={16} />} label={t('about.label.phone')} value={agency.phone} />
-            <ContactRow icon={<Mail size={16} />} label={t('about.label.email')} value={agency.email} />
-          </div>
+    <section
+      id="about"
+      className="py-12 md:py-16 lg:py-24 bg-gradient-to-b from-white via-brand-mist/40 to-white"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div {...introMotion} className="max-w-3xl">
+          <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
+            {t('about.eyebrow')}
+          </span>
+          <h2 className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-brand-ink tracking-tight">
+            {t('about.title')}
+          </h2>
+          <p className="mt-4 text-sm sm:text-base lg:text-[17px] text-brand-muted leading-relaxed">
+            {t('about.body')}
+          </p>
         </motion.div>
-        <div className="lg:col-span-7 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 gap-4 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar">
+
+        <div className="mt-8 md:mt-10 grid lg:grid-cols-2 gap-5 md:gap-6">
+          <motion.div
+            {...blockMotion}
+            className="rounded-3xl bg-white border border-slate-100 p-6 sm:p-7 shadow-card"
+          >
+            <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
+              {t('about.role.eyebrow')}
+            </span>
+            <h3 className="mt-2 font-display text-lg sm:text-xl font-extrabold text-brand-navy">
+              {t('about.role.title')}
+            </h3>
+            <p className="mt-2 text-sm sm:text-[15px] text-brand-muted leading-relaxed">
+              {t('about.role.text')}
+            </p>
+          </motion.div>
+          <motion.div
+            {...blockMotion}
+            className="rounded-3xl bg-gradient-to-br from-brand-mist via-white to-brand-ice border border-slate-100 p-6 sm:p-7 shadow-card"
+          >
+            <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
+              {t('hydromet.eyebrow')}
+            </span>
+            <h3 className="mt-2 font-display text-lg sm:text-xl font-extrabold text-brand-navy">
+              {t('hydromet.title')}
+            </h3>
+            <p className="mt-2 text-sm sm:text-[15px] text-brand-muted leading-relaxed">
+              {t('hydromet.body')}
+            </p>
+          </motion.div>
+        </div>
+
+        <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
           {cards.map((c) => (
             <motion.div
               key={c.titleKey}
               {...cardMotion}
-              className="snap-start min-w-[78vw] sm:min-w-0 shrink-0 sm:shrink rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
+              className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
             >
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-brand-ice to-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30">
                 <CardIcon kind={c.kind} />
               </div>
-              <div className="mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy">{t(c.titleKey)}</div>
-              <div className="mt-1.5 text-[13px] sm:text-sm text-brand-muted leading-relaxed">{t(c.textKey)}</div>
+              <div className="mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy">
+                {t(c.titleKey)}
+              </div>
+              <div className="mt-1.5 text-[13px] sm:text-sm text-brand-muted leading-relaxed">
+                {t(c.textKey)}
+              </div>
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          {...blockMotion}
+          className="mt-6 md:mt-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white p-6 sm:p-7 lg:p-8 shadow-card"
+        >
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-brand-cyan/20 blur-3xl" />
+            <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-brand-sky/15 blur-3xl" />
+          </div>
+          <div className="relative">
+            <div className="flex items-center gap-2.5">
+              <span
+                aria-hidden="true"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15 text-white shrink-0"
+              >
+                <ShieldCheck size={16} />
+              </span>
+              <h3 className="font-display text-base sm:text-lg lg:text-xl font-extrabold text-white">
+                {t('hydromet.importance.title')}
+              </h3>
+            </div>
+            <p className="mt-2 text-[13px] sm:text-sm text-white/80">
+              {t('hydromet.importance.lead')}
+            </p>
+            <ul className="mt-4 sm:mt-5 grid gap-2 sm:gap-2.5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+              {hydrometImportance.map((item) => (
+                <li
+                  key={item.id}
+                  className="flex items-start gap-2 rounded-xl bg-white/[0.08] ring-1 ring-white/10 px-3 py-2.5 backdrop-blur-md"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-sky"
+                  />
+                  <span className="text-[12px] sm:text-sm text-white font-medium leading-snug">
+                    {t(item.key)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
       </div>
     </section>
   )

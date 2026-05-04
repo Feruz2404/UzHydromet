@@ -7,6 +7,7 @@ export const extraDictionaries: Record<Lang, Dictionary> = {
     'contact.subtitle': "Qabul uchun yozilish so'rovini yuborish uchun ma'lumotlaringizni to'ldiring",
     'contact.field.fullName': 'F.I.Sh',
     'contact.field.attachment': 'Fayl biriktirish',
+    'contact.field.leader.help': "Qaysi rahbar qabuliga yozilmoqchi ekanligingizni tanlang",
     'contact.optional': '(ixtiyoriy)',
     'contact.attachmentPick': 'Fayl tanlash',
     'contact.attachmentClear': 'Faylni olib tashlash',
@@ -26,12 +27,16 @@ export const extraDictionaries: Record<Lang, Dictionary> = {
     'contact.error.recipient': 'Email qabul qiluvchi sozlanmagan',
     'contact.error.send': "Email yuborilmadi. Keyinroq qayta urinib ko'ring.",
     'contact.error.generic': "Kutilmagan xatolik. Iltimos, qayta urinib ko'ring.",
-    'reception.emptyAdmin': 'Hozircha qabul jadvali kiritilmagan'
+    'reception.emptyAdmin': 'Hozircha qabul jadvali kiritilmagan',
+    'about.role.eyebrow': 'Agentlik vazifasi',
+    'about.role.title': "O'zgidromet \u2014 mamlakatning rasmiy gidrometeorologik markazi",
+    'about.role.text': "Agentlik atmosfera, iqlim, gidrologiya va agrometeorologik kuzatuvlarni olib boradi, davlat organlari, xo'jalik tarmoqlari va aholi uchun rasmiy ma'lumot va xavfli hodisalarga oid ogohlantirishlarni taqdim etadi. Bu xizmatlar aholi xavfsizligi, qishloq xo'jaligi, suv resurslari, transport va atrof-muhit muhofazasini qo'llab-quvvatlaydi."
   },
   ru: {
     'contact.subtitle': 'Заполните данные, чтобы отправить заявку на приём',
     'contact.field.fullName': 'Ф.И.О',
     'contact.field.attachment': 'Прикрепить файл',
+    'contact.field.leader.help': 'Выберите, к какому руководителю вы хотите записаться',
     'contact.optional': '(необязательно)',
     'contact.attachmentPick': 'Выбрать файл',
     'contact.attachmentClear': 'Удалить файл',
@@ -51,12 +56,16 @@ export const extraDictionaries: Record<Lang, Dictionary> = {
     'contact.error.recipient': 'Получатель email не настроен',
     'contact.error.send': 'Не удалось отправить email. Попробуйте позже.',
     'contact.error.generic': 'Произошла ошибка. Пожалуйста, повторите попытку.',
-    'reception.emptyAdmin': 'График приёма пока не добавлен'
+    'reception.emptyAdmin': 'График приёма пока не добавлен',
+    'about.role.eyebrow': 'Роль агентства',
+    'about.role.title': "O'zgidromet \u2014 официальный гидрометеорологический центр страны",
+    'about.role.text': 'Агентство ведёт наблюдения за атмосферой, климатом, гидрологическими и агрометеорологическими процессами и предоставляет официальные данные и предупреждения об опасных явлениях для государственных органов, отраслей экономики и населения. Это поддерживает безопасность граждан, сельское хозяйство, водные ресурсы, транспорт и охрану окружающей среды.'
   },
   en: {
     'contact.subtitle': 'Fill in your details to submit a public reception request',
     'contact.field.fullName': 'Full name',
     'contact.field.attachment': 'Attachment',
+    'contact.field.leader.help': 'Choose which official you want to book a reception with',
     'contact.optional': '(optional)',
     'contact.attachmentPick': 'Choose file',
     'contact.attachmentClear': 'Remove file',
@@ -76,6 +85,9 @@ export const extraDictionaries: Record<Lang, Dictionary> = {
     'contact.error.recipient': 'Email recipient is not configured',
     'contact.error.send': 'Failed to send email. Please try again later.',
     'contact.error.generic': 'Something went wrong. Please try again.',
-    'reception.emptyAdmin': 'No reception schedule has been added yet'
+    'reception.emptyAdmin': 'No reception schedule has been added yet',
+    'about.role.eyebrow': 'Agency role',
+    'about.role.title': "O'zgidromet \u2014 the country's official hydrometeorological centre",
+    'about.role.text': 'The agency observes the atmosphere, climate, hydrology and agrometeorology and provides official data and hazardous-event warnings to government bodies, industries and the public. These services support public safety, agriculture, water resources, transport and environmental protection.'
   }
 }
