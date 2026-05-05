@@ -3,9 +3,14 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { CloudSun } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
 
+// motion props as named consts (see Header.tsx).
+const FROM_VISIBLE = { opacity: 1 }
+const TO_HIDDEN = { opacity: 0 }
+const FADE_TRANSITION = { duration: 0.32, ease: 'easeOut' as const }
+
 /**
- * Full-page loading screen shown until the AdminContext finishes its initial fetch.
- * Stays for at least `minDurationMs` to avoid flicker on fast loads, then fades out.
+ * Full-page loading screen shown until the AdminContext finishes its initial
+ * fetch. Stays for at least `minDurationMs` to avoid flicker, then fades out.
  */
 export function LoadingScreen({ minDurationMs = 320 }: { minDurationMs?: number }) {
   const { initialized, configured } = useAdmin()
@@ -15,7 +20,6 @@ export function LoadingScreen({ minDurationMs = 320 }: { minDurationMs?: number 
   useEffect(() => {
     if (!initialized) return
     if (!configured) {
-      // Skip loader entirely when Supabase isn't configured.
       setShow(false)
       return
     }
@@ -30,10 +34,10 @@ export function LoadingScreen({ minDurationMs = 320 }: { minDurationMs?: number 
       {show && (
         <motion.div
           key="loading-screen"
-          initial= opacity: 1 
-          animate= opacity: 1 
-          exit= opacity: 0 
-          transition= duration: 0.32, ease: 'easeOut' 
+          initial={FROM_VISIBLE}
+          animate={FROM_VISIBLE}
+          exit={TO_HIDDEN}
+          transition={FADE_TRANSITION}
           className="fixed inset-0 z-[60] flex items-center justify-center bg-gradient-to-br from-brand-mist via-white to-brand-ice"
           role="status"
           aria-live="polite"
@@ -44,7 +48,7 @@ export function LoadingScreen({ minDurationMs = 320 }: { minDurationMs?: number 
               <CloudSun size={28} aria-hidden="true" />
               <span className="absolute inset-0 rounded-2xl ring-2 ring-brand-sky/40 animate-ping" aria-hidden="true" />
             </div>
-            <span className="font-display text-sm font-semibold text-brand-navy tracking-wide">O\u2018zgidromet</span>
+            <span className="font-display text-sm font-semibold text-brand-navy tracking-wide">O‘zgidromet</span>
             <span className="sr-only">Yuklanmoqda...</span>
           </div>
         </motion.div>

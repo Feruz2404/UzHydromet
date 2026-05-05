@@ -4,6 +4,7 @@ import { useAdmin } from '../context/AdminContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { fadeInUpInView, fadeInUpInViewSlow } from '../lib/motion'
 import { MobileCarousel } from './ui/MobileCarousel'
+import { resolveText } from '../i18n/contentResolver'
 
 const tagAccents: Record<number, string> = {
   0: 'bg-brand-ice text-brand-deep ring-brand-sky/30',
@@ -12,7 +13,7 @@ const tagAccents: Record<number, string> = {
 }
 
 export function News() {
-  const { t } = useLanguage()
+  const { t, lang } = useLanguage()
   const { news, settings } = useAdmin()
   const fallbackUrl = settings.officialNewsUrl || 'https://gov.uz/oz/hydromet/news'
 
@@ -30,10 +31,10 @@ export function News() {
           className="-mx-4 px-4 md:mx-0 md:px-0 pb-2 md:pb-0 flex md:grid md:grid-cols-3 gap-4 md:gap-6 overflow-x-auto md:overflow-visible snap-x snap-mandatory md:snap-none scroll-smooth no-scrollbar"
         >
           {news.map((n, i) => {
-            const title = (n.title && n.title.trim()) || (n.titleKey ? t(n.titleKey) : '')
+            const title = resolveText(n.title, n.titleTranslations, n.titleKey, lang, t)
             const date = (n.date && n.date.trim()) || (n.dateKey ? t(n.dateKey) : '')
-            const summary = (n.summary && n.summary.trim()) || (n.summaryKey ? t(n.summaryKey) : '')
-            const tag = (n.tag && n.tag.trim()) || (n.tagKey ? t(n.tagKey) : '')
+            const summary = resolveText(n.summary, n.descriptionTranslations, n.summaryKey, lang, t)
+            const tag = resolveText(n.tag, n.badgeTranslations, n.tagKey, lang, t)
             const href = (n.url && n.url.trim()) || fallbackUrl
             return (
               <motion.article
@@ -43,13 +44,15 @@ export function News() {
               >
                 <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice/70 blur-2xl pointer-events-none" aria-hidden="true" />
                 <div className="relative flex items-center gap-2 flex-wrap">
-                  <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full ring-1 ${tagAccents[i] ?? tagAccents[0]}`}>
-                    <Newspaper size={11} /> {tag}
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-brand-muted font-medium">{date}</span>
+                  {tag && (
+                    <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full ring-1 ${tagAccents[i] ?? tagAccents[0]}`}>
+                      <Newspaper size={11} /> {tag}
+                    </span>
+                  )}
+                  {date && <span className="text-[10px] sm:text-[11px] text-brand-muted font-medium">{date}</span>}
                 </div>
-                <h3 className="relative mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy leading-snug break-words">{title}</h3>
-                <p className="relative mt-2 text-[13px] sm:text-sm text-brand-muted leading-relaxed">{summary}</p>
+                <h3 className="relative mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy leading-snug [overflow-wrap:anywhere]">{title}</h3>
+                <p className="relative mt-2 text-[13px] sm:text-sm text-brand-muted leading-relaxed [overflow-wrap:anywhere]">{summary}</p>
                 <a
                   href={href}
                   target="_blank"

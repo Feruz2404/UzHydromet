@@ -7,6 +7,15 @@ import { useAdmin } from '../context/AdminContext'
 
 const linkIds = ['home', 'about', 'weather', 'services', 'leadership', 'reception', 'location', 'contact'] as const
 
+// motion variants kept as named constants so JSX never contains a literal
+// double-brace expression (which can be mangled at the tooling layer).
+const BACKDROP_FROM = { opacity: 0 }
+const BACKDROP_TO = { opacity: 1 }
+const BACKDROP_TRANSITION = { duration: 0.18 }
+const DRAWER_FROM = { y: -8, opacity: 0 }
+const DRAWER_TO = { y: 0, opacity: 1 }
+const DRAWER_TRANSITION = { type: 'tween' as const, duration: 0.22, ease: 'easeOut' as const }
+
 export function Header() {
   const [open, setOpen] = useState<boolean>(false)
   const [scrolled, setScrolled] = useState<boolean>(false)
@@ -20,7 +29,7 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Body scroll lock + ESC to close
+  // Body scroll lock + ESC to close while the drawer is open.
   useEffect(() => {
     if (!open) return
     const previousOverflow = document.body.style.overflow
@@ -95,10 +104,10 @@ export function Header() {
               type="button"
               aria-label={closeLabel}
               onClick={close}
-              initial= opacity: 0 
-              animate= opacity: 1 
-              exit= opacity: 0 
-              transition= duration: 0.18 
+              initial={BACKDROP_FROM}
+              animate={BACKDROP_TO}
+              exit={BACKDROP_FROM}
+              transition={BACKDROP_TRANSITION}
               className="lg:hidden fixed inset-0 top-14 sm:top-16 bg-slate-900/40 backdrop-blur-sm z-40 cursor-pointer"
             />
             <motion.div
@@ -107,10 +116,10 @@ export function Header() {
               role="dialog"
               aria-modal="true"
               aria-label={menuLabel}
-              initial= y: -8, opacity: 0 
-              animate= y: 0, opacity: 1 
-              exit= y: -8, opacity: 0 
-              transition= type: 'tween', duration: 0.22, ease: 'easeOut' 
+              initial={DRAWER_FROM}
+              animate={DRAWER_TO}
+              exit={DRAWER_FROM}
+              transition={DRAWER_TRANSITION}
               className="lg:hidden fixed left-0 right-0 top-14 sm:top-16 z-50 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto bg-white border-t border-slate-200 shadow-[0_12px_40px_-16px_rgba(15,79,125,0.25)]"
             >
               <nav aria-label={menuLabel} className="px-3 py-3 flex flex-col gap-0.5">
