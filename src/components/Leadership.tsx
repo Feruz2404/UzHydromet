@@ -27,7 +27,7 @@ export function Leadership() {
   }
 
   return (
-    <section id="leadership" className="py-10 md:py-14 lg:py-20 bg-white">
+    <section id="leadership" className="py-10 md:py-14 lg:py-20 bg-white overflow-x-clip">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div {...fadeInUpInView} className="mb-6 md:mb-10 max-w-2xl">
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('leadership.eyebrow')}</span>
@@ -77,7 +77,7 @@ export function Leadership() {
                 <motion.article
                   key={leader.id}
                   {...fadeInUpInViewQuick}
-                  className="snap-start min-w-[86vw] sm:min-w-0 shrink-0 sm:shrink rounded-3xl bg-white border border-slate-100 shadow-card hover:shadow-glow transition-all overflow-hidden flex flex-col"
+                  className="snap-start w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] sm:w-auto sm:max-w-none flex-none sm:flex-auto rounded-3xl bg-white border border-slate-100 shadow-card hover:shadow-glow transition-all overflow-hidden flex flex-col"
                 >
                   <div className="grid gap-4 md:gap-6 p-4 sm:p-6 lg:p-7 lg:grid-cols-12 lg:items-start">
                     <div className="lg:col-span-2 flex lg:block items-center gap-3 min-w-0">
@@ -97,11 +97,11 @@ export function Leadership() {
                     </div>
                     <div className="lg:col-span-5 min-w-0">
                       <ul className="space-y-1.5 sm:space-y-2 text-[12.5px] sm:text-sm">
-                        <li className="flex items-start gap-2 min-w-0"><Phone size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><a href={telHref} className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere]">{phoneClean || '\u2014'}</a></li>
-                        <li className="flex items-start gap-2 min-w-0"><Mail size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />{emailClean ? (<a href={`mailto:${emailClean}`} className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere]">{emailClean}</a>) : (<span className="italic text-brand-muted">{t('leadership.infoPending')}</span>)}</li>
-                        <li className="flex items-start gap-2 min-w-0"><Globe size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere]">{websiteLabel}</a></li>
-                        <li className="flex items-start gap-2 min-w-0"><MapPin size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><span className="text-brand-muted leading-snug [overflow-wrap:anywhere]">{address}</span></li>
-                        <li className="flex items-start gap-2 min-w-0"><CalendarClock size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><span className="text-brand-muted [overflow-wrap:anywhere]">{day}{day && leader.receptionTime ? ', ' : ''}{leader.receptionTime}</span></li>
+                        <li className="flex items-start gap-2 min-w-0"><Phone size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><a href={telHref} className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere] min-w-0">{phoneClean || '\u2014'}</a></li>
+                        <li className="flex items-start gap-2 min-w-0"><Mail size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" />{emailClean ? (<a href={`mailto:${emailClean}`} className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere] min-w-0">{emailClean}</a>) : (<span className="italic text-brand-muted">{t('leadership.infoPending')}</span>)}</li>
+                        <li className="flex items-start gap-2 min-w-0"><Globe size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><a href={websiteUrl} target="_blank" rel="noopener noreferrer" className="text-brand-navy hover:text-brand-deep [overflow-wrap:anywhere] min-w-0">{websiteLabel}</a></li>
+                        <li className="flex items-start gap-2 min-w-0"><MapPin size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><span className="text-brand-muted leading-snug [overflow-wrap:anywhere] min-w-0">{address}</span></li>
+                        <li className="flex items-start gap-2 min-w-0"><CalendarClock size={14} aria-hidden="true" className="mt-0.5 text-brand-deep flex-shrink-0" /><span className="text-brand-muted [overflow-wrap:anywhere] min-w-0">{day}{day && leader.receptionTime ? ', ' : ''}{leader.receptionTime}</span></li>
                       </ul>
                     </div>
                   </div>

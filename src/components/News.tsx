@@ -18,7 +18,7 @@ export function News() {
   const fallbackUrl = settings.officialNewsUrl || 'https://gov.uz/oz/hydromet/news'
 
   return (
-    <section id="news" className="py-10 md:py-14 lg:py-20 bg-white">
+    <section id="news" className="py-10 md:py-14 lg:py-20 bg-white overflow-x-clip">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div {...fadeInUpInView} className="mb-6 md:mb-12 text-center max-w-2xl mx-auto">
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">{t('news.eyebrow')}</span>
@@ -40,10 +40,10 @@ export function News() {
               <motion.article
                 key={n.id}
                 {...fadeInUpInViewSlow}
-                className="snap-start min-w-[86vw] md:min-w-0 shrink-0 md:shrink group relative rounded-2xl md:rounded-3xl bg-gradient-to-b from-white to-brand-mist border border-slate-100 p-5 sm:p-6 md:p-7 shadow-card hover:shadow-glow hover:-translate-y-1 transition-all overflow-hidden"
+                className="snap-start w-[calc(100vw-2rem)] max-w-[calc(100vw-2rem)] md:w-auto md:max-w-none flex-none md:flex-auto group relative rounded-2xl md:rounded-3xl bg-gradient-to-b from-white to-brand-mist border border-slate-100 p-5 sm:p-6 md:p-7 shadow-card hover:shadow-glow hover:-translate-y-1 transition-all overflow-hidden"
               >
                 <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice/70 blur-2xl pointer-events-none" aria-hidden="true" />
-                <div className="relative flex items-center gap-2 flex-wrap">
+                <div className="relative flex items-center gap-2 flex-wrap min-w-0">
                   {tag && (
                     <span className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full ring-1 ${tagAccents[i] ?? tagAccents[0]}`}>
                       <Newspaper size={11} /> {tag}
@@ -51,8 +51,8 @@ export function News() {
                   )}
                   {date && <span className="text-[10px] sm:text-[11px] text-brand-muted font-medium">{date}</span>}
                 </div>
-                <h3 className="relative mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy leading-snug [overflow-wrap:anywhere]">{title}</h3>
-                <p className="relative mt-2 text-[13px] sm:text-sm text-brand-muted leading-relaxed [overflow-wrap:anywhere]">{summary}</p>
+                <h3 className="relative mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy leading-snug [overflow-wrap:anywhere] break-words">{title}</h3>
+                <p className="relative mt-2 text-[13px] sm:text-sm text-brand-muted leading-relaxed [overflow-wrap:anywhere] break-words">{summary}</p>
                 <a
                   href={href}
                   target="_blank"
