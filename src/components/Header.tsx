@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Menu, X, CloudSun } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useLanguage } from '../i18n/LanguageContext'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useAdmin } from '../context/AdminContext'
@@ -19,6 +20,19 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Body scroll lock + ESC to close
+  useEffect(() => {
+    if (!open) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [open])
+
   const toggle = () => setOpen((v) => !v)
   const close = () => setOpen(false)
 
@@ -29,6 +43,8 @@ export function Header() {
   const brandName = settings.agencyName.trim() || t('brand.short')
   const tagline = settings.shortDescription.trim() || t('brand.tagline')
   const hasLogo = Boolean(settings.logoUrl)
+  const closeLabel = t('header.closeMenu', 'Yopish')
+  const menuLabel = t('header.menuLabel', 'Asosiy menyu')
 
   return (
     <header className={headerClass}>
@@ -65,27 +81,54 @@ export function Header() {
             className="lg:hidden p-1.5 sm:p-2 text-slate-700 rounded-md hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/40"
             aria-label={t('header.toggleMenu')}
             aria-expanded={open}
+            aria-controls="mobile-nav"
           >
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
       </div>
-      {open && (
-        <div className="lg:hidden border-t border-slate-200 bg-white">
-          <div className="px-4 py-3 flex flex-col gap-1">
-            {linkIds.map((id) => (
-              <a
-                key={id}
-                href={`#${id}`}
-                onClick={close}
-                className="px-3 py-2 rounded-md text-slate-700 hover:bg-brand-mist hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/40"
-              >
-                {t(`nav.${id}`)}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.button
+              key="backdrop"
+              type="button"
+              aria-label={closeLabel}
+              onClick={close}
+              initial= opacity: 0 
+              animate= opacity: 1 
+              exit= opacity: 0 
+              transition= duration: 0.18 
+              className="lg:hidden fixed inset-0 top-14 sm:top-16 bg-slate-900/40 backdrop-blur-sm z-40 cursor-pointer"
+            />
+            <motion.div
+              key="drawer"
+              id="mobile-nav"
+              role="dialog"
+              aria-modal="true"
+              aria-label={menuLabel}
+              initial= y: -8, opacity: 0 
+              animate= y: 0, opacity: 1 
+              exit= y: -8, opacity: 0 
+              transition= type: 'tween', duration: 0.22, ease: 'easeOut' 
+              className="lg:hidden fixed left-0 right-0 top-14 sm:top-16 z-50 max-h-[calc(100vh-3.5rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto bg-white border-t border-slate-200 shadow-[0_12px_40px_-16px_rgba(15,79,125,0.25)]"
+            >
+              <nav aria-label={menuLabel} className="px-3 py-3 flex flex-col gap-0.5">
+                {linkIds.map((id) => (
+                  <a
+                    key={id}
+                    href={`#${id}`}
+                    onClick={close}
+                    className="flex items-center px-3 py-3 rounded-xl text-[15px] font-medium text-slate-800 hover:bg-brand-mist hover:text-brand-deep active:bg-brand-mist focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/40 transition"
+                  >
+                    {t(`nav.${id}`)}
+                  </a>
+                ))}
+              </nav>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   )
 }

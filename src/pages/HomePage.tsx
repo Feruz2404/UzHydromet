@@ -9,10 +9,12 @@ import { AppointmentForm } from '../components/AppointmentForm'
 import { News } from '../components/News'
 import { Footer } from '../components/Footer'
 import { BackToTop } from '../components/BackToTop'
+import { LoadingScreen } from '../components/ui/LoadingScreen'
 
 export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <LoadingScreen />
       <Header />
       <main className="flex-1">
         <Hero />
