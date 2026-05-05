@@ -23,6 +23,9 @@ const FIELDS = [
   'badge',
   'year',
   'link_url',
+  'title_translations',
+  'description_translations',
+  'badge_translations',
   'sort_order',
   'is_active'
 ] as const

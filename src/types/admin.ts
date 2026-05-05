@@ -1,3 +1,8 @@
+import type { Lang } from '../i18n/types'
+
+/** Per-language translation map persisted as JSONB on the server. */
+export type TranslationMap = Partial<Record<Lang, string>>
+
 export type SiteSettings = {
   id: string
   logoUrl?: string
@@ -27,6 +32,13 @@ export type Leader = {
   address?: string
   responsibilities?: string
   biography?: string
+  // Per-language translations for free-text fields. Optional; when missing,
+  // the public site falls back to the base UZ value (or the static key for seeded rows).
+  positionTranslations?: TranslationMap
+  receptionDayTranslations?: TranslationMap
+  responsibilitiesTranslations?: TranslationMap
+  biographyTranslations?: TranslationMap
+  addressTranslations?: TranslationMap
   sortOrder: number
   isActive: boolean
   // Optional i18n fallbacks (used by seeded leaders only when DB is empty)
@@ -53,6 +65,10 @@ export type NewsItem = {
   date?: string
   summary?: string
   tag?: string
+  // Per-language translations (DB-backed)
+  titleTranslations?: TranslationMap
+  descriptionTranslations?: TranslationMap
+  badgeTranslations?: TranslationMap
   // Per-item override link, falls back to settings.officialNewsUrl when empty
   url?: string
   sortOrder?: number
