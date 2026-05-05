@@ -55,6 +55,12 @@ const honeypotStyle: CSSProperties = {
   overflow: 'hidden'
 }
 
+// Web-compose endpoints declared as plain string consts (no template literals
+// embedded inside a URL). String concat is used below to avoid any
+// preprocessor that misreads `https://.../?...=${...}` patterns.
+const GMAIL_COMPOSE_BASE = 'https://mail.google.com/mail/?view=cm&fs=1'
+const OUTLOOK_COMPOSE_BASE = 'https://outlook.office.com/mail/deeplink/compose'
+
 function localeForLang(lang: Lang): string {
   if (lang === 'ru') return 'ru-RU'
   if (lang === 'en') return 'en-US'
@@ -82,7 +88,7 @@ function buildEmailBody(
   lang: Lang,
   t: (k: string) => string
 ): string {
-  const greetingTpl = t('contact.bodyTemplate.greeting') // "Hurmatli {name},"
+  const greetingTpl = t('contact.bodyTemplate.greeting')
   const greeting = greetingTpl.replace('{name}', leaderName.trim() || '\u2014')
   const intro = t('contact.bodyTemplate.intro')
 
@@ -91,19 +97,19 @@ function buildEmailBody(
   lines.push('')
   lines.push(intro)
   lines.push('')
-  lines.push(`${t('contact.bodyTemplate.fullName')}: ${form.fullName.trim()}`)
-  lines.push(`${t('contact.bodyTemplate.phone')}: ${form.phone.trim()}`)
+  lines.push(t('contact.bodyTemplate.fullName') + ': ' + form.fullName.trim())
+  lines.push(t('contact.bodyTemplate.phone') + ': ' + form.phone.trim())
   if (form.email.trim()) {
-    lines.push(`${t('contact.bodyTemplate.email')}: ${form.email.trim()}`)
+    lines.push(t('contact.bodyTemplate.email') + ': ' + form.email.trim())
   }
   lines.push('')
-  lines.push(`${t('contact.bodyTemplate.subject')}: ${form.subject.trim()}`)
+  lines.push(t('contact.bodyTemplate.subject') + ': ' + form.subject.trim())
   lines.push('')
   lines.push(form.message.trim())
   lines.push('')
   lines.push('\u2014')
   lines.push(t('contact.bodyTemplate.footer'))
-  lines.push(`${t('contact.bodyTemplate.date')}: ${formatDate(lang)}`)
+  lines.push(t('contact.bodyTemplate.date') + ': ' + formatDate(lang))
   return lines.join('\n')
 }
 
@@ -114,19 +120,27 @@ function buildEmailSubject(
   const prefix = t('contact.bodyTemplate.subjectPrefix')
   const base = form.subject.trim()
   if (!prefix) return base
-  return `${prefix} \u2014 ${base}`
+  return prefix + ' \u2014 ' + base
 }
 
 function buildMailtoUrl(to: string, subject: string, body: string): string {
-  return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  return 'mailto:' + encodeURIComponent(to)
+    + '?subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body)
 }
 
 function buildGmailUrl(to: string, subject: string, body: string): string {
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  return GMAIL_COMPOSE_BASE
+    + '&to=' + encodeURIComponent(to)
+    + '&su=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body)
 }
 
 function buildOutlookUrl(to: string, subject: string, body: string): string {
-  return `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  return OUTLOOK_COMPOSE_BASE
+    + '?to=' + encodeURIComponent(to)
+    + '&subject=' + encodeURIComponent(subject)
+    + '&body=' + encodeURIComponent(body)
 }
 
 async function copyToClipboard(text: string): Promise<boolean> {
@@ -263,7 +277,7 @@ export function AppointmentForm() {
 
   async function onCopyBody() {
     if (!emailPayload) return
-    const text = `${t('contact.bodyTemplate.subject')}: ${emailPayload.subject}\n\n${emailPayload.body}`
+    const text = t('contact.bodyTemplate.subject') + ': ' + emailPayload.subject + '\n\n' + emailPayload.body
     const ok = await copyToClipboard(text)
     if (ok) setCopied('body')
   }
@@ -376,10 +390,9 @@ export function AppointmentForm() {
                 <option value="">{t('contact.selectLeader')}</option>
                 {activeLeaders.map((l) => {
                   const position = resolveText(l.position, l.positionTranslations, l.positionKey, lang, t)
+                  const optionLabel = position ? l.fullName + ' \u2014 ' + position : l.fullName
                   return (
-                    <option key={l.id} value={l.id}>
-                      {position ? `${l.fullName} \u2014 ${position}` : l.fullName}
-                    </option>
+                    <option key={l.id} value={l.id}>{optionLabel}</option>
                   )
                 })}
               </select>
@@ -445,7 +458,7 @@ export function AppointmentForm() {
           <Field label={t('contact.field.phone')} error={errors.phone} htmlFor="f-phone">
             <input id="f-phone" type="tel" autoComplete="tel" className="form-input" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
           </Field>
-          <Field label={`${t('contact.field.email')} (${t('contact.optional')})`} error={errors.email} htmlFor="f-email">
+          <Field label={t('contact.field.email') + ' (' + t('contact.optional') + ')'} error={errors.email} htmlFor="f-email">
             <input id="f-email" type="email" autoComplete="email" className="form-input" value={form.email} onChange={(e) => update('email', e.target.value)} />
           </Field>
           <div className="sm:col-span-2">
