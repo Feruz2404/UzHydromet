@@ -28,17 +28,23 @@ const DOT_TRANSITION_B = { duration: 0.9, ease: 'easeInOut' as const, repeat: In
 const DOT_TRANSITION_C = { duration: 0.9, ease: 'easeInOut' as const, repeat: Infinity, delay: 0.3 }
 const DOT_ANIMATE = { y: [0, -6, 0], opacity: [0.4, 1, 0.4] }
 
+// Static logo path served from /public. Always available regardless of DB state.
+const PUBLIC_LOGO_PATH = '/logo.png'
+
 /**
  * Full-page branded loading screen. Stays for at least minDurationMs to
  * avoid flicker, then fades out once AdminContext.initialized flips true.
  *
- * Uses settings.logoUrl when available (real O'zgidromet emblem), with a
- * gradient + CloudSun fallback for unconfigured environments.
+ * Logo source priority:
+ *   1. settings.logoUrl  (admin-configured, e.g. Supabase Storage)
+ *   2. /logo.png         (always-available static asset in public/)
+ *   3. CloudSun icon     (only if the <img> errors out)
  */
 export function LoadingScreen({ minDurationMs = 480 }: { minDurationMs?: number }) {
   const { initialized, configured, settings } = useAdmin()
   const [show, setShow] = useState<boolean>(true)
   const [mountedAt] = useState<number>(() => Date.now())
+  const [imgFailed, setImgFailed] = useState<boolean>(false)
 
   useEffect(() => {
     if (!initialized) return
@@ -55,7 +61,8 @@ export function LoadingScreen({ minDurationMs = 480 }: { minDurationMs?: number 
   const brandName = (settings.agencyName && settings.agencyName.trim()) || "O'zgidromet"
   const tagline = (settings.shortDescription && settings.shortDescription.trim())
     || 'Gidrometeorologiya xizmati agentligi'
-  const hasLogo = Boolean(settings.logoUrl)
+  const logoSrc = (settings.logoUrl && settings.logoUrl.trim()) || PUBLIC_LOGO_PATH
+  const showImg = !imgFailed
 
   return (
     <AnimatePresence>
@@ -89,8 +96,13 @@ export function LoadingScreen({ minDurationMs = 480 }: { minDurationMs?: number 
 
               {/* Logo plate */}
               <div className="relative h-24 w-24 sm:h-28 sm:w-28 rounded-3xl bg-white border border-slate-200 shadow-glow flex items-center justify-center overflow-hidden">
-                {hasLogo ? (
-                  <img src={settings.logoUrl} alt={brandName} className="w-full h-full object-contain p-2" />
+                {showImg ? (
+                  <img
+                    src={logoSrc}
+                    alt={brandName}
+                    className="w-full h-full object-contain p-2"
+                    onError={() => setImgFailed(true)}
+                  />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-brand-primary via-brand-deep to-brand-navy flex items-center justify-center text-white">
                     <CloudSun size={42} aria-hidden="true" />
