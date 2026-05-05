@@ -28,6 +28,11 @@ const FIELDS = [
   'address',
   'responsibilities',
   'biography',
+  'position_translations',
+  'reception_day_translations',
+  'responsibilities_translations',
+  'biography_translations',
+  'address_translations',
   'sort_order',
   'is_active'
 ] as const
