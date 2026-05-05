@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient'
-import type { Leader, NewsItem, SiteSettings } from '../types/admin'
+import type { Leader, NewsItem, SiteSettings, TranslationMap } from '../types/admin'
 import { DEFAULT_LEADERS, DEFAULT_NEWS, DEFAULT_SITE_SETTINGS } from '../data/defaults'
 
 const TOKEN_KEY = 'uzhydromet:admin:token'
@@ -33,6 +33,11 @@ type LeaderRow = {
   address: string | null
   responsibilities: string | null
   biography: string | null
+  position_translations: Record<string, unknown> | null
+  reception_day_translations: Record<string, unknown> | null
+  responsibilities_translations: Record<string, unknown> | null
+  biography_translations: Record<string, unknown> | null
+  address_translations: Record<string, unknown> | null
   sort_order: number | null
   is_active: boolean | null
   created_at: string
@@ -45,10 +50,38 @@ type NewsRow = {
   badge: string | null
   year: string | null
   link_url: string | null
+  title_translations: Record<string, unknown> | null
+  description_translations: Record<string, unknown> | null
+  badge_translations: Record<string, unknown> | null
   sort_order: number | null
   is_active: boolean | null
   created_at: string
   updated_at: string
+}
+
+// --- Translation helpers ---
+function asTranslationMap(v: unknown): TranslationMap {
+  if (!v || typeof v !== 'object') return {}
+  const obj = v as Record<string, unknown>
+  const out: TranslationMap = {}
+  if (typeof obj.uz === 'string' && obj.uz.trim()) out.uz = obj.uz
+  if (typeof obj.ru === 'string' && obj.ru.trim()) out.ru = obj.ru
+  if (typeof obj.en === 'string' && obj.en.trim()) out.en = obj.en
+  return out
+}
+function cleanTranslationMap(m: TranslationMap | undefined | null): Record<string, string> {
+  const out: Record<string, string> = {}
+  if (!m) return out
+  if (m.uz && m.uz.trim()) out.uz = m.uz.trim()
+  if (m.ru && m.ru.trim()) out.ru = m.ru.trim()
+  if (m.en && m.en.trim()) out.en = m.en.trim()
+  return out
+}
+function stripTel(v: string | null | undefined): string {
+  return (v ?? '').toString().replace(/^tel:\s*/i, '').trim()
+}
+function stripMailto(v: string | null | undefined): string {
+  return (v ?? '').toString().replace(/^mailto:\s*/i, '').trim()
 }
 
 // --- Mappers: DB row -> app type ---
@@ -61,8 +94,8 @@ function mapSettings(row: SettingsRow | null): SiteSettings | null {
     agencyName: row.agency_name ?? '',
     shortDescription: row.short_description ?? '',
     address: row.address ?? '',
-    phone: row.phone ?? '',
-    email: row.email ?? '',
+    phone: stripTel(row.phone),
+    email: stripMailto(row.email),
     workingHours: row.working_hours ?? '',
     officialSiteUrl: row.official_site_url ?? '',
     officialNewsUrl: row.official_news_url ?? '',
@@ -77,12 +110,17 @@ function mapLeader(row: LeaderRow): Leader {
     photoUrl: row.photo_url ?? '',
     receptionDay: row.reception_day ?? '',
     receptionTime: row.reception_time ?? '',
-    phone: row.phone ?? '',
-    email: row.email ?? '',
+    phone: stripTel(row.phone),
+    email: stripMailto(row.email),
     websiteUrl: row.website_url ?? '',
     address: row.address ?? '',
     responsibilities: row.responsibilities ?? '',
     biography: row.biography ?? '',
+    positionTranslations: asTranslationMap(row.position_translations),
+    receptionDayTranslations: asTranslationMap(row.reception_day_translations),
+    responsibilitiesTranslations: asTranslationMap(row.responsibilities_translations),
+    biographyTranslations: asTranslationMap(row.biography_translations),
+    addressTranslations: asTranslationMap(row.address_translations),
     sortOrder: row.sort_order ?? 0,
     isActive: row.is_active ?? true,
     createdAt: row.created_at,
@@ -97,6 +135,9 @@ function mapNews(row: NewsRow): NewsItem {
     date: row.year ?? '',
     tag: row.badge ?? '',
     url: row.link_url ?? '',
+    titleTranslations: asTranslationMap(row.title_translations),
+    descriptionTranslations: asTranslationMap(row.description_translations),
+    badgeTranslations: asTranslationMap(row.badge_translations),
     sortOrder: row.sort_order ?? 0,
     isActive: row.is_active ?? true
   }
@@ -110,8 +151,8 @@ function toSettingsPatch(s: Partial<SiteSettings>): Record<string, unknown> {
     agency_name: s.agencyName ?? null,
     short_description: s.shortDescription ?? null,
     address: s.address ?? null,
-    phone: s.phone ?? null,
-    email: s.email ?? null,
+    phone: s.phone !== undefined ? stripTel(s.phone) || null : null,
+    email: s.email !== undefined ? stripMailto(s.email) || null : null,
     working_hours: s.workingHours ?? null,
     official_site_url: s.officialSiteUrl ?? null,
     official_news_url: s.officialNewsUrl ?? null
@@ -124,12 +165,17 @@ function toLeaderPatch(l: Partial<Leader>): Record<string, unknown> {
   if (l.photoUrl !== undefined) out.photo_url = l.photoUrl ? l.photoUrl : null
   if (l.receptionDay !== undefined) out.reception_day = l.receptionDay
   if (l.receptionTime !== undefined) out.reception_time = l.receptionTime
-  if (l.phone !== undefined) out.phone = l.phone
-  if (l.email !== undefined) out.email = l.email
+  if (l.phone !== undefined) out.phone = stripTel(l.phone)
+  if (l.email !== undefined) out.email = stripMailto(l.email)
   if (l.websiteUrl !== undefined) out.website_url = l.websiteUrl ? l.websiteUrl : null
   if (l.address !== undefined) out.address = l.address ? l.address : null
   if (l.responsibilities !== undefined) out.responsibilities = l.responsibilities ? l.responsibilities : null
   if (l.biography !== undefined) out.biography = l.biography ? l.biography : null
+  if (l.positionTranslations !== undefined) out.position_translations = cleanTranslationMap(l.positionTranslations)
+  if (l.receptionDayTranslations !== undefined) out.reception_day_translations = cleanTranslationMap(l.receptionDayTranslations)
+  if (l.responsibilitiesTranslations !== undefined) out.responsibilities_translations = cleanTranslationMap(l.responsibilitiesTranslations)
+  if (l.biographyTranslations !== undefined) out.biography_translations = cleanTranslationMap(l.biographyTranslations)
+  if (l.addressTranslations !== undefined) out.address_translations = cleanTranslationMap(l.addressTranslations)
   if (l.sortOrder !== undefined) out.sort_order = l.sortOrder
   if (l.isActive !== undefined) out.is_active = l.isActive
   return out
@@ -141,6 +187,9 @@ function toNewsPatch(n: Partial<NewsItem>): Record<string, unknown> {
   if (n.tag !== undefined) out.badge = n.tag ? n.tag : null
   if (n.date !== undefined) out.year = n.date ? n.date : null
   if (n.url !== undefined) out.link_url = n.url ? n.url : null
+  if (n.titleTranslations !== undefined) out.title_translations = cleanTranslationMap(n.titleTranslations)
+  if (n.descriptionTranslations !== undefined) out.description_translations = cleanTranslationMap(n.descriptionTranslations)
+  if (n.badgeTranslations !== undefined) out.badge_translations = cleanTranslationMap(n.badgeTranslations)
   if (n.sortOrder !== undefined) out.sort_order = n.sortOrder
   if (n.isActive !== undefined) out.is_active = n.isActive
   return out
@@ -172,13 +221,6 @@ async function loadFromSupabase(): Promise<{
   }
 }
 
-/**
- * Fetch a JSON admin endpoint and unwrap the standard envelope.
- * Endpoints return { ok: true, data } on success, or
- * { ok: false, error: <code>, details?: <safe text> } on failure.
- * On failure this throws an Error whose .message is `<code>` or
- * `<code> \u2014 <details>` so the UI can display it directly.
- */
 async function adminFetch<T>(path: string, init: RequestInit, token: string | null): Promise<T> {
   if (!token) throw new Error("Admin sessiyasi tugadi. Qayta kiring.")
   const headers = new Headers(init.headers)
@@ -212,32 +254,28 @@ type State = {
   loading: boolean
   error: string | null
   configured: boolean
+  initialized: boolean
 }
 
 export type UploadKind = 'site-logo' | 'footer-logo' | 'leader-photo'
 
 type AdminContextValue = {
-  // Public-facing (DB or static fallback)
   settings: SiteSettings
   leaders: Leader[]
   news: NewsItem[]
   activeLeaders: Leader[]
-  // Raw DB-only (for admin tabs)
   dbSettings: SiteSettings | null
   dbLeaders: Leader[]
   dbNews: NewsItem[]
-  // Status
   loading: boolean
+  initialized: boolean
   error: string | null
   configured: boolean
   refresh: () => Promise<void>
-  // Reception form state
   selectedLeaderId: string | null
   setSelectedLeaderId: (id: string | null) => void
-  // Auth
   adminToken: string | null
   setAdminToken: (token: string | null) => void
-  // Mutations
   saveSettings: (patch: Partial<SiteSettings>) => Promise<SiteSettings>
   createLeader: (input: Partial<Leader>) => Promise<Leader>
   updateLeader: (id: string, patch: Partial<Leader>) => Promise<Leader>
@@ -257,14 +295,15 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     dbNews: [],
     loading: isSupabaseConfigured(),
     error: null,
-    configured: isSupabaseConfigured()
+    configured: isSupabaseConfigured(),
+    initialized: !isSupabaseConfigured()
   })
   const [selectedLeaderId, setSelectedLeaderId] = useState<string | null>(null)
   const [adminToken, setAdminTokenState] = useState<string | null>(readToken())
 
   const refresh = useCallback(async () => {
     if (!isSupabaseConfigured()) {
-      setState((s) => ({ ...s, loading: false, configured: false }))
+      setState((s) => ({ ...s, loading: false, configured: false, initialized: true }))
       return
     }
     setState((s) => ({ ...s, loading: true, error: null }))
@@ -276,11 +315,12 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         dbNews: data.news,
         loading: false,
         error: null,
-        configured: data.configured
+        configured: data.configured,
+        initialized: true
       })
     } catch (e) {
       const msg = e instanceof Error ? e.message : 'unknown_error'
-      setState((s) => ({ ...s, loading: false, error: msg }))
+      setState((s) => ({ ...s, loading: false, error: msg, initialized: true }))
     }
   }, [])
 
@@ -375,11 +415,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       body: fd
     })
     let json: { ok?: boolean; url?: string; path?: string; error?: string; details?: string; bucket?: string } = {}
-    try {
-      json = (await res.json()) as typeof json
-    } catch {
-      // server returned non-JSON (shouldn't happen with the new handler)
-    }
+    try { json = (await res.json()) as typeof json } catch { /* non-JSON */ }
     if (!res.ok || !json.ok || !json.url || !json.path) {
       const code = json.error ?? `HTTP ${res.status}`
       const detail = json.details ? `${code} \u2014 ${json.details}` : (json.bucket ? `${code} (${json.bucket})` : code)
@@ -388,7 +424,6 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     return { url: json.url, path: json.path }
   }, [adminToken])
 
-  // Public-facing values (DB or static fallback)
   const settings = useMemo<SiteSettings>(() => state.dbSettings ?? DEFAULT_SITE_SETTINGS, [state.dbSettings])
   const leaders = useMemo<Leader[]>(() => (state.dbLeaders.length > 0 ? state.dbLeaders : DEFAULT_LEADERS), [state.dbLeaders])
   const news = useMemo<NewsItem[]>(() => (state.dbNews.length > 0 ? state.dbNews : DEFAULT_NEWS), [state.dbNews])
@@ -398,32 +433,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   )
 
   const value: AdminContextValue = useMemo(() => ({
-    settings,
-    leaders,
-    news,
-    activeLeaders,
+    settings, leaders, news, activeLeaders,
     dbSettings: state.dbSettings,
     dbLeaders: state.dbLeaders,
     dbNews: state.dbNews,
     loading: state.loading,
+    initialized: state.initialized,
     error: state.error,
     configured: state.configured,
     refresh,
-    selectedLeaderId,
-    setSelectedLeaderId,
-    adminToken,
-    setAdminToken,
-    saveSettings,
-    createLeader,
-    updateLeader,
-    deleteLeader,
-    createNews,
-    updateNews,
-    deleteNews,
-    uploadImage
+    selectedLeaderId, setSelectedLeaderId,
+    adminToken, setAdminToken,
+    saveSettings, createLeader, updateLeader, deleteLeader,
+    createNews, updateNews, deleteNews, uploadImage
   }), [
     settings, leaders, news, activeLeaders,
-    state.dbSettings, state.dbLeaders, state.dbNews, state.loading, state.error, state.configured,
+    state.dbSettings, state.dbLeaders, state.dbNews, state.loading, state.initialized, state.error, state.configured,
     refresh, selectedLeaderId,
     adminToken, setAdminToken,
     saveSettings, createLeader, updateLeader, deleteLeader,

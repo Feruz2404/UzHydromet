@@ -2,7 +2,9 @@ import { useMemo, useState, type ReactNode } from 'react'
 import { Plus, Pencil, Trash2, Save, X, GripVertical, Loader2 } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
 import { ImageUpload } from './ImageUpload'
-import type { Leader } from '../../types/admin'
+import { I18nField } from './I18nField'
+import type { Leader, TranslationMap } from '../../types/admin'
+import { CANONICAL_DAY_OPTIONS, stripPhonePrefix, stripEmailPrefix } from '../../i18n/contentResolver'
 
 type Errors = Partial<Record<keyof Leader, string>>
 type Toast = { kind: 'success' | 'error'; message: string } | null
@@ -21,6 +23,11 @@ function emptyLeader(sortOrder: number): Leader {
     address: '',
     responsibilities: '',
     biography: '',
+    positionTranslations: {},
+    receptionDayTranslations: {},
+    responsibilitiesTranslations: {},
+    biographyTranslations: {},
+    addressTranslations: {},
     sortOrder,
     isActive: true
   }
@@ -55,7 +62,12 @@ export function LeadersTab() {
       websiteUrl: leader.websiteUrl ?? '',
       address: leader.address ?? '',
       responsibilities: leader.responsibilities ?? '',
-      biography: leader.biography ?? ''
+      biography: leader.biography ?? '',
+      positionTranslations: leader.positionTranslations ?? {},
+      receptionDayTranslations: leader.receptionDayTranslations ?? {},
+      responsibilitiesTranslations: leader.responsibilitiesTranslations ?? {},
+      biographyTranslations: leader.biographyTranslations ?? {},
+      addressTranslations: leader.addressTranslations ?? {}
     })
     setErrors({})
   }
@@ -69,12 +81,23 @@ export function LeadersTab() {
     setEditing((e) => (e ? { ...e, [k]: v } : e))
   }
 
+  function setI18n(field: 'position' | 'address' | 'responsibilities' | 'biography', next: { base: string; translations: TranslationMap }) {
+    setEditing((e) => {
+      if (!e) return e
+      if (field === 'position') return { ...e, position: next.base, positionTranslations: next.translations }
+      if (field === 'address') return { ...e, address: next.base, addressTranslations: next.translations }
+      if (field === 'responsibilities') return { ...e, responsibilities: next.base, responsibilitiesTranslations: next.translations }
+      return { ...e, biography: next.base, biographyTranslations: next.translations }
+    })
+  }
+
   function validate(l: Leader): boolean {
     const next: Errors = {}
     if (!l.fullName.trim()) next.fullName = 'Majburiy'
-    if (!l.position.trim()) next.position = 'Majburiy'
+    if (!l.position.trim()) next.position = 'Majburiy (UZ tilida)'
     if (!l.phone.trim()) next.phone = 'Majburiy'
-    if (l.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(l.email)) next.email = "Yaroqsiz email"
+    const cleanEmail = stripEmailPrefix(l.email)
+    if (cleanEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(cleanEmail)) next.email = 'Yaroqsiz email'
     setErrors(next)
     return Object.keys(next).length === 0
   }
@@ -86,23 +109,28 @@ export function LeadersTab() {
     setSaving(true)
     try {
       const patch: Partial<Leader> = {
-        fullName: editing.fullName,
-        position: editing.position,
+        fullName: editing.fullName.trim(),
+        position: editing.position.trim(),
         photoUrl: editing.photoUrl,
         receptionDay: editing.receptionDay,
         receptionTime: editing.receptionTime,
-        phone: editing.phone,
-        email: editing.email,
+        phone: stripPhonePrefix(editing.phone),
+        email: stripEmailPrefix(editing.email),
         websiteUrl: editing.websiteUrl ?? '',
         address: editing.address ?? '',
         responsibilities: editing.responsibilities ?? '',
         biography: editing.biography ?? '',
+        positionTranslations: editing.positionTranslations ?? {},
+        receptionDayTranslations: editing.receptionDayTranslations ?? {},
+        responsibilitiesTranslations: editing.responsibilitiesTranslations ?? {},
+        biographyTranslations: editing.biographyTranslations ?? {},
+        addressTranslations: editing.addressTranslations ?? {},
         sortOrder: editing.sortOrder,
         isActive: editing.isActive
       }
       if (isNew) await createLeader(patch)
       else await updateLeader(editing.id, patch)
-      showToast('success', isNew ? 'Yangi rahbar qo\'shildi' : 'Saqlandi')
+      showToast('success', isNew ? "Yangi rahbar qo'shildi" : 'Saqlandi')
       setEditing(null)
       setErrors({})
     } catch (e) {
@@ -132,7 +160,7 @@ export function LeadersTab() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brand-navy">Rahbar xodimlar</h2>
-          <p className="text-sm text-brand-muted">Qabul jadvali, kontaktlar, vazifalari va biografiya. Supabase bazasida saqlanadi.</p>
+          <p className="text-sm text-brand-muted">Qabul jadvali, kontaktlar, vazifalari va biografiya. Lavozim, manzil, vazifalar va biografiya UZ/RU/EN tillarida saqlanadi.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={startCreate} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow transition"><Plus size={14} /> Yangi rahbar</button>
@@ -155,20 +183,63 @@ export function LeadersTab() {
               <ImageUpload label="Rasmi" kind="leader-photo" value={editing.photoUrl} onChange={(url) => setField('photoUrl', url)} onClear={() => setField('photoUrl', '')} helperText="Kvadrat rasm tavsiya etiladi." rounded="2xl" />
             </div>
             <Field label="F.I.Sh" error={errors.fullName}><input className="form-input" value={editing.fullName} onChange={(e) => setField('fullName', e.target.value)} /></Field>
-            <Field label="Lavozimi" error={errors.position}><input className="form-input" value={editing.position} onChange={(e) => setField('position', e.target.value)} /></Field>
-            <Field label="Qabul kuni"><input className="form-input" value={editing.receptionDay} placeholder="Masalan: Payshanba" onChange={(e) => setField('receptionDay', e.target.value)} /></Field>
+            <div>
+              <I18nField
+                label="Lavozimi"
+                base={editing.position}
+                translations={editing.positionTranslations}
+                onChange={(next) => setI18n('position', next)}
+                placeholder="Masalan: Agentlik direktori"
+                helperText="UZ majburiy. RU/EN bo'sh qoldirilsa, public sahifa UZ qiymatini ko'rsatadi."
+                error={errors.position}
+                required
+              />
+            </div>
+            <Field label="Qabul kuni">
+              <select className="form-input" value={editing.receptionDay} onChange={(e) => setField('receptionDay', e.target.value)}>
+                <option value="">\u2014</option>
+                {CANONICAL_DAY_OPTIONS.map((d) => (
+                  <option key={d.key} value={d.uz}>{d.uz}</option>
+                ))}
+              </select>
+              <p className="mt-1.5 text-xs text-brand-muted">Saytda tanlangan til bo'yicha avtomatik tarjima qilinadi.</p>
+            </Field>
             <Field label="Qabul vaqti"><input className="form-input" value={editing.receptionTime} placeholder="Masalan: 10:00 - 12:00" onChange={(e) => setField('receptionTime', e.target.value)} /></Field>
-            <Field label="Telefon" error={errors.phone}><input className="form-input" value={editing.phone} onChange={(e) => setField('phone', e.target.value)} /></Field>
-            <Field label="Email" error={errors.email}><input className="form-input" type="email" value={editing.email} onChange={(e) => setField('email', e.target.value)} /></Field>
-            <Field label="Veb-sayt"><input className="form-input" value={editing.websiteUrl ?? ''} placeholder="https://..." onChange={(e) => setField('websiteUrl', e.target.value)} /></Field>
-            <Field label="Manzil"><input className="form-input" value={editing.address ?? ''} placeholder="Toshkent, ..." onChange={(e) => setField('address', e.target.value)} /></Field>
-            <div className="sm:col-span-2">
-              <Field label="Vazifalari (mas'uliyatlari)"><textarea className="form-input resize-none" rows={5} value={editing.responsibilities ?? ''} placeholder="Rahbarning asosiy vazifalari..." onChange={(e) => setField('responsibilities', e.target.value)} /></Field>
-              <p className="mt-1.5 text-xs text-brand-muted">Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+            <Field label="Telefon" error={errors.phone}><input className="form-input" value={editing.phone} placeholder="+998 71 123 45 67" onChange={(e) => setField('phone', e.target.value)} /></Field>
+            <Field label="Email" error={errors.email}><input className="form-input" type="email" value={editing.email} placeholder="info@meteo.uz" onChange={(e) => setField('email', e.target.value)} /></Field>
+            <Field label="Veb-sayt"><input className="form-input" value={editing.websiteUrl ?? ''} placeholder="https://meteo.uz" onChange={(e) => setField('websiteUrl', e.target.value)} /></Field>
+            <div>
+              <I18nField
+                label="Manzil"
+                base={editing.address ?? ''}
+                translations={editing.addressTranslations}
+                onChange={(next) => setI18n('address', next)}
+                placeholder="Toshkent, ..."
+              />
             </div>
             <div className="sm:col-span-2">
-              <Field label="Biografiya"><textarea className="form-input resize-none" rows={6} value={editing.biography ?? ''} placeholder="Tarjimai hol matni: ta'lim, ish faoliyati, asosiy yutuqlar..." onChange={(e) => setField('biography', e.target.value)} /></Field>
-              <p className="mt-1.5 text-xs text-brand-muted">Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi.</p>
+              <I18nField
+                label="Vazifalari (mas'uliyatlari)"
+                base={editing.responsibilities ?? ''}
+                translations={editing.responsibilitiesTranslations}
+                onChange={(next) => setI18n('responsibilities', next)}
+                multiline
+                rows={5}
+                placeholder="Rahbarning asosiy vazifalari..."
+                helperText="Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi."
+              />
+            </div>
+            <div className="sm:col-span-2">
+              <I18nField
+                label="Biografiya"
+                base={editing.biography ?? ''}
+                translations={editing.biographyTranslations}
+                onChange={(next) => setI18n('biography', next)}
+                multiline
+                rows={6}
+                placeholder="Tarjimai hol matni: ta'lim, ish faoliyati, asosiy yutuqlar..."
+                helperText="Public sahifada ochiladigan panel sifatida ko'rinadi. Bo'sh qoldirilsa, panel ko'rsatilmaydi."
+              />
             </div>
             <Field label="Tartib raqami"><input className="form-input" type="number" value={editing.sortOrder} onChange={(e) => setField('sortOrder', Number(e.target.value || 0))} /></Field>
             <Field label="Holati">
@@ -193,6 +264,8 @@ export function LeadersTab() {
         {sorted.map((l) => {
           const hasResp = Boolean(l.responsibilities && l.responsibilities.trim())
           const hasBio = Boolean(l.biography && l.biography.trim())
+          const tx = l.positionTranslations ?? {}
+          const i18nBadge = (tx.ru && tx.ru.trim()) || (tx.en && tx.en.trim())
           return (
             <div key={l.id} className="p-4 sm:p-5 flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -207,6 +280,7 @@ export function LeadersTab() {
                     <span>#{l.sortOrder}</span>
                     <span aria-hidden="true">{'\u2022'}</span>
                     <span>{l.isActive ? 'Faol' : 'Faol emas'}</span>
+                    {i18nBadge ? (<><span aria-hidden="true">{'\u2022'}</span><span className="inline-flex items-center px-1.5 py-0.5 rounded bg-sky-50 text-sky-700 font-semibold">i18n</span></>) : null}
                     {hasResp && (<><span aria-hidden="true">{'\u2022'}</span><span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Vazifalari</span></>)}
                     {hasBio && (<><span aria-hidden="true">{'\u2022'}</span><span className="inline-flex items-center px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-semibold">Biografiya</span></>)}
                   </div>
@@ -216,7 +290,7 @@ export function LeadersTab() {
                 <button type="button" onClick={() => startEdit(l)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-brand-navy text-xs font-semibold hover:border-brand-primary hover:text-brand-deep transition disabled:opacity-60"><Pencil size={13} /> Tahrirlash</button>
                 <button type="button" onClick={() => remove(l.id)} disabled={deletingId === l.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-red-600 text-xs font-semibold hover:border-red-300 transition disabled:opacity-60">
                   {deletingId === l.id ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
-                  {deletingId === l.id ? 'O\'chirilmoqda' : "O'chirish"}
+                  {deletingId === l.id ? "O'chirilmoqda" : "O'chirish"}
                 </button>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { Save, ExternalLink, Plus, Trash2, Loader2 } from 'lucide-react'
 import { useAdmin } from '../../context/AdminContext'
-import type { NewsItem } from '../../types/admin'
+import { I18nField } from './I18nField'
+import type { NewsItem, TranslationMap } from '../../types/admin'
 
 type Toast = { kind: 'success' | 'error'; message: string } | null
 
@@ -21,6 +22,16 @@ export function NewsTab() {
 
   function setField(idx: number, patch: Partial<NewsItem>) {
     setDrafts((arr) => arr.map((n, i) => (i === idx ? { ...n, ...patch } : n)))
+  }
+
+  function setI18nTitle(idx: number, next: { base: string; translations: TranslationMap }) {
+    setField(idx, { title: next.base, titleTranslations: next.translations })
+  }
+  function setI18nSummary(idx: number, next: { base: string; translations: TranslationMap }) {
+    setField(idx, { summary: next.base, descriptionTranslations: next.translations })
+  }
+  function setI18nTag(idx: number, next: { base: string; translations: TranslationMap }) {
+    setField(idx, { tag: next.base, badgeTranslations: next.translations })
   }
 
   async function save() {
@@ -49,7 +60,19 @@ export function NewsTab() {
     const tempId = `__new_${Date.now()}`
     setDrafts((arr) => [
       ...arr,
-      { id: tempId, title: '', summary: '', date: '', tag: '', url: '', sortOrder: arr.length, isActive: true }
+      {
+        id: tempId,
+        title: '',
+        summary: '',
+        date: '',
+        tag: '',
+        url: '',
+        titleTranslations: {},
+        descriptionTranslations: {},
+        badgeTranslations: {},
+        sortOrder: arr.length,
+        isActive: true
+      }
     ])
   }
 
@@ -76,7 +99,7 @@ export function NewsTab() {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="font-display text-xl sm:text-2xl font-extrabold text-brand-navy">Yangiliklar</h2>
-          <p className="text-sm text-brand-muted">"Batafsil" tugmasi olib boradigan link va karta matnini boshqaring. Bo'sh qoldirilsa, sayt sozlamalaridagi rasmiy yangiliklar URL'i ishlatiladi.</p>
+          <p className="text-sm text-brand-muted">Sarlavha, qisqa matn va tag UZ/RU/EN tillarida saqlanadi. Bo'sh qoldirilgan tillar UZ qiymatiga qaytadi.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" onClick={addItem} disabled={saving} className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-slate-200 bg-white text-brand-navy text-sm font-semibold hover:border-brand-primary hover:text-brand-deep transition disabled:opacity-60"><Plus size={14} /> Qo'shish</button>
@@ -122,12 +145,25 @@ export function NewsTab() {
               </button>
             </div>
             <div className="mt-3 grid sm:grid-cols-2 gap-4">
-              <Field label="Sarlavha">
-                <input className="form-input" placeholder="Sarlavha" value={n.title ?? ''} onChange={(e) => setField(i, { title: e.target.value })} />
-              </Field>
-              <Field label="Tag (badge)">
-                <input className="form-input" placeholder="E\u2019lon" value={n.tag ?? ''} onChange={(e) => setField(i, { tag: e.target.value })} />
-              </Field>
+              <div className="sm:col-span-2">
+                <I18nField
+                  label="Sarlavha"
+                  base={n.title ?? ''}
+                  translations={n.titleTranslations}
+                  onChange={(next) => setI18nTitle(i, next)}
+                  placeholder="Yangilik sarlavhasi"
+                  required
+                />
+              </div>
+              <div>
+                <I18nField
+                  label="Tag (badge)"
+                  base={n.tag ?? ''}
+                  translations={n.badgeTranslations}
+                  onChange={(next) => setI18nTag(i, next)}
+                  placeholder="E\u2019lon"
+                />
+              </div>
               <Field label="Yil / sana">
                 <input className="form-input" placeholder="2026" value={n.date ?? ''} onChange={(e) => setField(i, { date: e.target.value })} />
               </Field>
@@ -144,9 +180,14 @@ export function NewsTab() {
                 </label>
               </Field>
               <div className="sm:col-span-2">
-                <Field label="Qisqa matn (description)">
-                  <textarea rows={3} className="form-input resize-none" placeholder="" value={n.summary ?? ''} onChange={(e) => setField(i, { summary: e.target.value })} />
-                </Field>
+                <I18nField
+                  label="Qisqa matn (description)"
+                  base={n.summary ?? ''}
+                  translations={n.descriptionTranslations}
+                  onChange={(next) => setI18nSummary(i, next)}
+                  multiline
+                  rows={3}
+                />
               </div>
             </div>
           </div>
