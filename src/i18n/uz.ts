@@ -17,7 +17,7 @@ export const uz: Dictionary = {
   'header.toggleMenu': "Menyuni ochish yoki yopish",
 
   'hero.eyebrow': "Rasmiy davlat agentligi",
-  'hero.title': "Gidrometeorologiya xizmati agentligi",
+  'hero.title': "O\u2018zbekiston Respublikasi Ekologiya va iqlim o\u2018zgarishi milliy qo\u2018mitasi huzuridagi Gidrometeorologiya xizmati agentligi",
   'hero.subtitle': "Ob-havo, iqlim, gidrologiya va agrometeorologik kuzatuvlar bo'yicha rasmiy davlat ma'lumot markazi.",
   'hero.cta.weather': "Ob-havoni ko'rish",
   'hero.cta.reception': "Qabulga yozilish",
@@ -35,7 +35,7 @@ export const uz: Dictionary = {
   'hero.area.warnings.text': "Xavfli ob-havo hodisalari haqida erta ogohlantirish.",
 
   'about.eyebrow': "Biz haqimizda",
-  'about.title': "Gidrometeorologiya xizmati agentligi",
+  'about.title': "Gidrometeorologiya xizmati agentligi (O\u2018zgidromet)",
   'about.body': "O'zgidromet \u2014 O'zbekistonda meteorologik, iqlim, gidrologik va agrometeorologik kuzatuvlarni amalga oshiruvchi davlat tashkiloti.",
   'about.label.phone': "Telefon",
   'about.label.email': "Elektron pochta",
