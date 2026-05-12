@@ -9,6 +9,7 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useWeather } from '../hooks/useWeather'
@@ -23,6 +24,7 @@ function cardinalOf(deg: number): Cardinal {
   return CARDINALS[((idx % 8) + 8) % 8]
 }
 
+// Motion variants (avoid JSX double-brace patterns)
 const chipsContainer = {
   hidden: {},
   show: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } }
@@ -30,6 +32,36 @@ const chipsContainer = {
 const chipItem = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' as const } }
+}
+const chipHover = { y: -2 }
+
+// Inline style objects (hoisted out of JSX to avoid double-brace push corruption)
+const gridOverlayStyle: CSSProperties = {
+  backgroundImage:
+    'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+  backgroundSize: '64px 64px'
+}
+
+const radarHaloStyle: CSSProperties = {
+  background:
+    'radial-gradient(circle at center, rgba(56,189,248,0.32) 0%, rgba(34,199,240,0.15) 40%, transparent 70%)'
+}
+
+const radarSweepBeamStyle: CSSProperties = {
+  background:
+    'linear-gradient(90deg, rgba(56,189,248,0.7) 0%, rgba(56,189,248,0) 100%)'
+}
+
+const ghostTempNumberStyle: CSSProperties = {
+  color: 'transparent',
+  WebkitTextStroke: '1px rgba(255,255,255,0.10)',
+  textShadow:
+    '0 0 80px rgba(56,189,248,0.18), 0 0 160px rgba(34,199,240,0.10)'
+}
+
+const ghostTempDegreeStyle: CSSProperties = {
+  color: 'transparent',
+  WebkitTextStroke: '1px rgba(255,255,255,0.10)'
 }
 
 export function Hero() {
@@ -55,7 +87,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-20 pb-14 sm:pt-24 sm:pb-18 md:pt-28 md:pb-24 lg:pt-32 lg:pb-28 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
+      className="relative overflow-hidden pt-20 pb-14 sm:pt-24 sm:pb-20 md:pt-28 md:pb-24 lg:pt-32 lg:pb-28 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
     >
       {/* === Premium atmospheric weather background === */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -65,14 +97,7 @@ export function Hero() {
         <div className="absolute top-1/3 right-1/4 h-[18rem] w-[18rem] rounded-full bg-sky-400/15 blur-3xl animate-glowPulseStrong" />
 
         {/* Subtle grid */}
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style=
-            backgroundImage:
-              'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
-            backgroundSize: '64px 64px'
-          
-        />
+        <div className="absolute inset-0 opacity-[0.06]" style={gridOverlayStyle} />
 
         {/* Slow drifting wave/cloud pattern */}
         <svg
@@ -94,10 +119,7 @@ export function Hero() {
           {/* Soft radial glow halo behind temperature */}
           <div
             className="absolute inset-[18%] rounded-full animate-glowPulseStrong"
-            style=
-              background:
-                'radial-gradient(circle at center, rgba(56,189,248,0.32) 0%, rgba(34,199,240,0.15) 40%, transparent 70%)'
-            
+            style={radarHaloStyle}
           />
           {/* Concentric radar rings */}
           <div className="absolute inset-0 opacity-[0.22] animate-radarSpin">
@@ -112,34 +134,26 @@ export function Hero() {
           <div className="absolute inset-0 opacity-[0.18] animate-radarSweep origin-center">
             <div
               className="absolute left-1/2 top-1/2 -translate-y-1/2 w-1/2 h-1 origin-left"
-              style=
-                background:
-                  'linear-gradient(90deg, rgba(56,189,248,0.7) 0%, rgba(56,189,248,0) 100%)'
-              
+              style={radarSweepBeamStyle}
             />
           </div>
           {/* Center dot */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-brand-sky/60" />
         </div>
 
-        {/* GIANT ghost temperature with pulsing glow */}
+        {/* GIANT ghost temperature (background) */}
         {data && (
           <>
             <div className="hidden md:flex absolute right-[5%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none">
               <span
                 className="text-[16rem] lg:text-[22rem] xl:text-[26rem] animate-glowPulse"
-                style=
-                  color: 'transparent',
-                  WebkitTextStroke: '1px rgba(255,255,255,0.10)',
-                  textShadow:
-                    '0 0 80px rgba(56,189,248,0.18), 0 0 160px rgba(34,199,240,0.10)'
-                
+                style={ghostTempNumberStyle}
               >
                 {Math.round(data.temperature)}
               </span>
               <span
                 className="mt-6 lg:mt-10 text-[5rem] lg:text-[7rem] xl:text-[8rem]"
-                style= color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.10)' 
+                style={ghostTempDegreeStyle}
               >
                 {'\u00B0'}
               </span>
@@ -189,7 +203,7 @@ export function Hero() {
 
           {/* === Integrated weather chips strip === */}
           <div id="weather" className="mt-8 sm:mt-10 scroll-mt-24">
-            {/* Inline current-weather label */}
+            {/* Inline current-weather label with live dot */}
             {data && info && Icon && (
               <div className="mb-3 inline-flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-white/75">
                 <span className="relative flex h-2 w-2">
@@ -237,7 +251,7 @@ export function Hero() {
                     {'\u00B0C'}
                   </span>
                   <span className="text-white/55 text-[10px] sm:text-[11px] hidden sm:inline">
-                    {t('weather.label.feels')} {Math.round(data.feelsLike)}
+                    {t('weather.label.feels')} {Math.round(data.apparentTemperature)}
                     {'\u00B0'}
                   </span>
                 </Chip>
@@ -291,7 +305,7 @@ function Chip({ children }: { children: React.ReactNode }) {
   return (
     <motion.span
       variants={chipItem}
-      whileHover= y: -2 
+      whileHover={chipHover}
       className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/[0.09] hover:bg-white/[0.14] backdrop-blur-md ring-1 ring-white/15 hover:ring-white/30 text-[12px] sm:text-[13px] text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_12px_-4px_rgba(0,0,0,0.25)] transition-colors"
     >
       {children}
