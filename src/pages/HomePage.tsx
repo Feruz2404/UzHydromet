@@ -8,25 +8,22 @@ import { AppointmentForm } from '../components/AppointmentForm'
 import { News } from '../components/News'
 import { Footer } from '../components/Footer'
 import { BackToTop } from '../components/BackToTop'
-import { LoadingScreen } from '../components/LoadingScreen'
 
 export function HomePage() {
   return (
-    <LoadingScreen>
-      <div className="min-h-screen flex flex-col overflow-x-hidden">
-        <Header />
-        <main className="flex-1">
-          <Hero />
-          <About />
-          <Services />
-          <Leadership />
-          <LocationMap />
-          <AppointmentForm />
-          <News />
-        </main>
-        <Footer />
-        <BackToTop />
-      </div>
-    </LoadingScreen>
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
+      <Header />
+      <main className="flex-1">
+        <Hero />
+        <About />
+        <Services />
+        <Leadership />
+        <LocationMap />
+        <AppointmentForm />
+        <News />
+      </main>
+      <Footer />
+      <BackToTop />
+    </div>
   )
 }
