@@ -33,7 +33,7 @@ const chipItem = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' as const } }
 }
-const chipHover = { y: -2 }
+const chipHover = { y: -2, scale: 1.02 }
 
 // Inline style objects (hoisted out of JSX to avoid double-brace push corruption)
 const gridOverlayStyle: CSSProperties = {
@@ -44,24 +44,48 @@ const gridOverlayStyle: CSSProperties = {
 
 const radarHaloStyle: CSSProperties = {
   background:
-    'radial-gradient(circle at center, rgba(56,189,248,0.32) 0%, rgba(34,199,240,0.15) 40%, transparent 70%)'
+    'radial-gradient(circle at center, rgba(56,189,248,0.40) 0%, rgba(34,199,240,0.18) 40%, transparent 72%)'
 }
 
 const radarSweepBeamStyle: CSSProperties = {
   background:
-    'linear-gradient(90deg, rgba(56,189,248,0.7) 0%, rgba(56,189,248,0) 100%)'
+    'linear-gradient(90deg, rgba(56,189,248,0.75) 0%, rgba(56,189,248,0) 100%)'
 }
 
 const ghostTempNumberStyle: CSSProperties = {
   color: 'transparent',
-  WebkitTextStroke: '1px rgba(255,255,255,0.10)',
+  WebkitTextStroke: '1px rgba(255,255,255,0.12)',
   textShadow:
-    '0 0 80px rgba(56,189,248,0.18), 0 0 160px rgba(34,199,240,0.10)'
+    '0 0 100px rgba(56,189,248,0.28), 0 0 200px rgba(34,199,240,0.18)'
 }
 
 const ghostTempDegreeStyle: CSSProperties = {
   color: 'transparent',
-  WebkitTextStroke: '1px rgba(255,255,255,0.10)'
+  WebkitTextStroke: '1px rgba(255,255,255,0.12)',
+  textShadow: '0 0 60px rgba(56,189,248,0.20)'
+}
+
+// Particle positions/delays (precomputed to avoid inline JSX double-brace)
+const particles: Array<{ left: string; bottom: string; delay: string; size: string; opacity: number }> = [
+  { left: '8%', bottom: '14%', delay: '0s', size: '6px', opacity: 0.55 },
+  { left: '22%', bottom: '8%', delay: '2.5s', size: '4px', opacity: 0.5 },
+  { left: '34%', bottom: '18%', delay: '4s', size: '5px', opacity: 0.45 },
+  { left: '48%', bottom: '10%', delay: '1.2s', size: '7px', opacity: 0.5 },
+  { left: '62%', bottom: '20%', delay: '3.4s', size: '4px', opacity: 0.4 },
+  { left: '76%', bottom: '12%', delay: '0.8s', size: '6px', opacity: 0.5 },
+  { left: '88%', bottom: '22%', delay: '5s', size: '5px', opacity: 0.45 }
+]
+
+function particleStyle(p: (typeof particles)[number], slow: boolean): CSSProperties {
+  return {
+    left: p.left,
+    bottom: p.bottom,
+    width: p.size,
+    height: p.size,
+    animationDelay: p.delay,
+    animationDuration: slow ? '15s' : '11s',
+    opacity: p.opacity
+  }
 }
 
 export function Hero() {
@@ -75,6 +99,7 @@ export function Hero() {
   const Icon = data ? weatherIconFor(data.weatherCode) : null
   const conditionLabel = info ? t(info.labelKey) : ''
   const cityShort = t('weather.cityShort')
+  const todayLabel = t('weather.compactToday')
   const updated = data
     ? new Date(data.time).toLocaleTimeString(LOCALE_BY_LANG[lang] ?? 'en-GB', {
         hour: '2-digit',
@@ -114,31 +139,43 @@ export function Hero() {
           <rect width="100%" height="100%" fill="url(#hero-waves)" />
         </svg>
 
+        {/* === Floating weather particles === */}
+        <div className="absolute inset-0">
+          {particles.map((p, i) => (
+            <span
+              key={`p-${i}`}
+              className={`absolute rounded-full bg-brand-sky/70 blur-[1px] ${i % 2 === 0 ? 'animate-particleFloat' : 'animate-particleFloatSlow'}`}
+              style={particleStyle(p, i % 2 !== 0)}
+            />
+          ))}
+        </div>
+
         {/* === Radar visualization (desktop only) === */}
-        <div className="absolute hidden lg:block right-[-6rem] top-1/2 -translate-y-1/2 w-[50rem] h-[50rem]">
+        <div className="absolute hidden lg:block right-[-6rem] top-1/2 -translate-y-1/2 w-[52rem] h-[52rem]">
           {/* Soft radial glow halo behind temperature */}
           <div
-            className="absolute inset-[18%] rounded-full animate-glowPulseStrong"
+            className="absolute inset-[14%] rounded-full animate-glowPulseStrong"
             style={radarHaloStyle}
           />
           {/* Concentric radar rings */}
-          <div className="absolute inset-0 opacity-[0.22] animate-radarSpin">
-            <div className="absolute inset-0 rounded-full border border-white/30 animate-radarPing" />
-            <div className="absolute inset-[8%] rounded-full border border-white/25 animate-radarPingDelayed" />
-            <div className="absolute inset-[18%] rounded-full border border-white/22 animate-radarPing" />
-            <div className="absolute inset-[30%] rounded-full border border-white/20 animate-radarPingDelayed" />
-            <div className="absolute inset-[42%] rounded-full border border-white/18" />
-            <div className="absolute inset-[54%] rounded-full border border-white/16" />
+          <div className="absolute inset-0 opacity-[0.26] animate-radarSpin">
+            <div className="absolute inset-0 rounded-full border border-white/35 animate-radarPing" />
+            <div className="absolute inset-[7%] rounded-full border border-white/30 animate-radarPingDelayed" />
+            <div className="absolute inset-[16%] rounded-full border border-white/26 animate-radarPing" />
+            <div className="absolute inset-[26%] rounded-full border border-white/24 animate-radarPingDelayed" />
+            <div className="absolute inset-[36%] rounded-full border border-white/22" />
+            <div className="absolute inset-[46%] rounded-full border border-white/20" />
+            <div className="absolute inset-[56%] rounded-full border border-white/18" />
           </div>
           {/* Slow radar sweep */}
-          <div className="absolute inset-0 opacity-[0.18] animate-radarSweep origin-center">
+          <div className="absolute inset-0 opacity-[0.22] animate-radarSweep origin-center">
             <div
               className="absolute left-1/2 top-1/2 -translate-y-1/2 w-1/2 h-1 origin-left"
               style={radarSweepBeamStyle}
             />
           </div>
           {/* Center dot */}
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-brand-sky/60" />
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-brand-sky shadow-[0_0_18px_rgba(56,189,248,0.8)]" />
         </div>
 
         {/* GIANT ghost temperature (background) */}
@@ -205,14 +242,18 @@ export function Hero() {
           <div id="weather" className="mt-8 sm:mt-10 scroll-mt-24">
             {/* Inline current-weather label with live dot */}
             {data && info && Icon && (
-              <div className="mb-3 inline-flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-white/75">
+              <div className="mb-3 inline-flex items-center gap-2.5 rounded-full bg-white/[0.08] ring-1 ring-white/15 px-3 py-1.5 backdrop-blur-md">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inset-0 rounded-full bg-emerald-400 animate-livePulse" />
                   <span className="relative rounded-full h-2 w-2 bg-emerald-400" />
                 </span>
-                <span>{t('weather.title')}</span>
+                <span className="text-[10px] sm:text-[11px] uppercase tracking-[0.18em] font-semibold text-white/85">
+                  {todayLabel}
+                </span>
                 <span className="text-white/40">{'\u2022'}</span>
-                <span className="text-white/65 normal-case tracking-normal">{conditionLabel}</span>
+                <span className="text-[11px] sm:text-xs text-white/75 normal-case tracking-normal">
+                  {conditionLabel}
+                </span>
               </div>
             )}
 
@@ -284,11 +325,11 @@ export function Hero() {
                     onClick={refresh}
                     disabled={loading}
                     aria-label={t('weather.refreshAria')}
-                    className="group/r ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
+                    className="group/r ml-1 inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/10 hover:bg-white/25 ring-1 ring-white/15 hover:ring-white/40 transition disabled:opacity-50"
                   >
                     <RefreshCw
                       size={12}
-                      className={`transition-transform duration-700 group-hover/r:rotate-[360deg] ${loading ? 'animate-spin' : ''}`}
+                      className={`text-white transition-transform duration-700 group-hover/r:rotate-[360deg] ${loading ? 'animate-spin' : ''}`}
                     />
                   </button>
                 </Chip>
@@ -306,7 +347,7 @@ function Chip({ children }: { children: React.ReactNode }) {
     <motion.span
       variants={chipItem}
       whileHover={chipHover}
-      className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/[0.09] hover:bg-white/[0.14] backdrop-blur-md ring-1 ring-white/15 hover:ring-white/30 text-[12px] sm:text-[13px] text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_12px_-4px_rgba(0,0,0,0.25)] transition-colors"
+      className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/[0.10] hover:bg-white/[0.16] backdrop-blur-md ring-1 ring-white/15 hover:ring-white/35 text-[12px] sm:text-[13px] text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_6px_18px_-6px_rgba(0,0,0,0.35)] transition-colors"
     >
       {children}
     </motion.span>
