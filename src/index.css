@@ -62,15 +62,21 @@ img {
 
 @keyframes slowDrift {
   0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(-16px); }
+  50% { transform: translateX(-22px); }
 }
-.animate-slowDrift { animation: slowDrift 14s ease-in-out infinite; }
+.animate-slowDrift { animation: slowDrift 16s ease-in-out infinite; }
 
 @keyframes glowPulse {
-  0%, 100% { opacity: 0.85; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.04); }
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 .animate-glowPulse { animation: glowPulse 6s ease-in-out infinite; }
+
+@keyframes glowPulseStrong {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 0.95; transform: scale(1.08); }
+}
+.animate-glowPulseStrong { animation: glowPulseStrong 5s ease-in-out infinite; }
 
 @keyframes radarPing {
   0%, 100% { opacity: 1; }
@@ -78,18 +84,40 @@ img {
 }
 .animate-radarPing { animation: radarPing 4s ease-in-out infinite; }
 
+@keyframes radarPingDelayed {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+.animate-radarPingDelayed { animation: radarPingDelayed 4s ease-in-out infinite; }
+
 @keyframes radarSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 .animate-radarSpin { animation: radarSpin 40s linear infinite; }
 
+@keyframes radarSweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-radarSweep { animation: radarSweep 8s linear infinite; }
+
+@keyframes livePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+.animate-livePulse { animation: livePulse 1.8s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .animate-floatY,
   .animate-slowDrift,
   .animate-glowPulse,
+  .animate-glowPulseStrong,
   .animate-radarPing,
+  .animate-radarPingDelayed,
   .animate-radarSpin,
+  .animate-radarSweep,
+  .animate-livePulse,
   .animate-spin,
   .animate-pulse {
     animation: none !important;

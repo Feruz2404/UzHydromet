@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import {
-  CloudSun,
   Calendar,
   MapPin,
   Activity,
@@ -26,11 +25,11 @@ function cardinalOf(deg: number): Cardinal {
 
 const chipsContainer = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } }
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.2 } }
 }
 const chipItem = {
-  hidden: { opacity: 0, y: 8 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } }
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' as const } }
 }
 
 export function Hero() {
@@ -56,50 +55,98 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-20 pb-12 sm:pt-24 sm:pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
+      className="relative overflow-hidden pt-20 pb-14 sm:pt-24 sm:pb-18 md:pt-28 md:pb-24 lg:pt-32 lg:pb-28 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
     >
-      {/* === Background-integrated weather visual === */}
+      {/* === Premium atmospheric weather background === */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Atmospheric color blobs with slow glow */}
-        <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-brand-cyan/25 blur-3xl animate-glowPulse" />
-        <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-brand-sky/15 blur-3xl" />
+        {/* Color blobs */}
+        <div className="absolute -top-40 -right-20 h-[34rem] w-[34rem] rounded-full bg-brand-cyan/30 blur-3xl animate-glowPulse" />
+        <div className="absolute -bottom-40 -left-32 h-[30rem] w-[30rem] rounded-full bg-brand-sky/20 blur-3xl animate-glowPulse" />
+        <div className="absolute top-1/3 right-1/4 h-[18rem] w-[18rem] rounded-full bg-sky-400/15 blur-3xl animate-glowPulseStrong" />
 
-        {/* Radar rings (desktop) with subtle pulse + slow spin */}
-        <div className="absolute hidden lg:block right-[-4rem] top-1/2 -translate-y-1/2 w-[44rem] h-[44rem] opacity-[0.18] animate-radarSpin">
-          <div className="absolute inset-0 rounded-full border border-white/20 animate-radarPing" />
-          <div className="absolute inset-[10%] rounded-full border border-white/15 animate-radarPing" />
-          <div className="absolute inset-[22%] rounded-full border border-white/12 animate-radarPing" />
-          <div className="absolute inset-[34%] rounded-full border border-white/10 animate-radarPing" />
-          <div className="absolute inset-[46%] rounded-full border border-white/12" />
-        </div>
+        {/* Subtle grid */}
+        <div
+          className="absolute inset-0 opacity-[0.06]"
+          style=
+            backgroundImage:
+              'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+            backgroundSize: '64px 64px'
+          
+        />
 
         {/* Slow drifting wave/cloud pattern */}
         <svg
-          className="absolute inset-0 w-full h-full opacity-[0.07] animate-slowDrift"
+          className="absolute inset-0 w-full h-full opacity-[0.10] animate-slowDrift"
           viewBox="0 0 800 400"
           preserveAspectRatio="none"
         >
           <defs>
-            <pattern id="hero-lines" width="60" height="60" patternUnits="userSpaceOnUse">
-              <path d="M0,30 Q15,10 30,30 T60,30" fill="none" stroke="white" strokeWidth="0.6" />
+            <pattern id="hero-waves" width="80" height="60" patternUnits="userSpaceOnUse">
+              <path d="M0,30 Q20,8 40,30 T80,30" fill="none" stroke="white" strokeWidth="0.7" />
+              <path d="M0,48 Q20,30 40,48 T80,48" fill="none" stroke="white" strokeWidth="0.4" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#hero-lines)" />
+          <rect width="100%" height="100%" fill="url(#hero-waves)" />
         </svg>
 
-        {/* GIANT ghost temperature with pulsing glow (background) */}
+        {/* === Radar visualization (desktop only) === */}
+        <div className="absolute hidden lg:block right-[-6rem] top-1/2 -translate-y-1/2 w-[50rem] h-[50rem]">
+          {/* Soft radial glow halo behind temperature */}
+          <div
+            className="absolute inset-[18%] rounded-full animate-glowPulseStrong"
+            style=
+              background:
+                'radial-gradient(circle at center, rgba(56,189,248,0.32) 0%, rgba(34,199,240,0.15) 40%, transparent 70%)'
+            
+          />
+          {/* Concentric radar rings */}
+          <div className="absolute inset-0 opacity-[0.22] animate-radarSpin">
+            <div className="absolute inset-0 rounded-full border border-white/30 animate-radarPing" />
+            <div className="absolute inset-[8%] rounded-full border border-white/25 animate-radarPingDelayed" />
+            <div className="absolute inset-[18%] rounded-full border border-white/22 animate-radarPing" />
+            <div className="absolute inset-[30%] rounded-full border border-white/20 animate-radarPingDelayed" />
+            <div className="absolute inset-[42%] rounded-full border border-white/18" />
+            <div className="absolute inset-[54%] rounded-full border border-white/16" />
+          </div>
+          {/* Slow radar sweep */}
+          <div className="absolute inset-0 opacity-[0.18] animate-radarSweep origin-center">
+            <div
+              className="absolute left-1/2 top-1/2 -translate-y-1/2 w-1/2 h-1 origin-left"
+              style=
+                background:
+                  'linear-gradient(90deg, rgba(56,189,248,0.7) 0%, rgba(56,189,248,0) 100%)'
+              
+            />
+          </div>
+          {/* Center dot */}
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-brand-sky/60" />
+        </div>
+
+        {/* GIANT ghost temperature with pulsing glow */}
         {data && (
           <>
-            <div className="hidden md:flex absolute right-[4%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.07] animate-glowPulse">
-              <span className="text-[14rem] lg:text-[20rem] xl:text-[24rem]">
+            <div className="hidden md:flex absolute right-[5%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none">
+              <span
+                className="text-[16rem] lg:text-[22rem] xl:text-[26rem] animate-glowPulse"
+                style=
+                  color: 'transparent',
+                  WebkitTextStroke: '1px rgba(255,255,255,0.10)',
+                  textShadow:
+                    '0 0 80px rgba(56,189,248,0.18), 0 0 160px rgba(34,199,240,0.10)'
+                
+              >
                 {Math.round(data.temperature)}
               </span>
-              <span className="mt-6 lg:mt-10 text-[5rem] lg:text-[7rem] xl:text-[8rem]">
+              <span
+                className="mt-6 lg:mt-10 text-[5rem] lg:text-[7rem] xl:text-[8rem]"
+                style= color: 'transparent', WebkitTextStroke: '1px rgba(255,255,255,0.10)' 
+              >
                 {'\u00B0'}
               </span>
             </div>
-            <div className="md:hidden absolute right-2 bottom-2 font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.08]">
-              <span className="text-[9rem]">
+            {/* Mobile ghost temp */}
+            <div className="md:hidden absolute right-1 -bottom-2 font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.08]">
+              <span className="text-[11rem]">
                 {Math.round(data.temperature)}
                 {'\u00B0'}
               </span>
@@ -122,33 +169,39 @@ export function Hero() {
             {t('hero.subtitle')}
           </p>
 
-          {/* CTA buttons */}
-          <div className="mt-5 sm:mt-7 flex flex-wrap gap-2.5 sm:gap-3">
-            <a
-              href="#weather"
-              className="inline-flex items-center gap-2 px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-xl bg-white text-brand-navy font-semibold text-sm sm:text-base shadow-card hover:shadow-glow transition-all"
-            >
-              <CloudSun size={18} />
-              {t('hero.cta.weather')}
-            </a>
+          {/* === CTAs (only 2, balanced & polished) === */}
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3">
             <a
               href="#contact"
-              className="inline-flex items-center gap-2 px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-xl bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-white font-semibold text-sm sm:text-base hover:bg-white/15 transition-all"
+              className="group inline-flex items-center justify-center gap-2 px-5 sm:px-6 lg:px-7 py-3 sm:py-3.5 rounded-xl bg-white text-brand-navy font-semibold text-sm sm:text-base shadow-card hover:shadow-glow hover:-translate-y-0.5 transition-all"
             >
-              <Calendar size={18} />
+              <Calendar size={18} className="transition-transform group-hover:scale-110" />
               {t('hero.cta.reception')}
             </a>
             <a
               href="#location"
-              className="inline-flex items-center gap-2 px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-xl bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-white font-semibold text-sm sm:text-base hover:bg-white/15 transition-all"
+              className="group inline-flex items-center justify-center gap-2 px-5 sm:px-6 lg:px-7 py-3 sm:py-3.5 rounded-xl bg-white/10 backdrop-blur-md ring-1 ring-white/25 text-white font-semibold text-sm sm:text-base hover:bg-white/15 hover:ring-white/40 hover:-translate-y-0.5 transition-all"
             >
-              <MapPin size={18} />
+              <MapPin size={18} className="transition-transform group-hover:scale-110" />
               {t('hero.cta.map')}
             </a>
           </div>
 
-          {/* === Integrated weather chips (no card, no column) === */}
-          <div id="weather" className="mt-7 sm:mt-9 scroll-mt-24">
+          {/* === Integrated weather chips strip === */}
+          <div id="weather" className="mt-8 sm:mt-10 scroll-mt-24">
+            {/* Inline current-weather label */}
+            {data && info && Icon && (
+              <div className="mb-3 inline-flex items-center gap-2 text-[11px] sm:text-xs uppercase tracking-[0.18em] font-semibold text-white/75">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inset-0 rounded-full bg-emerald-400 animate-livePulse" />
+                  <span className="relative rounded-full h-2 w-2 bg-emerald-400" />
+                </span>
+                <span>{t('weather.title')}</span>
+                <span className="text-white/40">{'\u2022'}</span>
+                <span className="text-white/65 normal-case tracking-normal">{conditionLabel}</span>
+              </div>
+            )}
+
             {loading && !data && (
               <div className="inline-flex items-center gap-2 text-white/80 text-xs sm:text-sm">
                 <RefreshCw size={14} className="animate-spin" />
@@ -178,42 +231,50 @@ export function Hero() {
                 className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 sm:gap-2.5 overflow-x-auto sm:flex-wrap snap-x snap-mandatory sm:snap-none no-scrollbar pb-1 sm:pb-0"
               >
                 <Chip>
-                  <Icon size={14} className="text-brand-sky" />
-                  <span className="font-semibold">
+                  <Icon size={15} className="text-brand-sky shrink-0" />
+                  <span className="font-bold tabular-nums text-white">
                     {Math.round(data.temperature)}
                     {'\u00B0C'}
                   </span>
-                  <span className="text-white/70">{conditionLabel}</span>
-                </Chip>
-                <Chip>
-                  <Wind size={13} className="text-brand-sky" />
-                  <span className="font-semibold">
-                    {Math.round(data.windSpeed)} km/h
+                  <span className="text-white/55 text-[10px] sm:text-[11px] hidden sm:inline">
+                    {t('weather.label.feels')} {Math.round(data.feelsLike)}
+                    {'\u00B0'}
                   </span>
-                  <span className="text-white/60">{dirCardinal}</span>
                 </Chip>
                 <Chip>
-                  <Droplets size={13} className="text-brand-sky" />
-                  <span className="font-semibold">{data.humidity}%</span>
-                  <span className="text-white/60">{t('weather.label.humidity')}</span>
+                  <Wind size={14} className="text-brand-sky shrink-0" />
+                  <span className="font-bold tabular-nums text-white">
+                    {Math.round(data.windSpeed)}
+                  </span>
+                  <span className="text-white/55 text-[10px] sm:text-[11px]">km/h</span>
+                  <span className="text-white/70 text-[10px] sm:text-[11px] font-semibold">
+                    {dirCardinal}
+                  </span>
                 </Chip>
                 <Chip>
-                  <MapPin size={13} className="text-brand-sky" />
-                  <span className="font-semibold">{cityShort}</span>
+                  <Droplets size={14} className="text-brand-sky shrink-0" />
+                  <span className="font-bold tabular-nums text-white">{data.humidity}%</span>
+                  <span className="text-white/55 text-[10px] sm:text-[11px]">
+                    {t('weather.label.humidity')}
+                  </span>
                 </Chip>
                 <Chip>
-                  <Clock size={13} className="text-brand-sky" />
-                  <span className="text-white/80">{updated}</span>
+                  <MapPin size={14} className="text-brand-sky shrink-0" />
+                  <span className="font-semibold text-white">{cityShort}</span>
+                </Chip>
+                <Chip>
+                  <Clock size={14} className="text-brand-sky shrink-0" />
+                  <span className="text-white/85 tabular-nums">{updated}</span>
                   <button
                     type="button"
                     onClick={refresh}
                     disabled={loading}
                     aria-label={t('weather.refreshAria')}
-                    className="group ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
+                    className="group/r ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
                   >
                     <RefreshCw
-                      size={11}
-                      className={`transition-transform duration-500 group-hover:rotate-180 ${loading ? 'animate-spin' : ''}`}
+                      size={12}
+                      className={`transition-transform duration-700 group-hover/r:rotate-[360deg] ${loading ? 'animate-spin' : ''}`}
                     />
                   </button>
                 </Chip>
@@ -230,7 +291,8 @@ function Chip({ children }: { children: React.ReactNode }) {
   return (
     <motion.span
       variants={chipItem}
-      className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md ring-1 ring-white/15 text-[11px] sm:text-xs text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+      whileHover= y: -2 
+      className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 rounded-full bg-white/[0.09] hover:bg-white/[0.14] backdrop-blur-md ring-1 ring-white/15 hover:ring-white/30 text-[12px] sm:text-[13px] text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_4px_12px_-4px_rgba(0,0,0,0.25)] transition-colors"
     >
       {children}
     </motion.span>
