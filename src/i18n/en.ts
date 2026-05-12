@@ -17,7 +17,7 @@ export const en: Dictionary = {
   'header.toggleMenu': "Open or close menu",
 
   'hero.eyebrow': "Official Government Agency",
-  'hero.title': "Hydrometeorological Service Agency",
+  'hero.title': "Hydrometeorological Service Agency under the National Committee of the Republic of Uzbekistan on Ecology and Climate Change",
   'hero.subtitle': "The official government source for weather, climate, hydrology and agrometeorological observations.",
   'hero.cta.weather': "View Weather",
   'hero.cta.reception': "Book appointment",
@@ -35,7 +35,7 @@ export const en: Dictionary = {
   'hero.area.warnings.text': "Early warnings of hazardous weather events.",
 
   'about.eyebrow': "About Us",
-  'about.title': "Hydrometeorological Service Agency",
+  'about.title': "Hydrometeorological Service Agency (O\u2018zgidromet)",
   'about.body': "O'zgidromet is the state agency responsible for meteorological, climate, hydrological, and agrometeorological observations in Uzbekistan.",
   'about.label.phone': "Phone",
   'about.label.email': "Email",
