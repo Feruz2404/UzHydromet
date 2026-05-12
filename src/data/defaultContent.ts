@@ -1,7 +1,7 @@
 export const agency = {
   shortName: "O'zgidromet",
   altName: 'Hydrometeorological Service Agency',
-  fullName: 'Hydrometeorological Service Agency of the Republic of Uzbekistan',
+  fullName: 'Hydrometeorological Service Agency',
   address: "Toshkent shahri, Yunusobod tumani, Osiyo ko'chasi, 72",
   phone: '55 503 1222 (100)',
   email: 'info@meteo.uz',

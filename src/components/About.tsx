@@ -89,12 +89,13 @@ export function About() {
           </motion.div>
         </div>
 
-        <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+        {/* Supporting 4-cards: mobile horizontal swipe / desktop grid */}
+        <div className="mt-6 md:mt-8 -mx-4 px-4 sm:mx-0 sm:px-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar pb-2 sm:pb-0">
           {cards.map((c) => (
             <motion.div
               key={c.titleKey}
               {...cardMotion}
-              className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
+              className="snap-start shrink-0 sm:shrink min-w-[82vw] sm:min-w-0 rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
             >
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-brand-ice to-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30">
                 <CardIcon kind={c.kind} />
