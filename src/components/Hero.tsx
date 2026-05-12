@@ -251,7 +251,7 @@ export function Hero() {
                     {'\u00B0C'}
                   </span>
                   <span className="text-white/55 text-[10px] sm:text-[11px] hidden sm:inline">
-                    {t('weather.label.feels')} {Math.round(data.feelsLike)}
+                    {t('weather.label.feels')} {Math.round(data.apparentTemperature)}
                     {'\u00B0'}
                   </span>
                 </Chip>
