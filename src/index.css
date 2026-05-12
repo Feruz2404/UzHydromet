@@ -53,8 +53,45 @@ img {
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
+/* === Hero atmospheric animations === */
 @keyframes floatY {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
 }
 .animate-floatY { animation: floatY 6s ease-in-out infinite; }
+
+@keyframes slowDrift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-16px); }
+}
+.animate-slowDrift { animation: slowDrift 14s ease-in-out infinite; }
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.animate-glowPulse { animation: glowPulse 6s ease-in-out infinite; }
+
+@keyframes radarPing {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+.animate-radarPing { animation: radarPing 4s ease-in-out infinite; }
+
+@keyframes radarSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-radarSpin { animation: radarSpin 40s linear infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-floatY,
+  .animate-slowDrift,
+  .animate-glowPulse,
+  .animate-radarPing,
+  .animate-radarSpin,
+  .animate-spin,
+  .animate-pulse {
+    animation: none !important;
+  }
+}

@@ -22,8 +22,9 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Drop redundant 'contact'; reception now points to #contact (appointment form)
-  const linkIds = ['home', 'about', 'weather', 'services', 'leadership', 'reception', 'location']
+  // Required order: home, about, leadership, services, reception (→ contact form), location.
+  // 'weather' and standalone 'contact' removed per UX spec.
+  const linkIds = ['home', 'about', 'leadership', 'services', 'reception', 'location'] as const
   const hrefFor = (id: string) => (id === 'reception' ? '#contact' : `#${id}`)
 
   return (
@@ -75,12 +76,6 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <a
-              href="#contact"
-              className="hidden md:inline-flex items-center px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card hover:shadow-glow transition-all"
-            >
-              {t('header.cta.contact')}
-            </a>
             <button
               type="button"
               onClick={() => setIsOpen((v) => !v)}
@@ -106,13 +101,6 @@ export function Header() {
                   {t(`nav.${id}`)}
                 </a>
               ))}
-              <a
-                href="#contact"
-                onClick={() => setIsOpen(false)}
-                className="mt-2 inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card"
-              >
-                {t('header.cta.contact')}
-              </a>
             </div>
           </div>
         )}
