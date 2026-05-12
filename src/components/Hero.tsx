@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion'
-import type { ReactNode } from 'react'
 import {
   CloudSun,
   Calendar,
@@ -7,16 +6,15 @@ import {
   Activity,
   Wind,
   Droplets,
-  Compass,
+  Clock,
   RefreshCw,
-  AlertCircle,
-  Thermometer
+  AlertCircle
 } from 'lucide-react'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useWeather } from '../hooks/useWeather'
 import { describeWeather, weatherIconFor } from '../data/weatherCodes'
-import { fadeInUp, fadeInUpDelayed } from '../lib/motion'
+import { fadeInUp } from '../lib/motion'
 
 const LOCALE_BY_LANG: Record<string, string> = { uz: 'en-GB', ru: 'ru-RU', en: 'en-GB' }
 const CARDINALS = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'] as const
@@ -38,39 +36,37 @@ export function Hero() {
   const conditionLabel = info ? t(info.labelKey) : ''
   const cityShort = t('weather.cityShort')
   const updated = data
-    ? new Date(data.time).toLocaleString(LOCALE_BY_LANG[lang] ?? 'en-GB', {
+    ? new Date(data.time).toLocaleTimeString(LOCALE_BY_LANG[lang] ?? 'en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
         timeZone: 'Asia/Tashkent'
       })
-    : '\u2014'
+    : ''
   const dirCardinal = data ? t(`weather.windCardinal.${cardinalOf(data.windDirection)}`) : ''
 
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-20 pb-10 sm:pt-24 sm:pb-12 md:pt-28 md:pb-16 lg:pt-32 lg:pb-20 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
+      className="relative overflow-hidden pt-20 pb-12 sm:pt-24 sm:pb-16 md:pt-28 md:pb-20 lg:pt-32 lg:pb-24 bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white"
     >
-      {/* Atmospheric weather-integrated background */}
+      {/* === Background-integrated weather visual === */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Atmospheric color blobs */}
         <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-brand-cyan/25 blur-3xl" />
         <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-brand-sky/15 blur-3xl" />
-        {/* Radar rings (desktop only) */}
-        <div className="absolute hidden lg:block right-[-6rem] top-1/2 -translate-y-1/2 w-[40rem] h-[40rem] opacity-[0.18]">
-          <div className="absolute inset-0 rounded-full border border-white/15" />
-          <div className="absolute inset-[8%] rounded-full border border-white/10" />
-          <div className="absolute inset-[18%] rounded-full border border-white/10" />
-          <div className="absolute inset-[28%] rounded-full border border-white/10" />
-          <div className="absolute inset-[38%] rounded-full border border-white/15" />
+
+        {/* Radar rings (desktop) */}
+        <div className="absolute hidden lg:block right-[-4rem] top-1/2 -translate-y-1/2 w-[44rem] h-[44rem] opacity-[0.15]">
+          <div className="absolute inset-0 rounded-full border border-white/20" />
+          <div className="absolute inset-[10%] rounded-full border border-white/15" />
+          <div className="absolute inset-[22%] rounded-full border border-white/12" />
+          <div className="absolute inset-[34%] rounded-full border border-white/10" />
+          <div className="absolute inset-[46%] rounded-full border border-white/12" />
         </div>
-        {/* Giant ghost temperature (desktop only) */}
-        {data && (
-          <div className="hidden lg:block absolute right-[6%] top-1/2 -translate-y-1/2 font-display font-extrabold text-[22rem] xl:text-[26rem] leading-none text-white/[0.05] tracking-tighter select-none pointer-events-none">
-            {Math.round(data.temperature)}
-            {'\u00B0'}
-          </div>
-        )}
-        {/* SVG wave/cloud pattern */}
+
+        {/* SVG wave/cloud line pattern */}
         <svg
-          className="absolute inset-0 w-full h-full opacity-[0.07]"
+          className="absolute inset-0 w-full h-full opacity-[0.06]"
           viewBox="0 0 800 400"
           preserveAspectRatio="none"
         >
@@ -81,8 +77,31 @@ export function Hero() {
           </defs>
           <rect width="100%" height="100%" fill="url(#hero-lines)" />
         </svg>
+
+        {/* GIANT subtle ghost temperature as background */}
+        {data && (
+          <>
+            {/* desktop variant */}
+            <div className="hidden md:flex absolute right-[4%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.07]">
+              <span className="text-[18rem] lg:text-[24rem] xl:text-[28rem]">
+                {Math.round(data.temperature)}
+              </span>
+              <span className="mt-6 lg:mt-10 text-[6rem] lg:text-[8rem] xl:text-[10rem]">
+                {'\u00B0'}
+              </span>
+            </div>
+            {/* mobile variant */}
+            <div className="md:hidden absolute right-2 bottom-2 font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.08]">
+              <span className="text-[10rem]">
+                {Math.round(data.temperature)}
+                {'\u00B0'}
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
+      {/* === Foreground content === */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div {...fadeInUp} className="max-w-3xl">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-[10px] sm:text-[11px] font-semibold text-white/90 uppercase tracking-[0.16em]">
@@ -95,6 +114,8 @@ export function Hero() {
           <p className="mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg text-white/80 max-w-xl leading-relaxed">
             {t('hero.subtitle')}
           </p>
+
+          {/* CTA buttons */}
           <div className="mt-5 sm:mt-7 flex flex-wrap gap-2.5 sm:gap-3">
             <a
               href="#weather"
@@ -118,122 +139,71 @@ export function Hero() {
               {t('hero.cta.map')}
             </a>
           </div>
-        </motion.div>
 
-        {/* Integrated live weather glass strip */}
-        <motion.div
-          {...fadeInUpDelayed}
-          id="weather"
-          className="relative mt-6 sm:mt-8 md:mt-10 lg:mt-12 scroll-mt-24"
-        >
-          <div className="relative rounded-3xl bg-white/[0.07] backdrop-blur-xl ring-1 ring-white/15 shadow-glow overflow-hidden">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -top-16 -right-10 w-56 h-56 rounded-full bg-brand-cyan/30 blur-3xl"
-            />
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -bottom-16 -left-10 w-56 h-56 rounded-full bg-brand-sky/20 blur-3xl"
-            />
+          {/* === Integrated weather chips (no card, no column) === */}
+          <div id="weather" className="mt-7 sm:mt-9 scroll-mt-24">
+            {loading && !data && (
+              <div className="inline-flex items-center gap-2 text-white/80 text-xs sm:text-sm">
+                <RefreshCw size={14} className="animate-spin" />
+                <span>{t('weather.loading')}</span>
+              </div>
+            )}
 
-            <div className="relative p-4 sm:p-5 md:p-6">
-              {loading && !data && (
-                <div className="text-center text-white/85 py-4">
-                  <RefreshCw
-                    className="inline-block animate-spin mr-2 align-middle"
-                    size={16}
-                  />
-                  <span className="align-middle text-sm">{t('weather.loading')}</span>
-                </div>
-              )}
+            {error && !loading && (
+              <div className="inline-flex items-center gap-2 text-white/85 text-xs sm:text-sm">
+                <AlertCircle size={14} />
+                <span>{t('weather.errorLoad')}</span>
+                <button
+                  type="button"
+                  onClick={refresh}
+                  className="ml-2 underline decoration-white/40 hover:decoration-white"
+                >
+                  {t('weather.tryAgain')}
+                </button>
+              </div>
+            )}
 
-              {error && !loading && (
-                <div className="text-center py-4">
-                  <AlertCircle className="inline-block mr-2 align-middle" size={16} />
-                  <span className="text-white/90 align-middle text-sm">
-                    {t('weather.errorLoad')}
+            {data && info && Icon && (
+              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 sm:gap-2.5 overflow-x-auto sm:flex-wrap snap-x snap-mandatory sm:snap-none no-scrollbar pb-1 sm:pb-0">
+                <Chip>
+                  <Icon size={14} className="text-brand-sky" />
+                  <span className="font-semibold">
+                    {Math.round(data.temperature)}
+                    {'\u00B0C'}
                   </span>
+                  <span className="text-white/70">{conditionLabel}</span>
+                </Chip>
+                <Chip>
+                  <Wind size={13} className="text-brand-sky" />
+                  <span className="font-semibold">
+                    {Math.round(data.windSpeed)} km/h
+                  </span>
+                  <span className="text-white/60">{dirCardinal}</span>
+                </Chip>
+                <Chip>
+                  <Droplets size={13} className="text-brand-sky" />
+                  <span className="font-semibold">{data.humidity}%</span>
+                  <span className="text-white/60">{t('weather.label.humidity')}</span>
+                </Chip>
+                <Chip>
+                  <MapPin size={13} className="text-brand-sky" />
+                  <span className="font-semibold">{cityShort}</span>
+                </Chip>
+                <Chip>
+                  <Clock size={13} className="text-brand-sky" />
+                  <span className="text-white/80">{updated}</span>
                   <button
                     type="button"
                     onClick={refresh}
-                    className="mt-3 block mx-auto px-4 py-2 rounded-xl bg-white text-brand-navy text-sm font-semibold hover:bg-brand-ice transition"
+                    disabled={loading}
+                    aria-label={t('weather.refreshAria')}
+                    className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
                   >
-                    {t('weather.tryAgain')}
+                    <RefreshCw size={11} className={loading ? 'animate-spin' : ''} />
                   </button>
-                </div>
-              )}
-
-              {data && info && Icon && (
-                <>
-                  {/* Primary row */}
-                  <div className="flex items-center gap-3 sm:gap-4 md:gap-5">
-                    <div
-                      aria-hidden="true"
-                      className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 shrink-0 rounded-2xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky animate-floatY"
-                    >
-                      <Icon size={32} strokeWidth={1.5} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-1.5 flex-wrap">
-                        <span className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold leading-none">
-                          {Math.round(data.temperature)}
-                        </span>
-                        <span className="text-xl sm:text-2xl md:text-3xl font-semibold text-white/75">
-                          {'\u00B0C'}
-                        </span>
-                        <span className="ml-1 text-sm sm:text-base font-semibold text-white/90 [overflow-wrap:anywhere]">
-                          {conditionLabel}
-                        </span>
-                      </div>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] sm:text-[11px] uppercase tracking-[0.14em] text-white/65 font-semibold">
-                        <span className="inline-flex items-center gap-1.5">
-                          <MapPin size={11} /> {cityShort}
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 normal-case tracking-normal text-white/75 font-medium [overflow-wrap:anywhere]">
-                          <span className="opacity-70">{t('weather.lastUpdated')}:</span>
-                          <span className="text-white/95">{updated}</span>
-                        </span>
-                      </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={refresh}
-                      disabled={loading}
-                      className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-white/10 hover:bg-white/15 ring-1 ring-white/15 transition disabled:opacity-60 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
-                      aria-label={t('weather.refreshAria')}
-                    >
-                      <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-                    </button>
-                  </div>
-
-                  {/* Secondary metrics: mobile horizontal swipe chips / desktop grid */}
-                  <div className="mt-4 sm:mt-5 -mx-4 px-4 sm:mx-0 sm:px-0 flex sm:grid sm:grid-cols-4 gap-2 sm:gap-3 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar pb-1 sm:pb-0">
-                    <Chip
-                      icon={<Thermometer size={14} />}
-                      label={t('weather.label.feels')}
-                      value={`${Math.round(data.apparentTemperature)}\u00B0C`}
-                    />
-                    <Chip
-                      icon={<Wind size={14} />}
-                      label={t('weather.label.wind')}
-                      value={`${Math.round(data.windSpeed)} km/h`}
-                      sub={dirCardinal}
-                    />
-                    <Chip
-                      icon={<Droplets size={14} />}
-                      label={t('weather.label.humidity')}
-                      value={`${data.humidity}%`}
-                    />
-                    <Chip
-                      icon={<Compass size={14} />}
-                      label={t('weather.label.windDir')}
-                      value={`${data.windDirection}\u00B0`}
-                      sub={dirCardinal}
-                    />
-                  </div>
-                </>
-              )}
-            </div>
+                </Chip>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
@@ -241,29 +211,10 @@ export function Hero() {
   )
 }
 
-function Chip({
-  icon,
-  label,
-  value,
-  sub
-}: {
-  icon: ReactNode
-  label: string
-  value: string
-  sub?: string
-}) {
+function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <div className="snap-start shrink-0 min-w-[44vw] sm:min-w-0 rounded-xl bg-white/[0.07] ring-1 ring-white/10 px-3 py-2.5 sm:p-3">
-      <div className="flex items-center gap-1.5 text-[9.5px] sm:text-[10px] uppercase tracking-wider text-white/65 font-semibold">
-        <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-md bg-white/10 ring-1 ring-white/15 flex items-center justify-center text-brand-sky shrink-0">
-          {icon}
-        </span>
-        <span className="truncate">{label}</span>
-      </div>
-      <div className="mt-1.5 text-sm sm:text-base font-bold text-white leading-tight break-words">
-        {value}
-      </div>
-      {sub && <div className="mt-0.5 text-[10.5px] text-white/55 truncate">{sub}</div>}
-    </div>
+    <span className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md ring-1 ring-white/15 text-[11px] sm:text-xs text-white whitespace-nowrap">
+      {children}
+    </span>
   )
 }
