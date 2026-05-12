@@ -17,10 +17,10 @@ export const en: Dictionary = {
   'header.toggleMenu': "Open or close menu",
 
   'hero.eyebrow': "Official Government Agency",
-  'hero.title': "Hydrometeorological Service Agency of the Republic of Uzbekistan",
+  'hero.title': "Hydrometeorological Service Agency",
   'hero.subtitle': "The official government source for weather, climate, hydrology and agrometeorological observations.",
   'hero.cta.weather': "View Weather",
-  'hero.cta.reception': "Reception Hours",
+  'hero.cta.reception': "Book appointment",
   'hero.cta.map': "Open Map",
   'hero.institutional.eyebrow': "Official Center",
   'hero.institutional.title': "Official hydrometeorological information center",
@@ -36,7 +36,7 @@ export const en: Dictionary = {
 
   'about.eyebrow': "About Us",
   'about.title': "Hydrometeorological Service Agency",
-  'about.body': "O'zgidromet is a state agency responsible for meteorological, climate, hydrological, and agrometeorological observations in the Republic of Uzbekistan.",
+  'about.body': "O'zgidromet is the state agency responsible for meteorological, climate, hydrological, and agrometeorological observations in Uzbekistan.",
   'about.label.phone': "Phone",
   'about.label.email': "Email",
   'about.card.weather.title': "Weather Forecast",
@@ -143,6 +143,7 @@ export const en: Dictionary = {
   'leadership.reception': "Reception",
   'leadership.action.responsibilities': "Responsibilities",
   'leadership.action.biography': "Biography",
+  'leadership.action.book': "Book appointment",
   'leadership.label.phone': "Phone",
   'leadership.label.email': "Email",
   'leadership.label.website': "Website",
@@ -205,7 +206,7 @@ export const en: Dictionary = {
   'contact.field.lastName': "Last Name",
   'contact.field.phone': "Phone Number",
   'contact.field.email': "Email",
-  'contact.field.leader': "Leader",
+  'contact.field.leader': "Which leader do you want to book with?",
   'contact.field.subject': "Subject",
   'contact.field.message': "Message",
   'contact.field.preferredDate': "Preferred Date",
@@ -233,12 +234,12 @@ export const en: Dictionary = {
   'news.item3.summary': "Public early warning channels keep citizens informed about dangerous weather events.",
   'news.item3.tag': "Notice",
 
-  'footer.tagline': "Hydrometeorological Service Agency of the Republic of Uzbekistan.",
+  'footer.tagline': "Hydrometeorological Service Agency.",
   'footer.quickLinks': "Quick Links",
   'footer.contact': "Contact",
   'footer.admin': "Administrator",
   'footer.adminText': "Content administration is available to authorized personnel.",
-  'footer.copyright': "\u00A9 2026 Hydrometeorological Service Agency of the Republic of Uzbekistan. All rights reserved.",
+  'footer.copyright': "\u00A9 2026 Hydrometeorological Service Agency. All rights reserved.",
 
   'agency.workingHours': "Monday - Friday, 09:00 - 18:00",
 
