@@ -17,10 +17,10 @@ export const uz: Dictionary = {
   'header.toggleMenu': "Menyuni ochish yoki yopish",
 
   'hero.eyebrow': "Rasmiy davlat agentligi",
-  'hero.title': "O'zbekiston Respublikasi Gidrometeorologiya xizmati agentligi",
+  'hero.title': "Gidrometeorologiya xizmati agentligi",
   'hero.subtitle': "Ob-havo, iqlim, gidrologiya va agrometeorologik kuzatuvlar bo'yicha rasmiy davlat ma'lumot markazi.",
   'hero.cta.weather': "Ob-havoni ko'rish",
-  'hero.cta.reception': "Qabul soatlari",
+  'hero.cta.reception': "Qabulga yozilish",
   'hero.cta.map': "Xaritani ochish",
   'hero.institutional.eyebrow': "Rasmiy markaz",
   'hero.institutional.title': "Rasmiy gidrometeorologik axborot markazi",
@@ -36,7 +36,7 @@ export const uz: Dictionary = {
 
   'about.eyebrow': "Biz haqimizda",
   'about.title': "Gidrometeorologiya xizmati agentligi",
-  'about.body': "O'zgidromet \u2014 O'zbekiston Respublikasida meteorologik, iqlim, gidrologik va agrometeorologik kuzatuvlarni amalga oshiruvchi davlat tashkiloti.",
+  'about.body': "O'zgidromet \u2014 O'zbekistonda meteorologik, iqlim, gidrologik va agrometeorologik kuzatuvlarni amalga oshiruvchi davlat tashkiloti.",
   'about.label.phone': "Telefon",
   'about.label.email': "Elektron pochta",
   'about.card.weather.title': "Ob-havo prognozi",
@@ -143,6 +143,7 @@ export const uz: Dictionary = {
   'leadership.reception': "Qabul",
   'leadership.action.responsibilities': "Vazifalari",
   'leadership.action.biography': "Biografiya",
+  'leadership.action.book': "Qabulga yozilish",
   'leadership.label.phone': "Telefon",
   'leadership.label.email': "Elektron pochta",
   'leadership.label.website': "Veb-sayt",
@@ -205,7 +206,7 @@ export const uz: Dictionary = {
   'contact.field.lastName': "Familiya",
   'contact.field.phone': "Telefon raqami",
   'contact.field.email': "Elektron pochta",
-  'contact.field.leader': "Rahbar",
+  'contact.field.leader': "Kimning qabuliga yozilmoqchisiz?",
   'contact.field.subject': "Mavzu",
   'contact.field.message': "Xabar",
   'contact.field.preferredDate': "Tanlangan sana",
@@ -233,12 +234,12 @@ export const uz: Dictionary = {
   'news.item3.summary': "Ommaviy erta ogohlantirish kanallari fuqarolarni xavfli ob-havo hodisalari haqida xabardor qiladi.",
   'news.item3.tag': "Diqqat",
 
-  'footer.tagline': "O'zbekiston Respublikasi Gidrometeorologiya xizmati agentligi.",
+  'footer.tagline': "Gidrometeorologiya xizmati agentligi.",
   'footer.quickLinks': "Tezkor havolalar",
   'footer.contact': "Aloqa",
   'footer.admin': "Administrator",
   'footer.adminText': "Tarkibni boshqarish vakolatli xodimlar uchun mavjud.",
-  'footer.copyright': "\u00A9 2026 O'zbekiston Respublikasi Gidrometeorologiya xizmati agentligi. Barcha huquqlar himoyalangan.",
+  'footer.copyright': "\u00A9 2026 Gidrometeorologiya xizmati agentligi. Barcha huquqlar himoyalangan.",
 
   'agency.workingHours': "Dushanba - Juma, 09:00 - 18:00",
 
