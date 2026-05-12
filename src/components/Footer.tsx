@@ -44,18 +44,13 @@ export function Footer() {
               </a>
             </li>
             <li>
-              <a href="#weather" className="hover:text-white">
-                {t('nav.weather')}
+              <a href="#leadership" className="hover:text-white">
+                {t('nav.leadership')}
               </a>
             </li>
             <li>
               <a href="#services" className="hover:text-white">
                 {t('nav.services')}
-              </a>
-            </li>
-            <li>
-              <a href="#leadership" className="hover:text-white">
-                {t('nav.leadership')}
               </a>
             </li>
             <li>

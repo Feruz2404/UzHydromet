@@ -24,6 +24,15 @@ function cardinalOf(deg: number): Cardinal {
   return CARDINALS[((idx % 8) + 8) % 8]
 }
 
+const chipsContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08, delayChildren: 0.15 } }
+}
+const chipItem = {
+  hidden: { opacity: 0, y: 8 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' as const } }
+}
+
 export function Hero() {
   const { t, lang } = useLanguage()
   const { data, loading, error, refresh } = useWeather(
@@ -51,22 +60,22 @@ export function Hero() {
     >
       {/* === Background-integrated weather visual === */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Atmospheric color blobs */}
-        <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-brand-cyan/25 blur-3xl" />
+        {/* Atmospheric color blobs with slow glow */}
+        <div className="absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-brand-cyan/25 blur-3xl animate-glowPulse" />
         <div className="absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-brand-sky/15 blur-3xl" />
 
-        {/* Radar rings (desktop) */}
-        <div className="absolute hidden lg:block right-[-4rem] top-1/2 -translate-y-1/2 w-[44rem] h-[44rem] opacity-[0.15]">
-          <div className="absolute inset-0 rounded-full border border-white/20" />
-          <div className="absolute inset-[10%] rounded-full border border-white/15" />
-          <div className="absolute inset-[22%] rounded-full border border-white/12" />
-          <div className="absolute inset-[34%] rounded-full border border-white/10" />
+        {/* Radar rings (desktop) with subtle pulse + slow spin */}
+        <div className="absolute hidden lg:block right-[-4rem] top-1/2 -translate-y-1/2 w-[44rem] h-[44rem] opacity-[0.18] animate-radarSpin">
+          <div className="absolute inset-0 rounded-full border border-white/20 animate-radarPing" />
+          <div className="absolute inset-[10%] rounded-full border border-white/15 animate-radarPing" />
+          <div className="absolute inset-[22%] rounded-full border border-white/12 animate-radarPing" />
+          <div className="absolute inset-[34%] rounded-full border border-white/10 animate-radarPing" />
           <div className="absolute inset-[46%] rounded-full border border-white/12" />
         </div>
 
-        {/* SVG wave/cloud line pattern */}
+        {/* Slow drifting wave/cloud pattern */}
         <svg
-          className="absolute inset-0 w-full h-full opacity-[0.06]"
+          className="absolute inset-0 w-full h-full opacity-[0.07] animate-slowDrift"
           viewBox="0 0 800 400"
           preserveAspectRatio="none"
         >
@@ -78,21 +87,19 @@ export function Hero() {
           <rect width="100%" height="100%" fill="url(#hero-lines)" />
         </svg>
 
-        {/* GIANT subtle ghost temperature as background */}
+        {/* GIANT ghost temperature with pulsing glow (background) */}
         {data && (
           <>
-            {/* desktop variant */}
-            <div className="hidden md:flex absolute right-[4%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.07]">
-              <span className="text-[18rem] lg:text-[24rem] xl:text-[28rem]">
+            <div className="hidden md:flex absolute right-[4%] top-1/2 -translate-y-1/2 items-start font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.07] animate-glowPulse">
+              <span className="text-[14rem] lg:text-[20rem] xl:text-[24rem]">
                 {Math.round(data.temperature)}
               </span>
-              <span className="mt-6 lg:mt-10 text-[6rem] lg:text-[8rem] xl:text-[10rem]">
+              <span className="mt-6 lg:mt-10 text-[5rem] lg:text-[7rem] xl:text-[8rem]">
                 {'\u00B0'}
               </span>
             </div>
-            {/* mobile variant */}
             <div className="md:hidden absolute right-2 bottom-2 font-display font-extrabold leading-none tracking-tighter select-none text-white/[0.08]">
-              <span className="text-[10rem]">
+              <span className="text-[9rem]">
                 {Math.round(data.temperature)}
                 {'\u00B0'}
               </span>
@@ -103,15 +110,15 @@ export function Hero() {
 
       {/* === Foreground content === */}
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div {...fadeInUp} className="max-w-3xl">
+        <motion.div {...fadeInUp} className="max-w-4xl">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-[10px] sm:text-[11px] font-semibold text-white/90 uppercase tracking-[0.16em]">
             <Activity size={12} />
             {t('hero.eyebrow')}
           </span>
-          <h1 className="mt-4 font-display text-[26px] sm:text-3xl md:text-5xl lg:text-6xl font-extrabold leading-[1.1] tracking-tight text-white">
+          <h1 className="mt-4 font-display text-[22px] sm:text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.18] tracking-tight text-white [text-wrap:balance] [overflow-wrap:anywhere] hyphens-auto">
             {t('hero.title')}
           </h1>
-          <p className="mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg text-white/80 max-w-xl leading-relaxed">
+          <p className="mt-3 sm:mt-4 text-sm sm:text-base lg:text-lg text-white/80 max-w-2xl leading-relaxed">
             {t('hero.subtitle')}
           </p>
 
@@ -164,7 +171,12 @@ export function Hero() {
             )}
 
             {data && info && Icon && (
-              <div className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 sm:gap-2.5 overflow-x-auto sm:flex-wrap snap-x snap-mandatory sm:snap-none no-scrollbar pb-1 sm:pb-0">
+              <motion.div
+                variants={chipsContainer}
+                initial="hidden"
+                animate="show"
+                className="-mx-4 px-4 sm:mx-0 sm:px-0 flex gap-2 sm:gap-2.5 overflow-x-auto sm:flex-wrap snap-x snap-mandatory sm:snap-none no-scrollbar pb-1 sm:pb-0"
+              >
                 <Chip>
                   <Icon size={14} className="text-brand-sky" />
                   <span className="font-semibold">
@@ -197,12 +209,15 @@ export function Hero() {
                     onClick={refresh}
                     disabled={loading}
                     aria-label={t('weather.refreshAria')}
-                    className="ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
+                    className="group ml-1 inline-flex items-center justify-center w-5 h-5 rounded-full hover:bg-white/15 transition disabled:opacity-50"
                   >
-                    <RefreshCw size={11} className={loading ? 'animate-spin' : ''} />
+                    <RefreshCw
+                      size={11}
+                      className={`transition-transform duration-500 group-hover:rotate-180 ${loading ? 'animate-spin' : ''}`}
+                    />
                   </button>
                 </Chip>
-              </div>
+              </motion.div>
             )}
           </div>
         </motion.div>
@@ -213,8 +228,11 @@ export function Hero() {
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md ring-1 ring-white/15 text-[11px] sm:text-xs text-white whitespace-nowrap">
+    <motion.span
+      variants={chipItem}
+      className="snap-start shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.08] backdrop-blur-md ring-1 ring-white/15 text-[11px] sm:text-xs text-white whitespace-nowrap shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+    >
       {children}
-    </span>
+    </motion.span>
   )
 }
