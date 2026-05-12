@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Phone, Mail, Globe, MapPin, CalendarClock, ChevronDown, FileText, BookOpen } from 'lucide-react'
+import { Phone, Mail, Globe, MapPin, CalendarClock, ChevronDown, FileText, BookOpen, CalendarCheck } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { fadeInUpInView, fadeInUpInViewQuick } from '../lib/motion'
@@ -17,9 +17,23 @@ function getInitials(name: string): string {
   return (first + second).toUpperCase() || '\u2014'
 }
 
+function bookAppointment(setSelectedLeaderId: (id: string | null) => void, leaderId: string) {
+  setSelectedLeaderId(leaderId)
+  if (typeof document !== 'undefined') {
+    const el = document.getElementById('contact')
+    if (el && typeof el.scrollIntoView === 'function') {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+  }
+  if (typeof window !== 'undefined') {
+    window.location.hash = '#contact'
+  }
+}
+
 export function Leadership() {
   const { t, lang } = useLanguage()
-  const { activeLeaders, settings } = useAdmin()
+  const { activeLeaders, settings, setSelectedLeaderId } = useAdmin()
   const [expanded, setExpanded] = useState<Record<string, ExpandedKind>>({})
 
   function toggle(id: string, kind: Exclude<ExpandedKind, null>) {
@@ -66,13 +80,13 @@ export function Leadership() {
                 : (leader.biographyKey && (leader.showBiography ?? false)) ? t(leader.biographyKey) : ''
               const showResp = Boolean(respText)
               const showBio = Boolean(bioText)
-              const hasActions = showResp || showBio
               const respBtn = open === 'responsibilities'
                 ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card'
                 : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'
               const bioBtn = open === 'biography'
                 ? 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card'
                 : 'bg-white border border-slate-200 text-brand-navy hover:border-brand-primary hover:text-brand-deep'
+              const bookBtn = 'bg-gradient-to-br from-brand-primary to-brand-deep text-white shadow-card hover:shadow-glow'
               return (
                 <motion.article
                   key={leader.id}
@@ -105,24 +119,23 @@ export function Leadership() {
                       </ul>
                     </div>
                   </div>
-                  {hasActions && (
-                    <div className="px-4 sm:px-6 lg:px-7 pb-4 sm:pb-6 lg:pb-7 mt-auto">
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        {showResp && (
-                          <button type="button" onClick={() => toggle(leader.id, 'responsibilities')} aria-expanded={open === 'responsibilities'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${respBtn}`}><FileText size={14} aria-hidden="true" />{t('leadership.action.responsibilities')}<ChevronDown size={13} aria-hidden="true" className={open === 'responsibilities' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
-                        )}
-                        {showBio && (
-                          <button type="button" onClick={() => toggle(leader.id, 'biography')} aria-expanded={open === 'biography'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${bioBtn}`}><BookOpen size={14} aria-hidden="true" />{t('leadership.action.biography')}<ChevronDown size={13} aria-hidden="true" className={open === 'biography' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
-                        )}
-                      </div>
-                      {open === 'responsibilities' && respText && (
-                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]">{respText}</div>
+                  <div className="px-4 sm:px-6 lg:px-7 pb-4 sm:pb-6 lg:pb-7 mt-auto">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
+                      {showResp && (
+                        <button type="button" onClick={() => toggle(leader.id, 'responsibilities')} aria-expanded={open === 'responsibilities'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${respBtn}`}><FileText size={14} aria-hidden="true" />{t('leadership.action.responsibilities')}<ChevronDown size={13} aria-hidden="true" className={open === 'responsibilities' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
                       )}
-                      {open === 'biography' && bioText && (
-                        <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]">{bioText}</div>
+                      {showBio && (
+                        <button type="button" onClick={() => toggle(leader.id, 'biography')} aria-expanded={open === 'biography'} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${bioBtn}`}><BookOpen size={14} aria-hidden="true" />{t('leadership.action.biography')}<ChevronDown size={13} aria-hidden="true" className={open === 'biography' ? 'transition-transform rotate-180' : 'transition-transform'} /></button>
                       )}
+                      <button type="button" onClick={() => bookAppointment(setSelectedLeaderId, leader.id)} className={`inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-[12.5px] sm:text-sm font-semibold transition-all w-full sm:w-auto ${bookBtn}`}><CalendarCheck size={14} aria-hidden="true" />{t('leadership.action.book')}</button>
                     </div>
-                  )}
+                    {open === 'responsibilities' && respText && (
+                      <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]">{respText}</div>
+                    )}
+                    {open === 'biography' && bioText && (
+                      <div className="mt-3 rounded-2xl bg-brand-mist/60 border border-slate-100 p-3.5 sm:p-4 text-[12.5px] sm:text-sm text-brand-navy leading-relaxed whitespace-pre-line [overflow-wrap:anywhere]">{bioText}</div>
+                    )}
+                  </div>
                 </motion.article>
               )
             })}

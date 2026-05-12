@@ -5,6 +5,10 @@ import { useLanguage } from '../i18n/LanguageContext'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { useAdmin } from '../context/AdminContext'
 
+const headerInitial = { y: -16, opacity: 0 }
+const headerAnimate = { y: 0, opacity: 1 }
+const headerTransition = { duration: 0.45, ease: 'easeOut' as const }
+
 export function Header() {
   const { t } = useLanguage()
   const { settings } = useAdmin()
@@ -24,9 +28,9 @@ export function Header() {
 
   return (
     <motion.header
-      initial= y: -16, opacity: 0 
-      animate= y: 0, opacity: 1 
-      transition= duration: 0.45, ease: 'easeOut' 
+      initial={headerInitial}
+      animate={headerAnimate}
+      transition={headerTransition}
       className={`fixed top-0 inset-x-0 z-40 transition-all ${
         scrolled
           ? 'bg-white/80 backdrop-blur-md shadow-card'
