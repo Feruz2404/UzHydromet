@@ -1,5 +1,16 @@
 import { motion } from 'framer-motion'
-import { CloudSun, Thermometer, Droplets, Sprout, ShieldCheck } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import {
+  ShieldCheck,
+  Shield,
+  Sprout,
+  Droplet,
+  Plane,
+  AlertTriangle,
+  Thermometer,
+  BarChart3,
+  Globe2
+} from 'lucide-react'
 import { hydrometImportance } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 
@@ -17,25 +28,23 @@ const blockMotion = {
   transition: { duration: 0.55 }
 }
 
-const cardMotion = {
-  initial: { opacity: 0, y: 16 },
+const chipMotion = {
+  initial: { opacity: 0, y: 12 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true },
-  transition: { duration: 0.5 }
+  transition: { duration: 0.45 }
 }
 
-const cards = [
-  { kind: 'cloudsun', titleKey: 'about.card.weather.title', textKey: 'about.card.weather.text' },
-  { kind: 'therm', titleKey: 'about.card.climate.title', textKey: 'about.card.climate.text' },
-  { kind: 'drops', titleKey: 'about.card.hydro.title', textKey: 'about.card.hydro.text' },
-  { kind: 'sprout', titleKey: 'about.card.agro.title', textKey: 'about.card.agro.text' }
-] as const
-
-function CardIcon({ kind }: { kind: string }) {
-  if (kind === 'cloudsun') return <CloudSun size={20} />
-  if (kind === 'therm') return <Thermometer size={20} />
-  if (kind === 'drops') return <Droplets size={20} />
-  return <Sprout size={20} />
+// Importance icons mapped by item id (from hydrometImportance in defaultContent)
+const importanceIcons: Record<string, LucideIcon> = {
+  publicSafety: Shield,
+  agriculture: Sprout,
+  water: Droplet,
+  transport: Plane,
+  warnings: AlertTriangle,
+  climate: Thermometer,
+  economic: BarChart3,
+  environment: Globe2
 }
 
 export function About() {
@@ -46,6 +55,7 @@ export function About() {
       className="py-12 md:py-16 lg:py-24 bg-gradient-to-b from-white via-brand-mist/40 to-white"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Intro */}
         <motion.div {...introMotion} className="max-w-3xl">
           <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
             {t('about.eyebrow')}
@@ -58,10 +68,11 @@ export function About() {
           </p>
         </motion.div>
 
-        <div className="mt-8 md:mt-10 grid lg:grid-cols-2 gap-5 md:gap-6">
+        {/* === Two big cards: mobile horizontal swipe / desktop 2-col grid === */}
+        <div className="mt-8 md:mt-10 -mx-4 px-4 lg:mx-0 lg:px-0 flex lg:grid lg:grid-cols-2 gap-5 md:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none scroll-smooth no-scrollbar pb-2 lg:pb-0">
           <motion.div
             {...blockMotion}
-            className="rounded-3xl bg-white border border-slate-100 p-6 sm:p-7 shadow-card"
+            className="snap-start shrink-0 lg:shrink min-w-[86vw] sm:min-w-[70vw] lg:min-w-0 rounded-3xl bg-white border border-slate-100 p-6 sm:p-7 shadow-card"
           >
             <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
               {t('about.role.eyebrow')}
@@ -75,7 +86,7 @@ export function About() {
           </motion.div>
           <motion.div
             {...blockMotion}
-            className="rounded-3xl bg-gradient-to-br from-brand-mist via-white to-brand-ice border border-slate-100 p-6 sm:p-7 shadow-card"
+            className="snap-start shrink-0 lg:shrink min-w-[86vw] sm:min-w-[70vw] lg:min-w-0 rounded-3xl bg-gradient-to-br from-brand-mist via-white to-brand-ice border border-slate-100 p-6 sm:p-7 shadow-card"
           >
             <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
               {t('hydromet.eyebrow')}
@@ -89,30 +100,10 @@ export function About() {
           </motion.div>
         </div>
 
-        {/* Supporting 4-cards: mobile horizontal swipe / desktop grid */}
-        <div className="mt-6 md:mt-8 -mx-4 px-4 sm:mx-0 sm:px-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar pb-2 sm:pb-0">
-          {cards.map((c) => (
-            <motion.div
-              key={c.titleKey}
-              {...cardMotion}
-              className="snap-start shrink-0 sm:shrink min-w-[82vw] sm:min-w-0 rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-0.5 hover:border-brand-sky/40 transition-all"
-            >
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-brand-ice to-white text-brand-deep flex items-center justify-center ring-1 ring-brand-sky/30">
-                <CardIcon kind={c.kind} />
-              </div>
-              <div className="mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy">
-                {t(c.titleKey)}
-              </div>
-              <div className="mt-1.5 text-[13px] sm:text-sm text-brand-muted leading-relaxed">
-                {t(c.textKey)}
-              </div>
-            </motion.div>
-          ))}
-        </div>
-
+        {/* === "Nima uchun muhim" with premium icon chips === */}
         <motion.div
           {...blockMotion}
-          className="mt-6 md:mt-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white p-6 sm:p-7 lg:p-8 shadow-card"
+          className="mt-8 md:mt-10 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white p-6 sm:p-7 lg:p-8 shadow-card"
         >
           <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-brand-cyan/20 blur-3xl" />
@@ -134,20 +125,26 @@ export function About() {
               {t('hydromet.importance.lead')}
             </p>
             <ul className="mt-4 sm:mt-5 grid gap-2 sm:gap-2.5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
-              {hydrometImportance.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-start gap-2 rounded-xl bg-white/[0.08] ring-1 ring-white/10 px-3 py-2.5 backdrop-blur-md"
-                >
-                  <span
-                    aria-hidden="true"
-                    className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-brand-sky"
-                  />
-                  <span className="text-[12px] sm:text-sm text-white font-medium leading-snug">
-                    {t(item.key)}
-                  </span>
-                </li>
-              ))}
+              {hydrometImportance.map((item) => {
+                const Icon = importanceIcons[item.id] ?? Shield
+                return (
+                  <motion.li
+                    key={item.id}
+                    {...chipMotion}
+                    className="group flex items-center gap-2.5 rounded-xl bg-white/[0.08] hover:bg-white/[0.13] ring-1 ring-white/10 hover:ring-white/25 px-3 py-2.5 backdrop-blur-md transition-all hover:-translate-y-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-sky/25 to-brand-cyan/15 ring-1 ring-brand-sky/30 text-brand-sky group-hover:text-white group-hover:from-brand-sky/40 transition-colors"
+                    >
+                      <Icon size={16} />
+                    </span>
+                    <span className="text-[12px] sm:text-[13px] text-white font-semibold leading-snug">
+                      {t(item.key)}
+                    </span>
+                  </motion.li>
+                )
+              })}
             </ul>
           </div>
         </motion.div>

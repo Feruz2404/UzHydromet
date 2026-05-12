@@ -108,6 +108,22 @@ img {
 }
 .animate-livePulse { animation: livePulse 1.8s ease-in-out infinite; }
 
+@keyframes particleFloat {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.5; }
+  100% { transform: translateY(-90px) translateX(8px); opacity: 0; }
+}
+.animate-particleFloat { animation: particleFloat 12s ease-in-out infinite; }
+
+@keyframes particleFloatSlow {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  20% { opacity: 0.6; }
+  80% { opacity: 0.4; }
+  100% { transform: translateY(-110px) translateX(-6px); opacity: 0; }
+}
+.animate-particleFloatSlow { animation: particleFloatSlow 16s ease-in-out infinite; }
+
 @media (prefers-reduced-motion: reduce) {
   .animate-floatY,
   .animate-slowDrift,
@@ -118,6 +134,8 @@ img {
   .animate-radarSpin,
   .animate-radarSweep,
   .animate-livePulse,
+  .animate-particleFloat,
+  .animate-particleFloatSlow,
   .animate-spin,
   .animate-pulse {
     animation: none !important;
