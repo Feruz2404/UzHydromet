@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion'
 import type { LucideIcon } from 'lucide-react'
 import {
-  ShieldCheck,
   Shield,
   Sprout,
   Droplet,
@@ -68,39 +67,39 @@ export function About() {
           </p>
         </motion.div>
 
-        {/* === Two big cards: mobile horizontal swipe / desktop 2-col grid === */}
-        <div className="mt-8 md:mt-10 -mx-4 px-4 lg:mx-0 lg:px-0 flex lg:grid lg:grid-cols-2 gap-5 md:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none scroll-smooth no-scrollbar pb-2 lg:pb-0">
+        {/* === Two compact cards: mobile horizontal swipe / desktop 2-col grid === */}
+        <div className="mt-8 md:mt-10 -mx-4 lg:mx-0 px-4 lg:px-0 flex lg:grid lg:grid-cols-2 gap-4 md:gap-6 overflow-x-auto lg:overflow-visible snap-x snap-mandatory lg:snap-none scroll-smooth no-scrollbar pb-2 lg:pb-0">
           <motion.div
             {...blockMotion}
-            className="snap-start shrink-0 lg:shrink min-w-[86vw] sm:min-w-[70vw] lg:min-w-0 rounded-3xl bg-white border border-slate-100 p-6 sm:p-7 shadow-card"
+            className="snap-start shrink-0 lg:shrink min-w-[86vw] max-w-[86vw] sm:min-w-[70vw] sm:max-w-[70vw] lg:min-w-0 lg:max-w-none rounded-2xl bg-white border border-slate-100 p-5 sm:p-6 shadow-card"
           >
             <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
               {t('about.role.eyebrow')}
             </span>
-            <h3 className="mt-2 font-display text-lg sm:text-xl font-extrabold text-brand-navy">
+            <h3 className="mt-2 font-display text-base sm:text-lg font-extrabold text-brand-navy">
               {t('about.role.title')}
             </h3>
-            <p className="mt-2 text-sm sm:text-[15px] text-brand-muted leading-relaxed">
+            <p className="mt-2 max-w-prose text-sm leading-6 text-brand-muted">
               {t('about.role.text')}
             </p>
           </motion.div>
           <motion.div
             {...blockMotion}
-            className="snap-start shrink-0 lg:shrink min-w-[86vw] sm:min-w-[70vw] lg:min-w-0 rounded-3xl bg-gradient-to-br from-brand-mist via-white to-brand-ice border border-slate-100 p-6 sm:p-7 shadow-card"
+            className="snap-start shrink-0 lg:shrink min-w-[86vw] max-w-[86vw] sm:min-w-[70vw] sm:max-w-[70vw] lg:min-w-0 lg:max-w-none rounded-2xl bg-gradient-to-br from-brand-mist via-white to-brand-ice border border-slate-100 p-5 sm:p-6 shadow-card"
           >
             <span className="text-[10px] sm:text-[11px] font-semibold text-brand-deep uppercase tracking-[0.16em]">
               {t('hydromet.eyebrow')}
             </span>
-            <h3 className="mt-2 font-display text-lg sm:text-xl font-extrabold text-brand-navy">
+            <h3 className="mt-2 font-display text-base sm:text-lg font-extrabold text-brand-navy">
               {t('hydromet.title')}
             </h3>
-            <p className="mt-2 text-sm sm:text-[15px] text-brand-muted leading-relaxed">
+            <p className="mt-2 max-w-prose text-sm leading-6 text-brand-muted">
               {t('hydromet.body')}
             </p>
           </motion.div>
         </div>
 
-        {/* === "Nima uchun muhim" with premium icon chips === */}
+        {/* === Importance panel with premium icon chips === */}
         <motion.div
           {...blockMotion}
           className="mt-8 md:mt-10 relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-navy via-brand-deep to-brand-primary text-white p-6 sm:p-7 lg:p-8 shadow-card"
@@ -110,21 +109,10 @@ export function About() {
             <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-brand-sky/15 blur-3xl" />
           </div>
           <div className="relative">
-            <div className="flex items-center gap-2.5">
-              <span
-                aria-hidden="true"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/15 text-white shrink-0"
-              >
-                <ShieldCheck size={16} />
-              </span>
-              <h3 className="font-display text-base sm:text-lg lg:text-xl font-extrabold text-white">
-                {t('hydromet.importance.title')}
-              </h3>
-            </div>
-            <p className="mt-2 text-[13px] sm:text-sm text-white/80">
+            <h3 className="font-display text-base sm:text-lg lg:text-xl font-extrabold text-white text-center lg:text-left text-balance">
               {t('hydromet.importance.lead')}
-            </p>
-            <ul className="mt-4 sm:mt-5 grid gap-2 sm:gap-2.5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
+            </h3>
+            <ul className="mt-5 sm:mt-6 grid gap-2 sm:gap-2.5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4">
               {hydrometImportance.map((item) => {
                 const Icon = importanceIcons[item.id] ?? Shield
                 return (

@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion'
-import { CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
+import { ArrowUpRight, CloudRain, Waves, Sprout, BarChart3, Trees, Plane, Cpu, Siren } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 import { fadeInUpInView, fadeInUpInViewQuick } from '../lib/motion'
 import { MobileCarousel } from './ui/MobileCarousel'
+
+const SERVICE_LINK = 'https://my.gov.uz/uz/service/1240'
 
 const services = [
   { id: 'meteo', titleKey: 'services.meteo.title', textKey: 'services.meteo.text' },
@@ -40,13 +42,13 @@ export function Services() {
           intervalMs={4800}
           ariaLabel={t('services.title')}
           desktopBreakpointPx={640}
-          className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar"
+          className="-mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5 overflow-x-auto sm:overflow-visible snap-x snap-mandatory sm:snap-none scroll-smooth no-scrollbar items-stretch"
         >
           {services.map((s) => (
             <motion.div
               key={s.id}
               {...fadeInUpInViewQuick}
-              className="snap-start min-w-[72vw] sm:min-w-0 shrink-0 sm:shrink group relative rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden"
+              className="snap-start min-w-[72vw] max-w-[72vw] sm:min-w-0 sm:max-w-none shrink-0 sm:shrink group relative rounded-2xl bg-white p-5 sm:p-6 border border-slate-100 shadow-card hover:shadow-glow hover:-translate-y-1 hover:border-brand-sky/50 transition-all overflow-hidden flex flex-col h-full"
             >
               <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-brand-ice opacity-0 group-hover:opacity-80 transition-opacity" aria-hidden="true" />
               <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-brand-deep to-brand-primary text-white flex items-center justify-center shadow-card">
@@ -54,6 +56,18 @@ export function Services() {
               </div>
               <div className="relative mt-3 sm:mt-4 font-display text-base sm:text-lg font-bold text-brand-navy">{t(s.titleKey)}</div>
               <div className="relative mt-1.5 text-[13px] sm:text-sm text-brand-muted leading-relaxed">{t(s.textKey)}</div>
+              <div className="relative mt-auto pt-4 sm:pt-5">
+                <a
+                  href={SERVICE_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={t('services.cta.use')}
+                  className="inline-flex max-w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-br from-brand-deep to-brand-primary px-3.5 py-2 text-[13px] sm:text-sm font-semibold text-white shadow-card hover:shadow-glow hover:-translate-y-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/60 transition-all"
+                >
+                  <span className="truncate">{t('services.cta.use')}</span>
+                  <ArrowUpRight size={16} className="shrink-0" aria-hidden="true" />
+                </a>
+              </div>
             </motion.div>
           ))}
         </MobileCarousel>
