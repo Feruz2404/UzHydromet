@@ -52,7 +52,7 @@ export const ru: Dictionary = {
   'hydromet.title': "Что такое гидрометеорология?",
   'hydromet.body': "Гидрометеорология \u2014 это область науки, изучающая атмосферные и водные процессы: погоду, климат, осадки, речной сток, водные ресурсы, засухи, наводнения и опасные погодные явления.",
   'hydromet.importance.title': "Почему это важно",
-  'hydromet.importance.lead': "Гидрометеорологические данные имеют ключевое значение для:",
+  'hydromet.importance.lead': "Гидрометеорологические данные важны для следующих областей",
   'hydromet.importance.publicSafety': "Безопасность населения",
   'hydromet.importance.agriculture': "Сельское хозяйство",
   'hydromet.importance.water': "Водные ресурсы",
@@ -121,6 +121,7 @@ export const ru: Dictionary = {
 
   'services.eyebrow': "Наши услуги",
   'services.title': "Комплексные гидрометеорологические услуги",
+  'services.cta.use': "Воспользоваться услугой",
   'services.meteo.title': "Метеорология",
   'services.meteo.text': "Атмосферные наблюдения, прогнозы и отчёты.",
   'services.hydro.title': "Гидрология",

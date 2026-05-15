@@ -52,7 +52,7 @@ export const en: Dictionary = {
   'hydromet.title': "What is hydrometeorology?",
   'hydromet.body': "Hydrometeorology is the field that studies atmospheric and water-related processes \u2014 including weather, climate, precipitation, river flow, water resources, drought, floods and hazardous weather events.",
   'hydromet.importance.title': "Why it matters",
-  'hydromet.importance.lead': "Hydrometeorological information is essential for:",
+  'hydromet.importance.lead': "Hydrometeorological data is essential for the following areas",
   'hydromet.importance.publicSafety': "Public safety",
   'hydromet.importance.agriculture': "Agriculture",
   'hydromet.importance.water': "Water resources",
@@ -121,6 +121,7 @@ export const en: Dictionary = {
 
   'services.eyebrow': "Our Services",
   'services.title': "Comprehensive Hydrometeorological Services",
+  'services.cta.use': "Use service",
   'services.meteo.title': "Meteorology",
   'services.meteo.text': "Atmospheric observations, forecasts, and reporting.",
   'services.hydro.title': "Hydrology",
