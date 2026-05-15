@@ -52,7 +52,7 @@ export const uz: Dictionary = {
   'hydromet.title': "Gidrometeorologiya nima?",
   'hydromet.body': "Gidrometeorologiya \u2014 atmosfera va suv jarayonlarini, jumladan ob-havo, iqlim, yog'in, daryolar oqimi, suv resurslari, qurg'oqchilik, toshqinlar va xavfli ob-havo hodisalarini o'rganadigan fan sohasi.",
   'hydromet.importance.title': "Nima uchun muhim",
-  'hydromet.importance.lead': "Gidrometeorologik ma'lumotlar quyidagi sohalar uchun ahamiyatli:",
+  'hydromet.importance.lead': "Gidrometeorologik ma'lumotlar quyidagi sohalar uchun ahamiyatli",
   'hydromet.importance.publicSafety': "Aholi xavfsizligi",
   'hydromet.importance.agriculture': "Qishloq xo'jaligi",
   'hydromet.importance.water': "Suv resurslari",
@@ -121,6 +121,7 @@ export const uz: Dictionary = {
 
   'services.eyebrow': "Bizning xizmatlar",
   'services.title': "Keng qamrovli gidrometeorologik xizmatlar",
+  'services.cta.use': "Xizmatdan foydalanish",
   'services.meteo.title': "Meteorologiya",
   'services.meteo.text': "Atmosferani kuzatish, prognoz va hisobot.",
   'services.hydro.title': "Gidrologiya",
