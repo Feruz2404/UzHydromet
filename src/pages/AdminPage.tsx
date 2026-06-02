@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import {
   Settings,
   Users,
@@ -23,9 +23,7 @@ type Tab = 'settings' | 'leaders' | 'news' | 'qr'
 
 function readAuth(): boolean {
   try {
-    return (
-      window.sessionStorage.getItem('uzhydromet:admin:auth') === '1'
-    )
+    return window.sessionStorage.getItem('uzhydromet:admin:auth') === '1'
   } catch {
     return false
   }
@@ -49,9 +47,7 @@ export default function AdminPage() {
 
   function logout() {
     try {
-      window.sessionStorage.removeItem(
-        'uzhydromet:admin:auth'
-      )
+      window.sessionStorage.removeItem('uzhydromet:admin:auth')
     } catch {
       // ignore
     }
@@ -156,19 +152,15 @@ function TabButton({
 }: {
   active: boolean
   onClick: () => void
-  icon: React.ReactNode
-  children: React.ReactNode
+  icon: ReactNode
+  children: ReactNode
 }) {
   const cls = active
     ? 'inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white text-sm font-semibold shadow-card'
     : 'inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-200 bg-white text-brand-navy text-sm font-semibold hover:border-brand-primary hover:text-brand-deep transition'
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cls}
-    >
+    <button type="button" onClick={onClick} className={cls}>
       {icon}
       {children}
     </button>
