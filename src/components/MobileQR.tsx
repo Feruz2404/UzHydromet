@@ -1,10 +1,20 @@
 import { motion } from 'framer-motion'
 import { ScanLine, Share2, ShieldCheck, Smartphone } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
-import { QRCodeCard } from './QRCodeCard'
+import { QRCodeCard, type QRCodeCardCopy } from './QRCodeCard'
 
 const TARGET_URL = 'https://uz-hydromet.vercel.app/'
 const LOGO_SRC = '/logo.png'
+
+const FADE_INITIAL = { opacity: 0, y: 16 }
+const FADE_ANIMATE = { opacity: 1, y: 0 }
+const FADE_VIEWPORT = { once: true, margin: '-80px' }
+const FADE_TRANSITION = { duration: 0.5, ease: 'easeOut' as const }
+const FADE_TRANSITION_DELAYED = {
+  duration: 0.5,
+  ease: 'easeOut' as const,
+  delay: 0.08,
+}
 
 export function MobileQR() {
   const { t } = useLanguage()
@@ -15,6 +25,13 @@ export function MobileQR() {
     { Icon: Share2, text: t('mobileQR.steps.share') },
   ]
 
+  const qrCopy: QRCodeCardCopy = {
+    download: t('mobileQR.download'),
+    copy: t('mobileQR.copy'),
+    copied: t('mobileQR.copied'),
+    transparent: t('mobileQR.transparent'),
+  }
+
   return (
     <section
       id="mobile-access"
@@ -23,10 +40,10 @@ export function MobileQR() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <motion.div
-            initial= opacity: 0, y: 16 
-            whileInView= opacity: 1, y: 0 
-            viewport= once: true 
-            transition= duration: 0.5, ease: 'easeOut' 
+            initial={FADE_INITIAL}
+            whileInView={FADE_ANIMATE}
+            viewport={FADE_VIEWPORT}
+            transition={FADE_TRANSITION}
           >
             <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-ice px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-primary ring-1 ring-brand-primary/15">
               <Smartphone size={12} aria-hidden="true" />
@@ -40,16 +57,19 @@ export function MobileQR() {
             </p>
 
             <ul className="mt-6 space-y-3">
-              {steps.map(({ Icon, text }, idx) => (
-                <li key={idx} className="flex items-start gap-3">
-                  <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary/10 to-brand-deep/10 text-brand-primary ring-1 ring-brand-primary/15">
-                    <Icon size={16} aria-hidden="true" />
-                  </span>
-                  <span className="text-sm sm:text-[15px] text-brand-navy/85 leading-6">
-                    {text}
-                  </span>
-                </li>
-              ))}
+              {steps.map((step, idx) => {
+                const Icon = step.Icon
+                return (
+                  <li key={idx} className="flex items-start gap-3">
+                    <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary/10 to-brand-deep/10 text-brand-primary ring-1 ring-brand-primary/15">
+                      <Icon size={16} aria-hidden="true" />
+                    </span>
+                    <span className="text-sm sm:text-[15px] text-brand-navy/85 leading-6">
+                      {step.text}
+                    </span>
+                  </li>
+                )
+              })}
             </ul>
 
             <div className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white/80 px-3 py-2 text-[12px] text-brand-navy/70 ring-1 ring-brand-deep/10">
@@ -59,10 +79,10 @@ export function MobileQR() {
           </motion.div>
 
           <motion.div
-            initial= opacity: 0, y: 16 
-            whileInView= opacity: 1, y: 0 
-            viewport= once: true 
-            transition= duration: 0.5, ease: 'easeOut', delay: 0.08 
+            initial={FADE_INITIAL}
+            whileInView={FADE_ANIMATE}
+            viewport={FADE_VIEWPORT}
+            transition={FADE_TRANSITION_DELAYED}
             className="relative"
           >
             <div
@@ -75,12 +95,7 @@ export function MobileQR() {
               ariaLabel={t('mobileQR.qrAria')}
               downloadFileName="uzhydromet-qr.png"
               urlLabel={t('mobileQR.urlLabel')}
-              copy=
-                download: t('mobileQR.download'),
-                copy: t('mobileQR.copy'),
-                copied: t('mobileQR.copied'),
-                transparent: t('mobileQR.transparent'),
-              
+              copy={qrCopy}
             />
           </motion.div>
         </div>

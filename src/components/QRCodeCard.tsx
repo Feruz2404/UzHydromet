@@ -1,4 +1,4 @@
-import { useCallback, useId, useRef, useState } from 'react'
+import { useCallback, useId, useRef, useState, type CSSProperties } from 'react'
 import QRCode from 'react-qr-code'
 import { toCanvas } from 'qrcode'
 import { Check, Copy, Download } from 'lucide-react'
@@ -42,6 +42,23 @@ const LOGO_FRACTION = 0.18
 const CIRCLE_FRACTION = 0.24
 const PNG_SIZE = 2000
 
+const CIRCLE_PCT = `${CIRCLE_FRACTION * 100}%`
+const INNER_LOGO_PCT = `${(LOGO_FRACTION / CIRCLE_FRACTION) * 100}%`
+
+const QR_SVG_STYLE: CSSProperties = {
+  width: '100%',
+  height: '100%',
+  display: 'block',
+}
+const CIRCLE_STYLE: CSSProperties = {
+  width: CIRCLE_PCT,
+  height: CIRCLE_PCT,
+}
+const LOGO_IMG_STYLE: CSSProperties = {
+  width: INNER_LOGO_PCT,
+  height: INNER_LOGO_PCT,
+}
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -61,7 +78,7 @@ export function QRCodeCard({
   urlLabel,
   copy,
 }: QRCodeCardProps) {
-  const labels: QRCodeCardCopy = { ...DEFAULT_COPY, ...copy }
+  const labels: QRCodeCardCopy = Object.assign({}, DEFAULT_COPY, copy)
   const [copied, setCopied] = useState<boolean>(false)
   const [transparent, setTransparent] = useState<boolean>(false)
   const [downloading, setDownloading] = useState<boolean>(false)
@@ -87,7 +104,7 @@ export function QRCodeCard({
       if (copyTimerRef.current !== null) window.clearTimeout(copyTimerRef.current)
       copyTimerRef.current = window.setTimeout(() => setCopied(false), 2000)
     } catch {
-      /* clipboard unavailable — silently ignore */
+      /* clipboard unavailable \u2014 silently ignore */
     }
   }, [value])
 
@@ -133,7 +150,7 @@ export function QRCodeCard({
             logoSize,
           )
         } catch {
-          /* logo failed to load — export QR without overlay */
+          /* logo failed to load \u2014 export QR without overlay */
         }
       }
 
@@ -149,9 +166,6 @@ export function QRCodeCard({
     }
   }, [value, logoSrc, transparent, fgColor, bgColor, downloadFileName])
 
-  const circlePct = `${CIRCLE_FRACTION * 100}%`
-  const innerLogoPct = `${(LOGO_FRACTION / CIRCLE_FRACTION) * 100}%`
-
   return (
     <div className="relative w-full max-w-md mx-auto rounded-3xl bg-white shadow-card ring-1 ring-slate-100 p-5 sm:p-7">
       <div
@@ -165,36 +179,36 @@ export function QRCodeCard({
           size={1024}
           bgColor={bgColor}
           fgColor={fgColor}
-          style= width: '100%', height: '100%', display: 'block' 
+          style={QR_SVG_STYLE}
         />
-        {logoSrc && (
+        {logoSrc ? (
           <div
             className="pointer-events-none absolute inset-0 flex items-center justify-center"
             aria-hidden="true"
           >
             <div
               className="flex items-center justify-center rounded-full bg-white shadow-card ring-1 ring-slate-100"
-              style= width: circlePct, height: circlePct 
+              style={CIRCLE_STYLE}
             >
               <img
                 src={logoSrc}
                 alt=""
                 className="object-contain"
-                style= width: innerLogoPct, height: innerLogoPct 
+                style={LOGO_IMG_STYLE}
               />
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
-      {urlLabel && (
+      {urlLabel ? (
         <div className="mt-4 rounded-xl bg-slate-50 px-3 py-2.5 text-center ring-1 ring-slate-100">
           <p className="text-[11px] uppercase tracking-wider text-slate-500 font-semibold">
             {urlLabel}
           </p>
           <p className="mt-0.5 text-sm font-medium text-brand-navy break-all">{value}</p>
         </div>
-      )}
+      ) : null}
 
       <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
         <button
