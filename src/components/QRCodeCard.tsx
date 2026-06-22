@@ -34,6 +34,13 @@ const DEFAULT_BG = '#FFFFFF'
 const EXPORT_SIZE = 2000
 // keep a healthy quiet zone so the code stays scannable even with a center logo
 const EXPORT_MARGIN = 4
+// soften the four outer corners of the exported PNG (fraction of the export size).
+// kept small enough to stay inside the quiet zone so no data modules are clipped.
+const CORNER_RADIUS_RATIO = 0.07
+// diameter of the white logo badge as a fraction of the QR; the logo fills most of it
+const LOGO_BADGE_RATIO = 0.23
+// how much of the badge the logo occupies, leaving only a thin white quiet ring
+const LOGO_FILL_RATIO = 0.9
 
 function downloadBlob(blob: Blob, fileName: string) {
   const link = document.createElement('a')
@@ -107,20 +114,19 @@ export function QRCodeCard({
       },
     })
 
-    if (logoSrc) {
-      try {
-        const ctx = canvas.getContext('2d')
-        if (!ctx) throw new Error('Canvas context not available')
+    const ctx = canvas.getContext('2d')
 
+    if (ctx && logoSrc) {
+      try {
         const img = await loadImage(logoSrc)
 
-        // Logo sizing: keep it <~20% of QR size so scanners remain reliable.
-        const logoSize = Math.round(EXPORT_SIZE * 0.18)
         const cx = EXPORT_SIZE / 2
         const cy = EXPORT_SIZE / 2
 
-        // White circular background for the logo (even when exporting transparent PNG)
-        const circleRadius = Math.round(logoSize * 0.62)
+        // White circular badge sized snugly around the (circular) logo, so only a
+        // thin quiet ring remains instead of a large empty area. Drawn even for a
+        // transparent export so the logo always sits on a clean background.
+        const circleRadius = Math.round((EXPORT_SIZE * LOGO_BADGE_RATIO) / 2)
         ctx.save()
         ctx.beginPath()
         ctx.arc(cx, cy, circleRadius, 0, Math.PI * 2)
@@ -128,15 +134,33 @@ export function QRCodeCard({
         ctx.fill()
         ctx.restore()
 
-        // draw the logo centered
-        const x = Math.round(cx - logoSize / 2)
-        const y = Math.round(cy - logoSize / 2)
+        // Draw the logo centered, filling most of the badge.
+        const logoSize = Math.round(circleRadius * 2 * LOGO_FILL_RATIO)
         ctx.imageSmoothingEnabled = true
         ctx.imageSmoothingQuality = 'high'
-        ctx.drawImage(img, x, y, logoSize, logoSize)
+        ctx.drawImage(
+          img,
+          Math.round(cx - logoSize / 2),
+          Math.round(cy - logoSize / 2),
+          logoSize,
+          logoSize,
+        )
       } catch {
         // ignore logo render failures; QR is still downloadable & scannable
       }
+    }
+
+    // Round the four outer corners of the exported PNG. destination-in keeps only
+    // the pixels inside the rounded rectangle, so the corners become transparent.
+    if (ctx) {
+      const radius = Math.round(EXPORT_SIZE * CORNER_RADIUS_RATIO)
+      ctx.save()
+      ctx.globalCompositeOperation = 'destination-in'
+      ctx.beginPath()
+      ctx.roundRect(0, 0, EXPORT_SIZE, EXPORT_SIZE, radius)
+      ctx.fillStyle = '#000000'
+      ctx.fill()
+      ctx.restore()
     }
 
     canvas.toBlob(
@@ -152,30 +176,43 @@ export function QRCodeCard({
   return (
     <div className="relative w-full max-w-md mx-auto rounded-3xl bg-white shadow-card ring-1 ring-slate-100 p-5 sm:p-7">
       <div
-        className="relative mx-auto aspect-square w-full max-w-[320px] sm:max-w-[360px] rounded-2xl bg-white p-4 ring-1 ring-slate-100 flex items-center justify-center"
+        className="relative mx-auto aspect-square w-full max-w-[320px] sm:max-w-[360px] overflow-hidden rounded-2xl bg-white p-4 ring-1 ring-slate-100"
         role="img"
         aria-label={ariaLabel ?? value}
         ref={qrRef}
       >
-        <QRCodeSVG
-          value={value}
-          width={320}
-          height={320}
-          level="H"
-          includeMargin={true}
-          fgColor={fgColor}
-          bgColor={transparent ? 'transparent' : bgColor}
-          imageSettings={
-            logoSrc
-              ? {
-                  src: logoSrc,
-                  width: 40,
-                  height: 40,
-                  excavate: true,
-                }
-              : undefined
-          }
-        />
+        <div className="relative h-full w-full">
+          <QRCodeSVG
+            value={value}
+            level="H"
+            marginSize={4}
+            fgColor={fgColor}
+            bgColor={transparent ? 'transparent' : bgColor}
+            className="h-full w-full"
+          />
+
+          {logoSrc && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <span
+                className="flex items-center justify-center rounded-full bg-white"
+                style={{
+                  width: `${LOGO_BADGE_RATIO * 100}%`,
+                  height: `${LOGO_BADGE_RATIO * 100}%`,
+                }}
+              >
+                <img
+                  src={logoSrc}
+                  alt=""
+                  className="rounded-full object-contain"
+                  style={{
+                    width: `${LOGO_FILL_RATIO * 100}%`,
+                    height: `${LOGO_FILL_RATIO * 100}%`,
+                  }}
+                />
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {urlLabel && (
