@@ -3,7 +3,7 @@ import { ScanLine, Share2, ShieldCheck, Smartphone } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 import { QRCodeCard, type QRCodeCardCopy } from './QRCodeCard'
 
-const TARGET_URL = 'https://uz-hydromet.vercel.app/'
+const TARGET_URL = 'https://hydromet.vrcloud.uz/'
 const LOGO_SRC = '/logo.png'
 
 const FADE_INITIAL = { opacity: 0, y: 16 }
