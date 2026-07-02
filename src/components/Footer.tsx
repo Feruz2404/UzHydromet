@@ -1,8 +1,9 @@
-import { Cloud, Mail, MapPin, Phone, Lock } from 'lucide-react'
+import { Mail, MapPin, Phone, Lock } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { agency } from '../data/defaultContent'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useAdmin } from '../context/AdminContext'
+import { BrandLogo } from './ui/BrandLogo'
 
 export function Footer() {
   const { t } = useLanguage()
@@ -16,17 +17,12 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid md:grid-cols-3 gap-10">
         <div>
           <div className="flex items-center gap-3">
-            {settings?.logoUrl ? (
-              <img
-                src={settings.logoUrl}
-                alt={t('brand.short')}
-                className="w-10 h-10 rounded-xl object-cover ring-1 ring-white/20"
-              />
-            ) : (
-              <span className="w-10 h-10 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center">
-                <Cloud size={20} />
-              </span>
-            )}
+            <BrandLogo
+              size={40}
+              className="w-10 h-10 rounded-xl ring-1 ring-white/20"
+              fallbackClassName="w-10 h-10 rounded-xl bg-white/10 ring-1 ring-white/15 flex items-center justify-center"
+              fallbackIconSize={20}
+            />
             <div>
               <div className="font-display font-extrabold text-lg">{t('brand.short')}</div>
               <div className="text-[11px] text-white/60">{t('brand.tagline')}</div>

@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Menu, X, Cloud } from 'lucide-react'
+import { Menu, X } from 'lucide-react'
 import { useLanguage } from '../i18n/LanguageContext'
 import { LanguageSwitcher } from './LanguageSwitcher'
-import { useAdmin } from '../context/AdminContext'
+import { BrandLogo } from './ui/BrandLogo'
 
 const headerInitial = { y: -16, opacity: 0 }
 const headerAnimate = { y: 0, opacity: 1 }
@@ -11,7 +11,6 @@ const headerTransition = { duration: 0.45, ease: 'easeOut' as const }
 
 export function Header() {
   const { t } = useLanguage()
-  const { settings } = useAdmin()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -40,18 +39,13 @@ export function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <a href="#home" className="flex items-center gap-2.5 min-w-0">
-            {settings?.logoUrl ? (
-              <img
-                src={settings.logoUrl}
-                alt={t('brand.short')}
-                className="w-9 h-9 rounded-xl object-cover ring-1 ring-brand-deep/10 shrink-0"
-              />
-            ) : (
-              <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white flex items-center justify-center shadow-card shrink-0">
-                <Cloud size={18} />
-              </span>
-            )}
+          <a href="#home" aria-label={t('brand.short')} className="flex items-center gap-2.5 min-w-0">
+            <BrandLogo
+              size={36}
+              className="w-9 h-9 rounded-xl ring-1 ring-brand-deep/10 shrink-0"
+              fallbackClassName="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-primary to-brand-deep text-white flex items-center justify-center shadow-card shrink-0"
+              fallbackIconSize={18}
+            />
             <span className="hidden xs:flex flex-col leading-tight min-w-0">
               <span className="font-display font-extrabold text-brand-navy text-sm truncate">
                 {t('brand.short')}
